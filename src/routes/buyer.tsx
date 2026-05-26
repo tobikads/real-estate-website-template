@@ -729,18 +729,21 @@ function Step4({
             </Chip>
           ))}
         </div>
-        <input
-          type="text"
-          value={state.otherMatters}
-          onChange={(e) => update("otherMatters", e.target.value)}
-          maxLength={200}
-          placeholder="Anything else that matters?"
-          className="mt-4 w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors"
-        />
+        <div className="mt-5">
+          <FieldLabel>Anything else that matters? <span className="text-stone-400 normal-case tracking-normal italic">— optional</span></FieldLabel>
+          <input
+            type="text"
+            value={state.otherMatters}
+            onChange={(e) => update("otherMatters", e.target.value)}
+            maxLength={200}
+            placeholder="A quiet street, garden space, walk to coffee…"
+            className="w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors"
+          />
+        </div>
       </div>
 
       <div>
-        <FieldLabel>Deal-breakers (optional)</FieldLabel>
+        <FieldLabel>Deal-breakers <span className="text-stone-400 normal-case tracking-normal italic">— optional</span></FieldLabel>
         <input
           type="text"
           value={state.dealBreakers}
@@ -750,6 +753,7 @@ function Step4({
           className="w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors"
         />
       </div>
+
     </div>
   );
 }
