@@ -4,11 +4,11 @@ import { Menu, X, Linkedin, Instagram, ArrowUpRight } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 
 const DROPDOWN_ITEMS = [
-  { label: "FAQ", href: "#" },
-  { label: "About", to: "/", hash: "meet" as const },
-  { label: "Areas Served", href: "#" },
-  { label: "Testimonials", to: "/", hash: "testimonials" as const },
-  { label: "Let's Connect", to: "/", hash: "work" as const },
+  { label: "FAQ", to: "/faq" },
+  { label: "About", to: "/about" },
+  { label: "Areas Served", to: "/areas-served" },
+  { label: "Testimonials", to: "/testimonials" },
+  { label: "Let's Connect", to: "/lets-connect" },
 ];
 
 const NAV_LEFT = [
@@ -18,7 +18,7 @@ const NAV_LEFT = [
 
 const NAV_RIGHT = [
   { label: "Question", to: "/question" },
-  { label: "Listings", to: "/" },
+  { label: "Listings", to: "/listings" },
 ];
 
 const MOBILE_ITEMS = [
@@ -26,13 +26,14 @@ const MOBILE_ITEMS = [
   { label: "Buyer", to: "/buyer" },
   { label: "Seller", to: "/seller" },
   { label: "Question", to: "/question" },
-  { label: "Listings", to: "/" },
+  { label: "Listings", to: "/listings" },
   { label: "Home", to: "/" },
-  { label: "About", to: "/", hash: "meet" as const },
-  { label: "Areas Served", href: "#" },
-  { label: "Testimonials", to: "/", hash: "testimonials" as const },
-  { label: "Let's Connect", to: "/", hash: "work" as const },
+  { label: "About", to: "/about" },
+  { label: "Areas Served", to: "/areas-served" },
+  { label: "Testimonials", to: "/testimonials" },
+  { label: "Let's Connect", to: "/lets-connect" },
 ];
+
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
