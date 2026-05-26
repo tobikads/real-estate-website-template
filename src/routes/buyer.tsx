@@ -902,9 +902,6 @@ function Step5({
         </dl>
       </div>
 
-      {error && (
-        <p className="text-sm text-red-700 font-light">{error}</p>
-      )}
     </div>
   );
 }
