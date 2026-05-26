@@ -256,60 +256,59 @@ function TeaserCard({ listing }: { listing: (typeof TEASER_LISTINGS)[number] }) 
   return (
     <article
       onClick={handleClick}
-      className="group relative shrink-0 w-[82%] sm:w-[60%] lg:w-auto snap-start overflow-hidden bg-stone-100 cursor-pointer transition-all duration-500 ease-out lg:hover:shadow-xl lg:hover:-translate-y-1"
+      className="group relative shrink-0 w-[78%] sm:w-[55%] lg:w-auto snap-start overflow-hidden bg-stone-100 cursor-pointer transition-all duration-500 ease-out lg:hover:shadow-lg lg:hover:-translate-y-0.5"
     >
-      <div className="relative aspect-[4/5] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={listing.image}
           alt={listing.neighborhood}
           loading="lazy"
           width={1280}
-          height={1600}
-          className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out lg:group-hover:scale-[1.06]"
+          height={960}
+          className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out lg:group-hover:scale-[1.04]"
         />
-        <div className="absolute inset-x-0 bottom-0 p-5 lg:p-6 bg-gradient-to-t from-black/70 via-black/15 to-transparent">
-          <p className="text-white font-serif text-xl lg:text-2xl tracking-wide">
-            {listing.price}
-          </p>
-          <p className="text-white/85 text-[10px] tracking-[0.28em] uppercase mt-1">
-            {listing.neighborhood}
-          </p>
-        </div>
-
         <div
-          className={`absolute inset-0 bg-stone-900/80 flex flex-col justify-end p-5 lg:p-6 transition-opacity duration-500
+          className={`absolute inset-0 bg-stone-900/75 flex flex-col justify-end p-4 lg:p-5 transition-opacity duration-500
             ${expanded ? "opacity-100" : "opacity-0"} lg:group-hover:opacity-100`}
         >
-          <p className="text-white font-serif text-2xl">{listing.price}</p>
-          <p className="text-white/80 text-[10px] tracking-[0.28em] uppercase mt-1">
+          <p className="text-white/85 text-[10px] tracking-[0.28em] uppercase">
             {listing.neighborhood}
           </p>
-          <p className="text-white/85 text-sm font-light mt-4 leading-relaxed">
+          <p className="text-white/90 text-sm font-light mt-2 leading-relaxed line-clamp-2">
             {listing.blurb}
           </p>
-          <div className="flex items-center gap-4 mt-4 text-white/90 text-xs font-light">
-            <span className="flex items-center gap-1.5">
-              <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.beds} bd
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.baths} ba
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.sqft} sqft
-            </span>
-          </div>
-          <a
-            href="#"
-            onClick={(e) => e.stopPropagation()}
-            className="mt-5 inline-flex items-center gap-2 self-start text-[10px] tracking-[0.3em] uppercase text-white border-b border-white/60 pb-1.5 hover:gap-3 transition-all"
-          >
-            View Details <ArrowUpRight className="h-3 w-3" strokeWidth={1.5} />
-          </a>
         </div>
+      </div>
+      <div className="bg-white border-t border-stone-100 px-4 py-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="font-serif text-lg text-stone-900">{listing.price}</p>
+          <p className="text-[10px] tracking-[0.25em] uppercase text-stone-500">
+            {listing.neighborhood}
+          </p>
+        </div>
+        <div className="mt-3 flex items-center gap-4 text-stone-600 text-xs font-light">
+          <span className="flex items-center gap-1.5">
+            <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.beds} bd
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.baths} ba
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.sqft} sqft
+          </span>
+        </div>
+        <Link
+          to="/listings"
+          onClick={(e) => e.stopPropagation()}
+          className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase text-stone-900 border-b border-stone-900 pb-1 hover:gap-3 transition-all"
+        >
+          View Details <ArrowUpRight className="h-3 w-3" strokeWidth={1.5} />
+        </Link>
       </div>
     </article>
   );
 }
+
 
 /* ---------- Wizard ---------- */
 
