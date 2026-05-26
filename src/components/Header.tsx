@@ -221,28 +221,17 @@ export function Header() {
                   aria-hidden
                 />
                 <div className="absolute right-0 top-full mt-4 w-64 bg-[#faf7f2] border border-stone-200/70 shadow-xl z-50 py-2">
-                  {DROPDOWN_ITEMS.map((item) =>
-                    item.to ? (
-                      <Link
-                        key={item.label}
-                        to={item.to}
-                        hash={item.hash}
-                        onClick={() => setMenuOpen(false)}
-                        className="block px-6 py-3 text-[12px] tracking-[0.2em] uppercase text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors"
-                      >
-                        {item.label}
-                      </Link>
-                    ) : (
-                      <a
-                        key={item.label}
-                        href={item.href}
-                        onClick={() => setMenuOpen(false)}
-                        className="block px-6 py-3 text-[12px] tracking-[0.2em] uppercase text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors"
-                      >
-                        {item.label}
-                      </a>
-                    ),
-                  )}
+                  {DROPDOWN_ITEMS.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.to}
+                      onClick={() => setMenuOpen(false)}
+                      className="block px-6 py-3 text-[12px] tracking-[0.2em] uppercase text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+
                 </div>
               </>
             )}
