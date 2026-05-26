@@ -757,12 +757,11 @@ function Step4({
 function Step5({
   state,
   update,
-  error,
 }: {
   state: BuyerState;
   update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
-  error: string | null;
 }) {
+
   const inputCls =
     "w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors";
 
