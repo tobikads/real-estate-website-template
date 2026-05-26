@@ -91,7 +91,7 @@ const LISTINGS = [
 ];
 
 const DROPDOWN_ITEMS = [
-  { label: "Home", href: "#" },
+  { label: "FAQ", href: "#" },
   { label: "About", href: "#meet" },
   { label: "Areas Served", href: "#" },
   { label: "Testimonials", href: "#testimonials" },
@@ -129,7 +129,10 @@ function Header() {
 
   const mobileMenu = mobileOpen
     ? createPortal(
-        <div className="fixed inset-0 z-[100] bg-[#faf7f2] text-stone-900 flex flex-col overflow-y-auto">
+        <div
+          data-mobile-menu
+          className="fixed inset-0 z-[100] bg-[#faf7f2] text-stone-900 flex flex-col overflow-y-auto"
+        >
           <div className="flex items-center justify-between px-6 py-5 border-b border-stone-200/70">
             <div>
               <p className="font-serif text-2xl leading-none text-stone-900">
@@ -164,7 +167,7 @@ function Header() {
                 { label: "Seller", href: "#" },
                 { label: "Question", href: "#" },
                 { label: "Listings", href: "#" },
-                { label: "Home", href: "#" },
+                { label: "FAQ", href: "#" },
                 { label: "About", href: "#meet" },
                 { label: "Areas Served", href: "#" },
                 { label: "Testimonials", href: "#testimonials" },
@@ -180,23 +183,6 @@ function Header() {
                   <ArrowUpRight className="h-3.5 w-3.5 text-stone-400" strokeWidth={1.5} />
                 </a>
               ))}
-            </div>
-
-            <div className="mt-8 flex items-center gap-5 text-stone-700">
-              <a
-                href="#"
-                aria-label="LinkedIn"
-                className="inline-flex h-11 w-11 items-center justify-center border border-stone-200"
-              >
-                <Linkedin className="h-4 w-4" strokeWidth={1.5} />
-              </a>
-              <a
-                href="#"
-                aria-label="Instagram"
-                className="inline-flex h-11 w-11 items-center justify-center border border-stone-200"
-              >
-                <Instagram className="h-4 w-4" strokeWidth={1.5} />
-              </a>
             </div>
           </nav>
         </div>,
@@ -332,21 +318,26 @@ function Hero() {
         <p className="mt-6 text-white/90 font-light text-sm sm:text-base tracking-[0.2em] uppercase">
           Real Estate Agent in Atlanta, Georgia
         </p>
-        <p className="mt-10 sm:mt-14 text-white/85 text-[11px] sm:text-xs tracking-[0.3em] uppercase font-light">
-          Ready to{" "}
-          <a href="#" className="underline underline-offset-[6px] decoration-white/40 hover:decoration-white transition-colors">
-            buy
-          </a>
-          ,{" "}
-          <a href="#" className="underline underline-offset-[6px] decoration-white/40 hover:decoration-white transition-colors">
-            sell
-          </a>
-          , or{" "}
-          <a href="#" className="underline underline-offset-[6px] decoration-white/40 hover:decoration-white transition-colors">
-            ask a question
-          </a>
-          ?
-        </p>
+        <div className="mt-10 sm:mt-14">
+          <p className="text-white/80 text-[11px] sm:text-xs tracking-[0.3em] uppercase font-light">
+            Ready to
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+            {[
+              { label: "Buy", href: "#" },
+              { label: "Sell", href: "#" },
+              { label: "Ask a Question", href: "#" },
+            ].map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="inline-flex min-h-10 items-center justify-center border border-white/45 bg-white/10 px-4 py-2 text-[10px] uppercase tracking-[0.25em] text-white/90 backdrop-blur-sm transition-colors hover:border-white hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/80"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* slide indicators */}
@@ -537,15 +528,31 @@ function Testimonials() {
   );
 }
 
-function ListingCard({ listing }: { listing: (typeof LISTINGS)[number] }) {
-  const [expanded, setExpanded] = useState(false);
+function ListingCard({
+  listing,
+  expanded,
+  onToggle,
+}: {
+  listing: (typeof LISTINGS)[number];
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const handleCardClick = () => {
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      return;
+    }
+
+    onToggle();
+  };
 
   return (
     <article
+      data-listing-card
+      data-expanded={expanded ? "true" : "false"}
       className="group relative overflow-hidden bg-stone-100 cursor-pointer
                  transition-transform duration-500 ease-out
                  lg:hover:scale-[1.025] lg:hover:shadow-2xl"
-      onClick={() => setExpanded((e) => !e)}
+      onClick={handleCardClick}
     >
       <div className="relative aspect-[4/5] overflow-hidden">
         <img
@@ -613,6 +620,32 @@ function ListingCard({ listing }: { listing: (typeof LISTINGS)[number] }) {
 }
 
 function FeaturedListings() {
+  const [expandedListing, setExpandedListing] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!expandedListing) {
+      return;
+    }
+
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      const target = event.target;
+
+      if (target instanceof Element && !target.closest("[data-listing-card]")) {
+        setExpandedListing(null);
+      }
+    };
+
+    const closeOnScroll = () => setExpandedListing(null);
+
+    document.addEventListener("pointerdown", closeOnOutsidePress);
+    window.addEventListener("scroll", closeOnScroll, { passive: true });
+
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePress);
+      window.removeEventListener("scroll", closeOnScroll);
+    };
+  }, [expandedListing]);
+
   return (
     <section className="bg-[#faf7f2] py-24 lg:py-36">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -627,7 +660,16 @@ function FeaturedListings() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
           {LISTINGS.map((l) => (
-            <ListingCard key={l.neighborhood} listing={l} />
+            <ListingCard
+              key={l.neighborhood}
+              listing={l}
+              expanded={expandedListing === l.neighborhood}
+              onToggle={() =>
+                setExpandedListing((current) =>
+                  current === l.neighborhood ? null : l.neighborhood,
+                )
+              }
+            />
           ))}
         </div>
 
