@@ -109,8 +109,22 @@ function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (mobileOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [mobileOpen]);
+
   const linkColor = scrolled ? "text-stone-800" : "text-white";
   const linkHover = scrolled ? "hover:text-stone-500" : "hover:text-white/70";
+
+  const startHereClass = scrolled
+    ? "border border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-[#faf7f2]"
+    : "border border-white/80 text-white bg-white/10 hover:bg-white/20";
 
   return (
     <header
@@ -122,27 +136,30 @@ function Header() {
         {/* Left: socials */}
         <div className={`flex items-center gap-4 ${linkColor} transition-colors`}>
           <a href="#" aria-label="LinkedIn" className={`${linkHover} transition-colors`}>
-            <Linkedin className="h-4 w-4" strokeWidth={1.5} />
+            <Linkedin className="h-4 w-4 lg:h-4 lg:w-4 h-5 w-5" strokeWidth={1.5} />
           </a>
           <a href="#" aria-label="Instagram" className={`${linkHover} transition-colors`}>
-            <Instagram className="h-4 w-4" strokeWidth={1.5} />
+            <Instagram className="h-4 w-4 lg:h-4 lg:w-4 h-5 w-5" strokeWidth={1.5} />
           </a>
         </div>
 
-        {/* Center nav */}
+        {/* Center nav (desktop) */}
         <nav
-          className={`hidden lg:flex items-center gap-10 text-[12px] tracking-[0.18em] uppercase ${linkColor} transition-colors`}
+          className={`hidden lg:flex items-center gap-8 xl:gap-10 text-[12px] tracking-[0.18em] uppercase ${linkColor} transition-colors`}
         >
           <a href="#" className={`${linkHover} font-light`}>Buyer</a>
           <a href="#" className={`${linkHover} font-light`}>Seller</a>
-          <a href="#" className={`${linkHover} font-medium text-[13px] tracking-[0.25em]`}>
+          <a
+            href="#"
+            className={`inline-flex items-center rounded-full px-5 xl:px-6 py-2.5 text-[13px] tracking-[0.25em] font-semibold transition-colors ${startHereClass}`}
+          >
             START HERE
           </a>
           <a href="#" className={`${linkHover} font-light`}>Question</a>
           <a href="#" className={`${linkHover} font-light`}>Listings</a>
         </nav>
 
-        {/* Right: dropdown */}
+        {/* Right: dropdown (desktop) / hamburger (mobile) */}
         <div className="relative">
           <button
             onClick={() => setMenuOpen((o) => !o)}
@@ -160,9 +177,9 @@ function Header() {
           <button
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
-            className={`lg:hidden ${linkColor} ${linkHover} transition-colors`}
+            className={`lg:hidden inline-flex h-11 w-11 items-center justify-center -mr-2 ${linkColor} ${linkHover} transition-colors`}
           >
-            <Menu className="h-5 w-5" strokeWidth={1.5} />
+            <Menu className="h-6 w-6" strokeWidth={1.5} />
           </button>
 
           {menuOpen && (
@@ -191,26 +208,51 @@ function Header() {
 
       {/* Mobile full drawer */}
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-[60] bg-[#faf7f2] flex flex-col">
-          <div className="flex items-center justify-between px-6 py-5">
+        <div className="lg:hidden fixed inset-0 z-[60] bg-[#faf7f2] flex flex-col overflow-y-auto">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-stone-200/60">
             <span className="font-serif text-xl text-stone-800">Alexandra Carter</span>
-            <button onClick={() => setMobileOpen(false)} aria-label="Close menu">
-              <X className="h-5 w-5 text-stone-700" strokeWidth={1.5} />
+            <button
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close menu"
+              className="inline-flex h-11 w-11 items-center justify-center -mr-2"
+            >
+              <X className="h-6 w-6 text-stone-700" strokeWidth={1.5} />
             </button>
           </div>
-          <nav className="flex-1 flex flex-col items-center justify-center gap-7 text-stone-800">
-            <a href="#" onClick={() => setMobileOpen(false)} className="text-sm tracking-[0.2em] uppercase">Buyer</a>
-            <a href="#" onClick={() => setMobileOpen(false)} className="text-sm tracking-[0.2em] uppercase">Seller</a>
-            <a href="#" onClick={() => setMobileOpen(false)} className="text-base tracking-[0.3em] uppercase font-medium">START HERE</a>
-            <a href="#" onClick={() => setMobileOpen(false)} className="text-sm tracking-[0.2em] uppercase">Question</a>
-            <a href="#" onClick={() => setMobileOpen(false)} className="text-sm tracking-[0.2em] uppercase">Listings</a>
-            <div className="my-4 h-px w-12 bg-stone-300" />
+
+          <nav className="flex-1 flex flex-col px-8 py-8 gap-1">
+            <a
+              href="#"
+              onClick={() => setMobileOpen(false)}
+              className="mb-6 inline-flex items-center justify-center rounded-full border border-stone-900 bg-stone-900 px-6 py-4 text-[13px] tracking-[0.3em] uppercase font-semibold text-[#faf7f2] hover:bg-stone-800 transition-colors min-h-[52px]"
+            >
+              START HERE
+            </a>
+
+            {[
+              { label: "Buyer", href: "#" },
+              { label: "Seller", href: "#" },
+              { label: "Question", href: "#" },
+              { label: "Listings", href: "#" },
+            ].map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center min-h-[52px] text-[14px] tracking-[0.22em] uppercase text-stone-800 border-b border-stone-200/70 font-light"
+              >
+                {item.label}
+              </a>
+            ))}
+
+            <div className="h-6" />
+
             {DROPDOWN_ITEMS.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-xs tracking-[0.25em] uppercase text-stone-500"
+                className="flex items-center min-h-[48px] text-[12px] tracking-[0.25em] uppercase text-stone-500 border-b border-stone-200/50 font-light"
               >
                 {item.label}
               </a>
