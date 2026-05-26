@@ -113,7 +113,6 @@ export function Header() {
               <Link
                 key={item.label}
                 to={item.to}
-                hash={item.hash}
                 onClick={() => setMobileOpen(false)}
                 className="mb-7 flex min-h-[56px] items-center justify-center border border-stone-950 bg-stone-950 px-6 py-4 text-center text-[13px] font-semibold uppercase tracking-[0.32em] text-[#faf7f2] transition-colors hover:bg-stone-800"
               >
@@ -122,31 +121,19 @@ export function Header() {
             ))}
 
             <div className="divide-y divide-stone-200/80 border-y border-stone-200/80">
-              {MOBILE_ITEMS.filter((i) => !i.isPrimary).map((item) =>
-                item.href ? (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-800 transition-colors hover:text-stone-500"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowUpRight className="h-3.5 w-3.5 text-stone-400" strokeWidth={1.5} />
-                  </a>
-                ) : (
-                  <Link
-                    key={item.label}
-                    to={item.to}
-                    hash={item.hash}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-800 transition-colors hover:text-stone-500"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowUpRight className="h-3.5 w-3.5 text-stone-400" strokeWidth={1.5} />
-                  </Link>
-                ),
-              )}
+              {MOBILE_ITEMS.filter((i) => !i.isPrimary).map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-800 transition-colors hover:text-stone-500"
+                >
+                  <span>{item.label}</span>
+                  <ArrowUpRight className="h-3.5 w-3.5 text-stone-400" strokeWidth={1.5} />
+                </Link>
+              ))}
             </div>
+
           </nav>
         </div>,
         document.body,
