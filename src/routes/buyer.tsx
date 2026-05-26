@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import {
   Linkedin,
   Instagram,
@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Check,
 } from "lucide-react";
+
 
 import { Header } from "@/components/Header";
 import buyerHero from "@/assets/buyer-hero.jpg";
