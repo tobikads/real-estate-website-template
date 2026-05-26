@@ -947,14 +947,15 @@ function BuyerReassurance() {
           &ldquo;Alexandra made the process clear from the first call.&rdquo;
         </blockquote>
         <div className="mt-12">
-          <a
-            href="/testimonials"
+          <Link
+            to="/testimonials"
             className="inline-flex items-center gap-3 text-[11px] tracking-[0.3em] uppercase text-stone-900 border-b border-stone-900 pb-2 hover:gap-5 transition-all"
           >
             View Testimonials
             <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} />
-          </a>
+          </Link>
         </div>
+
       </div>
     </section>
   );
