@@ -789,7 +789,7 @@ function Step5({
           </div>
           <div>
             <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-              Phone
+              Phone <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
             </label>
             <input
               type="tel"
@@ -801,7 +801,7 @@ function Step5({
           </div>
           <div className="sm:col-span-2">
             <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-              Email
+              Email <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
             </label>
             <input
               type="email"
@@ -812,6 +812,10 @@ function Step5({
             />
           </div>
         </div>
+        <p className="mt-3 text-xs text-stone-400 font-light italic">
+          Share a phone or email — whichever you prefer.
+        </p>
+
         <div className="mt-6">
           <FieldLabel>Preferred follow-up</FieldLabel>
           <div className="flex flex-wrap gap-2.5">
