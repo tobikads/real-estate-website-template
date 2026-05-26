@@ -318,10 +318,12 @@ function BuyerWizard() {
   const [step, setStep] = useState(1);
   const [state, setState] = useState<BuyerState>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const wizardRef = useRef<HTMLDivElement | null>(null);
 
   const update = <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => {
     setState((s) => ({ ...s, [k]: v }));
+    if (notice) setNotice(null);
   };
 
   const toggleArr = (k: "areas" | "homeTypes" | "mustHaves", value: string) => {
@@ -332,26 +334,44 @@ function BuyerWizard() {
         [k]: arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value],
       };
     });
+    if (notice) setNotice(null);
   };
 
-  const canContinue = (() => {
-    if (step === 1) return !!state.timeline;
-    if (step === 2) return state.areas.length > 0;
-    if (step === 3) return !!state.budget && !!state.financing;
-    if (step === 4) return !!state.beds && !!state.baths;
-    return true;
-  })();
+  const validateStep = (): string | null => {
+    if (step === 1 && !state.timeline) return "Choose one option to continue.";
+    if (step === 2 && state.areas.length === 0)
+      return "Choose at least one area to continue.";
+    if (step === 3) {
+      if (!state.budget) return "Choose a budget range to continue.";
+      if (!state.financing) return "Choose a financing option to continue.";
+    }
+    if (step === 4) {
+      if (!state.beds) return "Choose a bedroom option to continue.";
+      if (!state.baths) return "Choose a bathroom option to continue.";
+    }
+    return null;
+  };
+
+  const handleContinue = () => {
+    const msg = validateStep();
+    if (msg) {
+      setNotice(msg);
+      return;
+    }
+    setNotice(null);
+    setStep((s) => s + 1);
+  };
 
   const handleSubmit = () => {
     if (!state.name.trim()) {
-      setError("Please share your name.");
+      setNotice("Please share your name to continue.");
       return;
     }
     if (!state.phone.trim() && !state.email.trim()) {
-      setError("Please share a phone or email so Alexandra can follow up.");
+      setNotice("Please share a phone or email so Alexandra can follow up.");
       return;
     }
-    setError(null);
+    setNotice(null);
     setSubmitted(true);
   };
 
@@ -374,79 +394,98 @@ function BuyerWizard() {
           </p>
         </div>
 
-        {submitted ? (
-          <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
-            <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
-              <Check className="h-4 w-4" strokeWidth={2} />
-            </div>
-            <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">
-              Thank you
-            </h3>
-            <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
-              I'll review what you shared and follow up with homes or next steps
-              that fit your search.
-            </p>
-          </div>
-        ) : (
-          <div className="bg-white border border-stone-200 shadow-sm">
-            {/* Progress */}
-            <div className="px-6 sm:px-10 pt-8">
-              <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500">
-                <span>Step {step} of {TOTAL_STEPS}</span>
-                <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
+        {/* Fixed-min-height shell keeps page from jumping on submit */}
+        <div ref={wizardRef} className="min-h-[760px]">
+          {submitted ? (
+            <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
+              <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+                <Check className="h-4 w-4" strokeWidth={2} />
               </div>
-              <div className="mt-3 h-px bg-stone-200 relative overflow-hidden">
+              <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">
+                Thank you
+              </h3>
+              <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
+                I'll review what you shared and follow up with homes or next
+                steps that fit your search.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-white border border-stone-200 shadow-sm">
+              {/* Progress */}
+              <div className="px-6 sm:px-10 pt-8">
+                <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500">
+                  <span>Step {step} of {TOTAL_STEPS}</span>
+                  <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
+                </div>
+                <div className="mt-3 h-px bg-stone-200 relative overflow-hidden">
+                  <div
+                    className="absolute inset-y-0 left-0 bg-stone-900 transition-all duration-500"
+                    style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="px-6 sm:px-10 py-10 sm:py-12">
+                {step === 1 && <Step1 state={state} update={update} />}
+                {step === 2 && (
+                  <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />
+                )}
+                {step === 3 && <Step3 state={state} update={update} />}
+                {step === 4 && (
+                  <Step4 state={state} update={update} toggle={toggleArr} />
+                )}
+                {step === 5 && <Step5 state={state} update={update} />}
+              </div>
+
+              {/* Calm inline notice */}
+              {notice && (
                 <div
-                  className="absolute inset-y-0 left-0 bg-stone-900 transition-all duration-500"
-                  style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
-                />
+                  role="status"
+                  className="mx-6 sm:mx-10 mb-2 bg-stone-100 border-l-2 border-stone-400 px-4 py-3 text-sm font-light text-stone-700"
+                >
+                  {notice}
+                </div>
+              )}
+
+              {/* Controls — sticky-friendly padding for mobile reach */}
+              <div className="px-5 sm:px-10 pt-5 pb-6 sm:pb-7 border-t border-stone-100 flex items-center justify-between gap-4">
+                {step > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNotice(null);
+                      setStep((s) => s - 1);
+                    }}
+                    className="inline-flex items-center gap-2 min-h-11 px-3 text-[11px] tracking-[0.3em] uppercase text-stone-600 hover:text-stone-900 transition-colors"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" strokeWidth={1.5} /> Back
+                  </button>
+                ) : (
+                  <span />
+                )}
+
+                {step < TOTAL_STEPS ? (
+                  <button
+                    type="button"
+                    onClick={handleContinue}
+                    className="inline-flex items-center gap-2 min-h-12 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-6 sm:px-8 py-3.5 hover:bg-stone-800 transition-colors"
+                  >
+                    Continue <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="inline-flex items-center gap-2 min-h-12 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-6 sm:px-8 py-3.5 hover:bg-stone-800 transition-colors"
+                  >
+                    Send to Alexandra
+                  </button>
+                )}
               </div>
             </div>
+          )}
+        </div>
 
-            <div className="px-6 sm:px-10 py-10 sm:py-12 min-h-[420px]">
-              {step === 1 && <Step1 state={state} update={update} />}
-              {step === 2 && <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />}
-              {step === 3 && <Step3 state={state} update={update} />}
-              {step === 4 && (
-                <Step4 state={state} update={update} toggle={toggleArr} />
-              )}
-              {step === 5 && (
-                <Step5 state={state} update={update} error={error} />
-              )}
-            </div>
-
-            {/* Controls */}
-            <div className="px-6 sm:px-10 py-6 border-t border-stone-100 flex items-center justify-between gap-4">
-              {step > 1 ? (
-                <button
-                  onClick={() => setStep((s) => s - 1)}
-                  className="inline-flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-stone-600 hover:text-stone-900 transition-colors"
-                >
-                  <ChevronLeft className="h-3.5 w-3.5" strokeWidth={1.5} /> Back
-                </button>
-              ) : (
-                <span />
-              )}
-
-              {step < TOTAL_STEPS ? (
-                <button
-                  onClick={() => canContinue && setStep((s) => s + 1)}
-                  disabled={!canContinue}
-                  className="inline-flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-7 py-3.5 hover:bg-stone-800 transition-colors disabled:bg-stone-300 disabled:cursor-not-allowed"
-                >
-                  Continue <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.5} />
-                </button>
-              ) : (
-                <button
-                  onClick={handleSubmit}
-                  className="inline-flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-7 py-3.5 hover:bg-stone-800 transition-colors"
-                >
-                  Send to Alexandra
-                </button>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Secondary phone option */}
         <p className="mt-10 text-center text-sm text-stone-500 font-light leading-relaxed max-w-lg mx-auto">
