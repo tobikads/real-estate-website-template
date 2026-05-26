@@ -948,7 +948,7 @@ function BuyerReassurance() {
         </blockquote>
         <div className="mt-12">
           <a
-            href="/#testimonials"
+            href="/testimonials"
             className="inline-flex items-center gap-3 text-[11px] tracking-[0.3em] uppercase text-stone-900 border-b border-stone-900 pb-2 hover:gap-5 transition-all"
           >
             View Testimonials
@@ -997,7 +997,7 @@ function Footer() {
             <ul className="space-y-2 text-sm font-light">
               <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
               <li><Link to="/start-here" className="hover:text-white transition-colors">Start Here</Link></li>
-              <li><a href="/#testimonials" className="hover:text-white transition-colors">Testimonials</a></li>
+              <li><a href="/testimonials" className="hover:text-white transition-colors">Testimonials</a></li>
             </ul>
           </div>
         </div>
