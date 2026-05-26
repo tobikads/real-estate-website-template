@@ -4,11 +4,11 @@ import { Menu, X, Linkedin, Instagram, ArrowUpRight } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 
 const DROPDOWN_ITEMS = [
-  { label: "FAQ", href: "#" },
-  { label: "About", to: "/", hash: "meet" as const },
-  { label: "Areas Served", href: "#" },
-  { label: "Testimonials", to: "/", hash: "testimonials" as const },
-  { label: "Let's Connect", to: "/", hash: "work" as const },
+  { label: "FAQ", to: "/faq" },
+  { label: "About", to: "/about" },
+  { label: "Areas Served", to: "/areas-served" },
+  { label: "Testimonials", to: "/testimonials" },
+  { label: "Let's Connect", to: "/lets-connect" },
 ];
 
 const NAV_LEFT = [
@@ -18,7 +18,7 @@ const NAV_LEFT = [
 
 const NAV_RIGHT = [
   { label: "Question", to: "/question" },
-  { label: "Listings", to: "/" },
+  { label: "Listings", to: "/listings" },
 ];
 
 const MOBILE_ITEMS = [
@@ -26,13 +26,14 @@ const MOBILE_ITEMS = [
   { label: "Buyer", to: "/buyer" },
   { label: "Seller", to: "/seller" },
   { label: "Question", to: "/question" },
-  { label: "Listings", to: "/" },
+  { label: "Listings", to: "/listings" },
   { label: "Home", to: "/" },
-  { label: "About", to: "/", hash: "meet" as const },
-  { label: "Areas Served", href: "#" },
-  { label: "Testimonials", to: "/", hash: "testimonials" as const },
-  { label: "Let's Connect", to: "/", hash: "work" as const },
+  { label: "About", to: "/about" },
+  { label: "Areas Served", to: "/areas-served" },
+  { label: "Testimonials", to: "/testimonials" },
+  { label: "Let's Connect", to: "/lets-connect" },
 ];
+
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -112,7 +113,6 @@ export function Header() {
               <Link
                 key={item.label}
                 to={item.to}
-                hash={item.hash}
                 onClick={() => setMobileOpen(false)}
                 className="mb-7 flex min-h-[56px] items-center justify-center border border-stone-950 bg-stone-950 px-6 py-4 text-center text-[13px] font-semibold uppercase tracking-[0.32em] text-[#faf7f2] transition-colors hover:bg-stone-800"
               >
@@ -121,31 +121,19 @@ export function Header() {
             ))}
 
             <div className="divide-y divide-stone-200/80 border-y border-stone-200/80">
-              {MOBILE_ITEMS.filter((i) => !i.isPrimary).map((item) =>
-                item.href ? (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-800 transition-colors hover:text-stone-500"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowUpRight className="h-3.5 w-3.5 text-stone-400" strokeWidth={1.5} />
-                  </a>
-                ) : (
-                  <Link
-                    key={item.label}
-                    to={item.to}
-                    hash={item.hash}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-800 transition-colors hover:text-stone-500"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowUpRight className="h-3.5 w-3.5 text-stone-400" strokeWidth={1.5} />
-                  </Link>
-                ),
-              )}
+              {MOBILE_ITEMS.filter((i) => !i.isPrimary).map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-800 transition-colors hover:text-stone-500"
+                >
+                  <span>{item.label}</span>
+                  <ArrowUpRight className="h-3.5 w-3.5 text-stone-400" strokeWidth={1.5} />
+                </Link>
+              ))}
             </div>
+
           </nav>
         </div>,
         document.body,
@@ -233,28 +221,17 @@ export function Header() {
                   aria-hidden
                 />
                 <div className="absolute right-0 top-full mt-4 w-64 bg-[#faf7f2] border border-stone-200/70 shadow-xl z-50 py-2">
-                  {DROPDOWN_ITEMS.map((item) =>
-                    item.to ? (
-                      <Link
-                        key={item.label}
-                        to={item.to}
-                        hash={item.hash}
-                        onClick={() => setMenuOpen(false)}
-                        className="block px-6 py-3 text-[12px] tracking-[0.2em] uppercase text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors"
-                      >
-                        {item.label}
-                      </Link>
-                    ) : (
-                      <a
-                        key={item.label}
-                        href={item.href}
-                        onClick={() => setMenuOpen(false)}
-                        className="block px-6 py-3 text-[12px] tracking-[0.2em] uppercase text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors"
-                      >
-                        {item.label}
-                      </a>
-                    ),
-                  )}
+                  {DROPDOWN_ITEMS.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.to}
+                      onClick={() => setMenuOpen(false)}
+                      className="block px-6 py-3 text-[12px] tracking-[0.2em] uppercase text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+
                 </div>
               </>
             )}

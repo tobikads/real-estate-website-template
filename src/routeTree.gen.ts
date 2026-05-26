@@ -9,12 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as StartHereRouteImport } from './routes/start-here'
 import { Route as SellerRouteImport } from './routes/seller'
 import { Route as QuestionRouteImport } from './routes/question'
+import { Route as ListingsRouteImport } from './routes/listings'
+import { Route as LetsConnectRouteImport } from './routes/lets-connect'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as BuyerRouteImport } from './routes/buyer'
+import { Route as AreasServedRouteImport } from './routes/areas-served'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TestimonialsRoute = TestimonialsRouteImport.update({
+  id: '/testimonials',
+  path: '/testimonials',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StartHereRoute = StartHereRouteImport.update({
   id: '/start-here',
   path: '/start-here',
@@ -30,9 +41,34 @@ const QuestionRoute = QuestionRouteImport.update({
   path: '/question',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ListingsRoute = ListingsRouteImport.update({
+  id: '/listings',
+  path: '/listings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LetsConnectRoute = LetsConnectRouteImport.update({
+  id: '/lets-connect',
+  path: '/lets-connect',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BuyerRoute = BuyerRouteImport.update({
   id: '/buyer',
   path: '/buyer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AreasServedRoute = AreasServedRouteImport.update({
+  id: '/areas-served',
+  path: '/areas-served',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,44 +79,109 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/areas-served': typeof AreasServedRoute
   '/buyer': typeof BuyerRoute
+  '/faq': typeof FaqRoute
+  '/lets-connect': typeof LetsConnectRoute
+  '/listings': typeof ListingsRoute
   '/question': typeof QuestionRoute
   '/seller': typeof SellerRoute
   '/start-here': typeof StartHereRoute
+  '/testimonials': typeof TestimonialsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/areas-served': typeof AreasServedRoute
   '/buyer': typeof BuyerRoute
+  '/faq': typeof FaqRoute
+  '/lets-connect': typeof LetsConnectRoute
+  '/listings': typeof ListingsRoute
   '/question': typeof QuestionRoute
   '/seller': typeof SellerRoute
   '/start-here': typeof StartHereRoute
+  '/testimonials': typeof TestimonialsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/areas-served': typeof AreasServedRoute
   '/buyer': typeof BuyerRoute
+  '/faq': typeof FaqRoute
+  '/lets-connect': typeof LetsConnectRoute
+  '/listings': typeof ListingsRoute
   '/question': typeof QuestionRoute
   '/seller': typeof SellerRoute
   '/start-here': typeof StartHereRoute
+  '/testimonials': typeof TestimonialsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/buyer' | '/question' | '/seller' | '/start-here'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/areas-served'
+    | '/buyer'
+    | '/faq'
+    | '/lets-connect'
+    | '/listings'
+    | '/question'
+    | '/seller'
+    | '/start-here'
+    | '/testimonials'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/buyer' | '/question' | '/seller' | '/start-here'
-  id: '__root__' | '/' | '/buyer' | '/question' | '/seller' | '/start-here'
+  to:
+    | '/'
+    | '/about'
+    | '/areas-served'
+    | '/buyer'
+    | '/faq'
+    | '/lets-connect'
+    | '/listings'
+    | '/question'
+    | '/seller'
+    | '/start-here'
+    | '/testimonials'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/areas-served'
+    | '/buyer'
+    | '/faq'
+    | '/lets-connect'
+    | '/listings'
+    | '/question'
+    | '/seller'
+    | '/start-here'
+    | '/testimonials'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AreasServedRoute: typeof AreasServedRoute
   BuyerRoute: typeof BuyerRoute
+  FaqRoute: typeof FaqRoute
+  LetsConnectRoute: typeof LetsConnectRoute
+  ListingsRoute: typeof ListingsRoute
   QuestionRoute: typeof QuestionRoute
   SellerRoute: typeof SellerRoute
   StartHereRoute: typeof StartHereRoute
+  TestimonialsRoute: typeof TestimonialsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/testimonials': {
+      id: '/testimonials'
+      path: '/testimonials'
+      fullPath: '/testimonials'
+      preLoaderRoute: typeof TestimonialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/start-here': {
       id: '/start-here'
       path: '/start-here'
@@ -102,11 +203,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuestionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/listings': {
+      id: '/listings'
+      path: '/listings'
+      fullPath: '/listings'
+      preLoaderRoute: typeof ListingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lets-connect': {
+      id: '/lets-connect'
+      path: '/lets-connect'
+      fullPath: '/lets-connect'
+      preLoaderRoute: typeof LetsConnectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/buyer': {
       id: '/buyer'
       path: '/buyer'
       fullPath: '/buyer'
       preLoaderRoute: typeof BuyerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/areas-served': {
+      id: '/areas-served'
+      path: '/areas-served'
+      fullPath: '/areas-served'
+      preLoaderRoute: typeof AreasServedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -121,10 +257,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AreasServedRoute: AreasServedRoute,
   BuyerRoute: BuyerRoute,
+  FaqRoute: FaqRoute,
+  LetsConnectRoute: LetsConnectRoute,
+  ListingsRoute: ListingsRoute,
   QuestionRoute: QuestionRoute,
   SellerRoute: SellerRoute,
   StartHereRoute: StartHereRoute,
+  TestimonialsRoute: TestimonialsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import {
   Linkedin,
   Instagram,
@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Check,
 } from "lucide-react";
+
 
 import { Header } from "@/components/Header";
 import buyerHero from "@/assets/buyer-hero.jpg";
@@ -255,60 +256,59 @@ function TeaserCard({ listing }: { listing: (typeof TEASER_LISTINGS)[number] }) 
   return (
     <article
       onClick={handleClick}
-      className="group relative shrink-0 w-[82%] sm:w-[60%] lg:w-auto snap-start overflow-hidden bg-stone-100 cursor-pointer transition-all duration-500 ease-out lg:hover:shadow-xl lg:hover:-translate-y-1"
+      className="group relative shrink-0 w-[78%] sm:w-[55%] lg:w-auto snap-start overflow-hidden bg-stone-100 cursor-pointer transition-all duration-500 ease-out lg:hover:shadow-lg lg:hover:-translate-y-0.5"
     >
-      <div className="relative aspect-[4/5] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={listing.image}
           alt={listing.neighborhood}
           loading="lazy"
           width={1280}
-          height={1600}
-          className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out lg:group-hover:scale-[1.06]"
+          height={960}
+          className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out lg:group-hover:scale-[1.04]"
         />
-        <div className="absolute inset-x-0 bottom-0 p-5 lg:p-6 bg-gradient-to-t from-black/70 via-black/15 to-transparent">
-          <p className="text-white font-serif text-xl lg:text-2xl tracking-wide">
-            {listing.price}
-          </p>
-          <p className="text-white/85 text-[10px] tracking-[0.28em] uppercase mt-1">
-            {listing.neighborhood}
-          </p>
-        </div>
-
         <div
-          className={`absolute inset-0 bg-stone-900/80 flex flex-col justify-end p-5 lg:p-6 transition-opacity duration-500
+          className={`absolute inset-0 bg-stone-900/75 flex flex-col justify-end p-4 lg:p-5 transition-opacity duration-500
             ${expanded ? "opacity-100" : "opacity-0"} lg:group-hover:opacity-100`}
         >
-          <p className="text-white font-serif text-2xl">{listing.price}</p>
-          <p className="text-white/80 text-[10px] tracking-[0.28em] uppercase mt-1">
+          <p className="text-white/85 text-[10px] tracking-[0.28em] uppercase">
             {listing.neighborhood}
           </p>
-          <p className="text-white/85 text-sm font-light mt-4 leading-relaxed">
+          <p className="text-white/90 text-sm font-light mt-2 leading-relaxed line-clamp-2">
             {listing.blurb}
           </p>
-          <div className="flex items-center gap-4 mt-4 text-white/90 text-xs font-light">
-            <span className="flex items-center gap-1.5">
-              <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.beds} bd
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.baths} ba
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.sqft} sqft
-            </span>
-          </div>
-          <a
-            href="#"
-            onClick={(e) => e.stopPropagation()}
-            className="mt-5 inline-flex items-center gap-2 self-start text-[10px] tracking-[0.3em] uppercase text-white border-b border-white/60 pb-1.5 hover:gap-3 transition-all"
-          >
-            View Details <ArrowUpRight className="h-3 w-3" strokeWidth={1.5} />
-          </a>
         </div>
+      </div>
+      <div className="bg-white border-t border-stone-100 px-4 py-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="font-serif text-lg text-stone-900">{listing.price}</p>
+          <p className="text-[10px] tracking-[0.25em] uppercase text-stone-500">
+            {listing.neighborhood}
+          </p>
+        </div>
+        <div className="mt-3 flex items-center gap-4 text-stone-600 text-xs font-light">
+          <span className="flex items-center gap-1.5">
+            <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.beds} bd
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.baths} ba
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.sqft} sqft
+          </span>
+        </div>
+        <Link
+          to="/listings"
+          onClick={(e) => e.stopPropagation()}
+          className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase text-stone-900 border-b border-stone-900 pb-1 hover:gap-3 transition-all"
+        >
+          View Details <ArrowUpRight className="h-3 w-3" strokeWidth={1.5} />
+        </Link>
       </div>
     </article>
   );
 }
+
 
 /* ---------- Wizard ---------- */
 
@@ -318,10 +318,12 @@ function BuyerWizard() {
   const [step, setStep] = useState(1);
   const [state, setState] = useState<BuyerState>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const wizardRef = useRef<HTMLDivElement | null>(null);
 
   const update = <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => {
     setState((s) => ({ ...s, [k]: v }));
+    if (notice) setNotice(null);
   };
 
   const toggleArr = (k: "areas" | "homeTypes" | "mustHaves", value: string) => {
@@ -332,26 +334,44 @@ function BuyerWizard() {
         [k]: arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value],
       };
     });
+    if (notice) setNotice(null);
   };
 
-  const canContinue = (() => {
-    if (step === 1) return !!state.timeline;
-    if (step === 2) return state.areas.length > 0;
-    if (step === 3) return !!state.budget && !!state.financing;
-    if (step === 4) return !!state.beds && !!state.baths;
-    return true;
-  })();
+  const validateStep = (): string | null => {
+    if (step === 1 && !state.timeline) return "Choose one option to continue.";
+    if (step === 2 && state.areas.length === 0)
+      return "Choose at least one area to continue.";
+    if (step === 3) {
+      if (!state.budget) return "Choose a budget range to continue.";
+      if (!state.financing) return "Choose a financing option to continue.";
+    }
+    if (step === 4) {
+      if (!state.beds) return "Choose a bedroom option to continue.";
+      if (!state.baths) return "Choose a bathroom option to continue.";
+    }
+    return null;
+  };
+
+  const handleContinue = () => {
+    const msg = validateStep();
+    if (msg) {
+      setNotice(msg);
+      return;
+    }
+    setNotice(null);
+    setStep((s) => s + 1);
+  };
 
   const handleSubmit = () => {
     if (!state.name.trim()) {
-      setError("Please share your name.");
+      setNotice("Please share your name to continue.");
       return;
     }
     if (!state.phone.trim() && !state.email.trim()) {
-      setError("Please share a phone or email so Alexandra can follow up.");
+      setNotice("Please share a phone or email so Alexandra can follow up.");
       return;
     }
-    setError(null);
+    setNotice(null);
     setSubmitted(true);
   };
 
@@ -374,79 +394,98 @@ function BuyerWizard() {
           </p>
         </div>
 
-        {submitted ? (
-          <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
-            <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
-              <Check className="h-4 w-4" strokeWidth={2} />
-            </div>
-            <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">
-              Thank you
-            </h3>
-            <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
-              I'll review what you shared and follow up with homes or next steps
-              that fit your search.
-            </p>
-          </div>
-        ) : (
-          <div className="bg-white border border-stone-200 shadow-sm">
-            {/* Progress */}
-            <div className="px-6 sm:px-10 pt-8">
-              <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500">
-                <span>Step {step} of {TOTAL_STEPS}</span>
-                <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
+        {/* Fixed-min-height shell keeps page from jumping on submit */}
+        <div ref={wizardRef} className="min-h-[760px]">
+          {submitted ? (
+            <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
+              <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+                <Check className="h-4 w-4" strokeWidth={2} />
               </div>
-              <div className="mt-3 h-px bg-stone-200 relative overflow-hidden">
+              <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">
+                Thank you
+              </h3>
+              <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
+                I'll review what you shared and follow up with homes or next
+                steps that fit your search.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-white border border-stone-200 shadow-sm">
+              {/* Progress */}
+              <div className="px-6 sm:px-10 pt-8">
+                <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500">
+                  <span>Step {step} of {TOTAL_STEPS}</span>
+                  <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
+                </div>
+                <div className="mt-3 h-px bg-stone-200 relative overflow-hidden">
+                  <div
+                    className="absolute inset-y-0 left-0 bg-stone-900 transition-all duration-500"
+                    style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="px-6 sm:px-10 py-10 sm:py-12">
+                {step === 1 && <Step1 state={state} update={update} />}
+                {step === 2 && (
+                  <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />
+                )}
+                {step === 3 && <Step3 state={state} update={update} />}
+                {step === 4 && (
+                  <Step4 state={state} update={update} toggle={toggleArr} />
+                )}
+                {step === 5 && <Step5 state={state} update={update} />}
+              </div>
+
+              {/* Calm inline notice */}
+              {notice && (
                 <div
-                  className="absolute inset-y-0 left-0 bg-stone-900 transition-all duration-500"
-                  style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
-                />
+                  role="status"
+                  className="mx-6 sm:mx-10 mb-2 bg-stone-100 border-l-2 border-stone-400 px-4 py-3 text-sm font-light text-stone-700"
+                >
+                  {notice}
+                </div>
+              )}
+
+              {/* Controls — sticky-friendly padding for mobile reach */}
+              <div className="px-5 sm:px-10 pt-5 pb-6 sm:pb-7 border-t border-stone-100 flex items-center justify-between gap-4">
+                {step > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNotice(null);
+                      setStep((s) => s - 1);
+                    }}
+                    className="inline-flex items-center gap-2 min-h-11 px-3 text-[11px] tracking-[0.3em] uppercase text-stone-600 hover:text-stone-900 transition-colors"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" strokeWidth={1.5} /> Back
+                  </button>
+                ) : (
+                  <span />
+                )}
+
+                {step < TOTAL_STEPS ? (
+                  <button
+                    type="button"
+                    onClick={handleContinue}
+                    className="inline-flex items-center gap-2 min-h-12 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-6 sm:px-8 py-3.5 hover:bg-stone-800 transition-colors"
+                  >
+                    Continue <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="inline-flex items-center gap-2 min-h-12 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-6 sm:px-8 py-3.5 hover:bg-stone-800 transition-colors"
+                  >
+                    Send to Alexandra
+                  </button>
+                )}
               </div>
             </div>
+          )}
+        </div>
 
-            <div className="px-6 sm:px-10 py-10 sm:py-12 min-h-[420px]">
-              {step === 1 && <Step1 state={state} update={update} />}
-              {step === 2 && <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />}
-              {step === 3 && <Step3 state={state} update={update} />}
-              {step === 4 && (
-                <Step4 state={state} update={update} toggle={toggleArr} />
-              )}
-              {step === 5 && (
-                <Step5 state={state} update={update} error={error} />
-              )}
-            </div>
-
-            {/* Controls */}
-            <div className="px-6 sm:px-10 py-6 border-t border-stone-100 flex items-center justify-between gap-4">
-              {step > 1 ? (
-                <button
-                  onClick={() => setStep((s) => s - 1)}
-                  className="inline-flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-stone-600 hover:text-stone-900 transition-colors"
-                >
-                  <ChevronLeft className="h-3.5 w-3.5" strokeWidth={1.5} /> Back
-                </button>
-              ) : (
-                <span />
-              )}
-
-              {step < TOTAL_STEPS ? (
-                <button
-                  onClick={() => canContinue && setStep((s) => s + 1)}
-                  disabled={!canContinue}
-                  className="inline-flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-7 py-3.5 hover:bg-stone-800 transition-colors disabled:bg-stone-300 disabled:cursor-not-allowed"
-                >
-                  Continue <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.5} />
-                </button>
-              ) : (
-                <button
-                  onClick={handleSubmit}
-                  className="inline-flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-7 py-3.5 hover:bg-stone-800 transition-colors"
-                >
-                  Send to Alexandra
-                </button>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Secondary phone option */}
         <p className="mt-10 text-center text-sm text-stone-500 font-light leading-relaxed max-w-lg mx-auto">
@@ -690,18 +729,21 @@ function Step4({
             </Chip>
           ))}
         </div>
-        <input
-          type="text"
-          value={state.otherMatters}
-          onChange={(e) => update("otherMatters", e.target.value)}
-          maxLength={200}
-          placeholder="Anything else that matters?"
-          className="mt-4 w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors"
-        />
+        <div className="mt-5">
+          <FieldLabel>Anything else that matters? <span className="text-stone-400 normal-case tracking-normal italic">— optional</span></FieldLabel>
+          <input
+            type="text"
+            value={state.otherMatters}
+            onChange={(e) => update("otherMatters", e.target.value)}
+            maxLength={200}
+            placeholder="A quiet street, garden space, walk to coffee…"
+            className="w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors"
+          />
+        </div>
       </div>
 
       <div>
-        <FieldLabel>Deal-breakers (optional)</FieldLabel>
+        <FieldLabel>Deal-breakers <span className="text-stone-400 normal-case tracking-normal italic">— optional</span></FieldLabel>
         <input
           type="text"
           value={state.dealBreakers}
@@ -711,6 +753,7 @@ function Step4({
           className="w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors"
         />
       </div>
+
     </div>
   );
 }
@@ -718,12 +761,11 @@ function Step4({
 function Step5({
   state,
   update,
-  error,
 }: {
   state: BuyerState;
   update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
-  error: string | null;
 }) {
+
   const inputCls =
     "w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors";
 
@@ -747,7 +789,7 @@ function Step5({
           </div>
           <div>
             <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-              Phone
+              Phone <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
             </label>
             <input
               type="tel"
@@ -759,7 +801,7 @@ function Step5({
           </div>
           <div className="sm:col-span-2">
             <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-              Email
+              Email <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
             </label>
             <input
               type="email"
@@ -770,6 +812,10 @@ function Step5({
             />
           </div>
         </div>
+        <p className="mt-3 text-xs text-stone-400 font-light italic">
+          Share a phone or email — whichever you prefer.
+        </p>
+
         <div className="mt-6">
           <FieldLabel>Preferred follow-up</FieldLabel>
           <div className="flex flex-wrap gap-2.5">
@@ -864,9 +910,6 @@ function Step5({
         </dl>
       </div>
 
-      {error && (
-        <p className="text-sm text-red-700 font-light">{error}</p>
-      )}
     </div>
   );
 }
@@ -904,14 +947,15 @@ function BuyerReassurance() {
           &ldquo;Alexandra made the process clear from the first call.&rdquo;
         </blockquote>
         <div className="mt-12">
-          <a
-            href="/#testimonials"
+          <Link
+            to="/testimonials"
             className="inline-flex items-center gap-3 text-[11px] tracking-[0.3em] uppercase text-stone-900 border-b border-stone-900 pb-2 hover:gap-5 transition-all"
           >
             View Testimonials
             <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} />
-          </a>
+          </Link>
         </div>
+
       </div>
     </section>
   );
@@ -954,7 +998,7 @@ function Footer() {
             <ul className="space-y-2 text-sm font-light">
               <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
               <li><Link to="/start-here" className="hover:text-white transition-colors">Start Here</Link></li>
-              <li><a href="/#testimonials" className="hover:text-white transition-colors">Testimonials</a></li>
+              <li><Link to="/testimonials" className="hover:text-white transition-colors">Testimonials</Link></li>
             </ul>
           </div>
         </div>
