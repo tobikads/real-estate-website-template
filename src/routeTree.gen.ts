@@ -9,8 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StartHereRouteImport } from './routes/start-here'
+import { Route as SellerRouteImport } from './routes/seller'
+import { Route as QuestionRouteImport } from './routes/question'
+import { Route as BuyerRouteImport } from './routes/buyer'
 import { Route as IndexRouteImport } from './routes/index'
 
+const StartHereRoute = StartHereRouteImport.update({
+  id: '/start-here',
+  path: '/start-here',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellerRoute = SellerRouteImport.update({
+  id: '/seller',
+  path: '/seller',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuestionRoute = QuestionRouteImport.update({
+  id: '/question',
+  path: '/question',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuyerRoute = BuyerRouteImport.update({
+  id: '/buyer',
+  path: '/buyer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +43,72 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/buyer': typeof BuyerRoute
+  '/question': typeof QuestionRoute
+  '/seller': typeof SellerRoute
+  '/start-here': typeof StartHereRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/buyer': typeof BuyerRoute
+  '/question': typeof QuestionRoute
+  '/seller': typeof SellerRoute
+  '/start-here': typeof StartHereRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/buyer': typeof BuyerRoute
+  '/question': typeof QuestionRoute
+  '/seller': typeof SellerRoute
+  '/start-here': typeof StartHereRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/buyer' | '/question' | '/seller' | '/start-here'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/buyer' | '/question' | '/seller' | '/start-here'
+  id: '__root__' | '/' | '/buyer' | '/question' | '/seller' | '/start-here'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BuyerRoute: typeof BuyerRoute
+  QuestionRoute: typeof QuestionRoute
+  SellerRoute: typeof SellerRoute
+  StartHereRoute: typeof StartHereRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/start-here': {
+      id: '/start-here'
+      path: '/start-here'
+      fullPath: '/start-here'
+      preLoaderRoute: typeof StartHereRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seller': {
+      id: '/seller'
+      path: '/seller'
+      fullPath: '/seller'
+      preLoaderRoute: typeof SellerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/question': {
+      id: '/question'
+      path: '/question'
+      fullPath: '/question'
+      preLoaderRoute: typeof QuestionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/buyer': {
+      id: '/buyer'
+      path: '/buyer'
+      fullPath: '/buyer'
+      preLoaderRoute: typeof BuyerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +121,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BuyerRoute: BuyerRoute,
+  QuestionRoute: QuestionRoute,
+  SellerRoute: SellerRoute,
+  StartHereRoute: StartHereRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
