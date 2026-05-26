@@ -138,7 +138,23 @@
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: #faf7f2;
+    color: #1a1815;
+    font-family: "Inter", system-ui, sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
   }
 }
+
+@layer utilities {
+  .font-serif { font-family: "Cormorant Garamond", Georgia, serif; }
+  .font-sans  { font-family: "Inter", system-ui, sans-serif; }
+  .tracking-luxe { letter-spacing: 0.25em; }
+}
+
