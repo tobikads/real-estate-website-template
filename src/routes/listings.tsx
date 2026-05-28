@@ -1062,11 +1062,11 @@ function CommunitiesMap({
               {/* Atlanta city marker */}
               {!selectedCounty && (
                 <g pointerEvents="none">
-                  <circle cx="46" cy="63" r="1.05" fill="#f9f6ef" />
-                  <circle cx="46" cy="63" r="2.1" fill="none" stroke="#f9f6ef" strokeWidth="0.25" opacity="0.8" />
+                  <circle cx="46" cy="70" r="1.05" fill="#f9f6ef" />
+                  <circle cx="46" cy="70" r="2.1" fill="none" stroke="#f9f6ef" strokeWidth="0.25" opacity="0.8" />
                   <text
                     x="46"
-                    y="67.4"
+                    y="74.4"
                     textAnchor="middle"
                     style={{
                       fontSize: "2.2px",
