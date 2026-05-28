@@ -96,134 +96,133 @@ type CountyShape = {
 const COUNTY_SHAPES: CountyShape[] = [
   {
     name: "Cherokee",
-    points: "6,6 36,4 42,14 40,26 14,28 4,18",
-    label: [22, 16],
+    points: "19,6 42,5 45,27 30,30 17,22",
+    label: [30, 17],
     neighborhoods: [
-      { name: "Canton", x: 20, y: 12 },
-      { name: "Woodstock", x: 30, y: 22 },
+      { name: "Canton", x: 29, y: 15 },
+      { name: "Woodstock", x: 34, y: 24 },
     ],
   },
   {
     name: "Forsyth",
-    points: "42,14 66,10 70,26 44,28 40,26",
-    label: [55, 19],
-    neighborhoods: [{ name: "Cumming", x: 55, y: 19 }],
+    points: "45,9 64,7 68,29 46,29 45,27",
+    label: [57, 18],
+    neighborhoods: [{ name: "Cumming", x: 58, y: 18 }],
   },
   {
     name: "Paulding",
-    points: "4,30 16,30 18,44 14,48 4,48",
-    label: [10, 39],
-    neighborhoods: [{ name: "Dallas", x: 10, y: 39 }],
+    points: "5,31 23,29 25,50 8,53 2,42",
+    label: [14, 42],
+    neighborhoods: [{ name: "Dallas", x: 14, y: 42 }],
   },
   {
     name: "Cobb",
-    points: "16,30 40,28 44,34 42,44 22,48 18,44",
-    label: [30, 38],
+    points: "23,29 45,27 44,51 27,55 25,50",
+    label: [34, 42],
     neighborhoods: [
-      { name: "Acworth", x: 22, y: 32 },
-      { name: "Kennesaw", x: 26, y: 36 },
-      { name: "Marietta", x: 33, y: 39 },
-      { name: "Smyrna", x: 38, y: 43 },
-      { name: "Powder Springs", x: 24, y: 44 },
+      { name: "Acworth", x: 31, y: 32 },
+      { name: "Kennesaw", x: 33, y: 37 },
+      { name: "Marietta", x: 36, y: 43 },
+      { name: "Smyrna", x: 40, y: 49 },
+      { name: "Powder Springs", x: 29, y: 49 },
     ],
   },
   {
     name: "Gwinnett",
-    points: "50,28 78,28 82,42 70,48 56,48 50,40",
-    label: [65, 38],
+    points: "67,25 92,27 97,49 79,64 63,50 58,39",
+    label: [78, 43],
     neighborhoods: [
-      { name: "Buford", x: 66, y: 31 },
-      { name: "Suwanee", x: 60, y: 34 },
-      { name: "Lawrenceville", x: 72, y: 38 },
-      { name: "Duluth", x: 62, y: 39 },
-      { name: "Peachtree Corners", x: 56, y: 42 },
-      { name: "Norcross", x: 58, y: 45 },
+      { name: "Buford", x: 78, y: 31 },
+      { name: "Suwanee", x: 73, y: 37 },
+      { name: "Lawrenceville", x: 82, y: 46 },
+      { name: "Duluth", x: 71, y: 45 },
+      { name: "Peachtree Corners", x: 66, y: 48 },
+      { name: "Norcross", x: 68, y: 53 },
     ],
   },
   {
-    // Concave "peanut" approximating Fulton's narrow waist at Atlanta
     name: "Fulton",
     points:
-      "40,28 50,28 50,40 52,48 50,54 52,60 50,68 46,76 38,82 26,84 22,76 24,68 30,60 34,52 36,44 38,36",
-    label: [38, 70],
+      "45,27 58,31 58,43 52,52 55,64 51,78 36,80 31,67 38,56 41,43",
+    label: [45, 67],
     neighborhoods: [
-      { name: "Alpharetta", x: 45, y: 31 },
-      { name: "Roswell", x: 43, y: 36 },
-      { name: "Sandy Springs", x: 45, y: 43 },
-      { name: "Buckhead", x: 44, y: 50 },
-      { name: "Atlanta", x: 38, y: 58 },
-      { name: "Midtown", x: 41, y: 55 },
+      { name: "Alpharetta", x: 52, y: 33 },
+      { name: "Roswell", x: 50, y: 39 },
+      { name: "Sandy Springs", x: 50, y: 47 },
+      { name: "Buckhead", x: 48, y: 54 },
+      { name: "Atlanta", x: 46, y: 63 },
+      { name: "Midtown", x: 47, y: 59 },
     ],
   },
   {
     name: "DeKalb",
-    points: "50,42 56,48 70,48 72,60 64,64 54,62 50,54",
-    label: [62, 55],
+    points: "58,43 63,50 79,64 69,76 55,64 52,52",
+    label: [64, 61],
     neighborhoods: [
-      { name: "Dunwoody", x: 56, y: 49 },
-      { name: "Chamblee", x: 60, y: 52 },
-      { name: "Brookhaven", x: 56, y: 54 },
-      { name: "Tucker", x: 66, y: 53 },
-      { name: "Decatur", x: 58, y: 58 },
-      { name: "Stone Mountain", x: 68, y: 58 },
+      { name: "Dunwoody", x: 61, y: 50 },
+      { name: "Chamblee", x: 64, y: 54 },
+      { name: "Brookhaven", x: 60, y: 56 },
+      { name: "Tucker", x: 70, y: 58 },
+      { name: "Decatur", x: 62, y: 64 },
+      { name: "Stone Mountain", x: 71, y: 68 },
     ],
   },
   {
     name: "Douglas",
-    points: "4,50 18,46 22,54 18,62 6,62",
-    label: [12, 55],
-    neighborhoods: [{ name: "Douglasville", x: 12, y: 55 }],
+    points: "8,54 27,55 31,69 15,76 5,68",
+    label: [18, 64],
+    neighborhoods: [{ name: "Douglasville", x: 18, y: 64 }],
   },
   {
     name: "Rockdale",
-    points: "72,60 82,60 84,70 72,70",
-    label: [78, 65],
-    neighborhoods: [{ name: "Conyers", x: 78, y: 65 }],
+    points: "79,64 91,62 94,76 82,85 69,76",
+    label: [82, 73],
+    neighborhoods: [{ name: "Conyers", x: 83, y: 73 }],
   },
   {
     name: "Clayton",
-    points: "38,70 50,68 50,78 38,80 34,74",
-    label: [43, 74],
+    points: "36,80 51,78 57,87 43,92 35,85",
+    label: [45, 84],
     neighborhoods: [
-      { name: "College Park", x: 39, y: 72 },
-      { name: "Forest Park", x: 44, y: 73 },
-      { name: "Riverdale", x: 42, y: 76 },
-      { name: "Jonesboro", x: 46, y: 77 },
+      { name: "College Park", x: 41, y: 81 },
+      { name: "Forest Park", x: 48, y: 83 },
+      { name: "Riverdale", x: 44, y: 87 },
+      { name: "Jonesboro", x: 51, y: 88 },
     ],
   },
   {
     name: "Henry",
-    points: "50,68 72,68 80,84 62,92 52,84",
-    label: [64, 78],
+    points: "57,76 77,76 84,92 64,99 51,87",
+    label: [66, 87],
     neighborhoods: [
-      { name: "Stockbridge", x: 58, y: 74 },
-      { name: "McDonough", x: 66, y: 82 },
+      { name: "Stockbridge", x: 62, y: 81 },
+      { name: "McDonough", x: 70, y: 90 },
     ],
   },
   {
     name: "Fayette",
-    points: "22,76 38,80 40,88 30,92 20,86",
-    label: [30, 84],
+    points: "27,75 42,80 43,92 30,99 21,89",
+    label: [32, 88],
     neighborhoods: [
-      { name: "Tyrone", x: 26, y: 82 },
-      { name: "Fayetteville", x: 33, y: 85 },
-      { name: "Peachtree City", x: 28, y: 89 },
+      { name: "Tyrone", x: 29, y: 84 },
+      { name: "Fayetteville", x: 36, y: 88 },
+      { name: "Peachtree City", x: 31, y: 93 },
     ],
   },
   {
     name: "Coweta",
-    points: "0,64 18,62 22,80 12,96 0,90",
-    label: [11, 80],
-    neighborhoods: [{ name: "Newnan", x: 11, y: 80 }],
+    points: "5,72 27,75 21,89 9,99 0,93 0,80",
+    label: [13, 86],
+    neighborhoods: [{ name: "Newnan", x: 13, y: 86 }],
   },
 ];
 
 // Chattahoochee River — flows NE to SW through the metro, forming part of the Cobb/Fulton border.
 const RIVER_PATH =
-  "M 70 8 Q 60 22 50 30 Q 44 36 42 44 Q 40 52 34 58 Q 24 66 14 78";
+  "M 69 8 Q 62 20 56 30 Q 49 39 48 48 Q 46 58 37 66 Q 25 75 9 92";
 
 // Stylized I-285 perimeter ring around central Atlanta (in Fulton/DeKalb).
-const PERIMETER = { cx: 44, cy: 56, rx: 11, ry: 9 };
+const PERIMETER = { cx: 50, cy: 61, rx: 13, ry: 10 };
 
 function makeListings(): Listing[] {
   const list: Listing[] = [];
@@ -824,14 +823,14 @@ function CommunitiesMap({
 
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
           {/* Stylized Atlanta metro map */}
-          <div className="relative bg-gradient-to-br from-[#f3ede2] to-[#e6ddcc] border border-stone-300/70 aspect-[5/4] overflow-hidden">
-            {/* Parchment grain */}
+          <div className="relative bg-[#f7f4ed] border border-stone-300/70 aspect-[5/4] overflow-hidden shadow-[0_24px_80px_rgba(28,25,23,0.08)]">
+            {/* Quiet map paper texture */}
             <div
-              className="absolute inset-0 opacity-[0.05] pointer-events-none"
+              className="absolute inset-0 opacity-[0.045] pointer-events-none"
               style={{
                 backgroundImage:
-                  "radial-gradient(circle at 20% 30%, #000 0.5px, transparent 0.5px), radial-gradient(circle at 70% 65%, #000 0.5px, transparent 0.5px)",
-                backgroundSize: "18px 18px, 24px 24px",
+                  "linear-gradient(#1c1917 1px, transparent 1px), linear-gradient(90deg, #1c1917 1px, transparent 1px)",
+                backgroundSize: "7.5% 7.5%",
               }}
             />
 
@@ -841,14 +840,16 @@ function CommunitiesMap({
               preserveAspectRatio="xMidYMid meet"
             >
               <defs>
-                <pattern id="hatchPrimary" patternUnits="userSpaceOnUse" width="2.4" height="2.4" patternTransform="rotate(45)">
-                  <line x1="0" y1="0" x2="0" y2="2.4" stroke="#8a6a3a" strokeWidth="0.18" opacity="0.35" />
-                </pattern>
-                <filter id="countyShadow" x="-10%" y="-10%" width="120%" height="120%">
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="0.4" />
-                  <feOffset dx="0" dy="0.3" result="o" />
-                  <feComponentTransfer><feFuncA type="linear" slope="0.25" /></feComponentTransfer>
-                  <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+                <filter id="countyShadow" x="-18%" y="-18%" width="136%" height="136%">
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="0.9" />
+                  <feOffset dx="0" dy="0.8" result="offset" />
+                  <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.32" />
+                  </feComponentTransfer>
+                  <feMerge>
+                    <feMergeNode />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
                 </filter>
               </defs>
 
@@ -857,23 +858,33 @@ function CommunitiesMap({
                 const primary = PRIMARY_COUNTIES.has(c.name);
                 const active = selectedCounty === c.name;
                 const fill = active
-                  ? "#1c1917"
+                  ? "#6f1d20"
                   : primary
-                    ? "#e9dcc4"
-                    : "#ede5d5";
+                    ? "#3f3c37"
+                    : "#57534c";
+                const hoverFill = active ? fill : primary ? "#5b5146" : "#6b6258";
                 return (
                   <polygon
                     key={c.name}
                     points={c.points}
                     fill={fill}
-                    stroke={active ? "#1c1917" : "#a89478"}
-                    strokeWidth={active ? "0.5" : "0.3"}
+                    stroke="#f7f4ed"
+                    strokeWidth={active ? "0.8" : "0.45"}
                     strokeLinejoin="round"
-                    className="transition-all duration-300 cursor-pointer"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select ${c.name} County`}
+                    className="transition-all duration-300 cursor-pointer outline-none"
                     style={{ filter: active ? "url(#countyShadow)" : undefined }}
                     onClick={() => handleSelect(c.name)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleSelect(c.name);
+                      }
+                    }}
                     onMouseEnter={(e) => {
-                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", primary ? "#d9c49f" : "#dfd3bd");
+                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", hoverFill);
                     }}
                     onMouseLeave={(e) => {
                       if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", fill);
@@ -882,24 +893,14 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* Primary-county hatch overlay for subtle warmth */}
-              {COUNTY_SHAPES.filter((c) => PRIMARY_COUNTIES.has(c.name) && selectedCounty !== c.name).map((c) => (
-                <polygon
-                  key={`hatch-${c.name}`}
-                  points={c.points}
-                  fill="url(#hatchPrimary)"
-                  pointerEvents="none"
-                />
-              ))}
-
               {/* Chattahoochee River */}
               <path
                 d={RIVER_PATH}
-                stroke="#7d9aa3"
-                strokeWidth="0.55"
+                stroke="#8ee5e7"
+                strokeWidth="0.7"
                 strokeLinecap="round"
                 fill="none"
-                opacity="0.6"
+                opacity="0.88"
                 pointerEvents="none"
               />
 
@@ -910,29 +911,35 @@ function CommunitiesMap({
                 rx={PERIMETER.rx}
                 ry={PERIMETER.ry}
                 fill="none"
-                stroke="#6b5a40"
-                strokeWidth="0.18"
-                strokeDasharray="0.8 0.8"
-                opacity="0.55"
+                stroke="#171412"
+                strokeWidth="0.22"
+                strokeDasharray="0.9 0.9"
+                opacity="0.58"
                 pointerEvents="none"
               />
 
-              {/* I-75 / I-85 hint lines crossing the metro */}
+              {/* Interstate hints crossing the metro */}
               <path
-                d="M 20 4 L 50 56 L 72 96"
-                stroke="#6b5a40"
-                strokeWidth="0.15"
-                strokeDasharray="0.6 0.9"
-                opacity="0.4"
+                d="M 30 5 C 32 24 39 45 48 62 C 56 76 64 88 74 98"
+                stroke="#171412"
+                strokeWidth="0.35"
+                opacity="0.65"
                 fill="none"
                 pointerEvents="none"
               />
               <path
-                d="M 90 18 L 50 56 L 18 96"
-                stroke="#6b5a40"
-                strokeWidth="0.15"
-                strokeDasharray="0.6 0.9"
-                opacity="0.4"
+                d="M 92 23 C 73 35 60 48 49 62 C 36 76 24 88 13 99"
+                stroke="#171412"
+                strokeWidth="0.28"
+                opacity="0.55"
+                fill="none"
+                pointerEvents="none"
+              />
+              <path
+                d="M 2 66 C 27 60 48 60 66 66 C 77 70 88 72 98 73"
+                stroke="#171412"
+                strokeWidth="0.28"
+                opacity="0.5"
                 fill="none"
                 pointerEvents="none"
               />
@@ -950,12 +957,12 @@ function CommunitiesMap({
                     dominantBaseline="middle"
                     className="pointer-events-none select-none"
                     style={{
-                      fontSize: "2.4px",
-                      letterSpacing: "0.5px",
+                      fontSize: "2.55px",
+                      letterSpacing: "0.45px",
                       fontFamily: "Inter, system-ui, sans-serif",
                       textTransform: "uppercase",
-                      fontWeight: 500,
-                      fill: "#3f3326",
+                      fontWeight: 650,
+                      fill: "#f9f6ef",
                     }}
                   >
                     {c.name}
@@ -966,17 +973,17 @@ function CommunitiesMap({
               {/* Atlanta city marker */}
               {!selectedCounty && (
                 <g pointerEvents="none">
-                  <circle cx="40" cy="58" r="0.9" fill="#1c1917" />
-                  <circle cx="40" cy="58" r="1.8" fill="none" stroke="#1c1917" strokeWidth="0.2" opacity="0.5" />
+                  <circle cx="46" cy="63" r="1.05" fill="#f9f6ef" />
+                  <circle cx="46" cy="63" r="2.1" fill="none" stroke="#f9f6ef" strokeWidth="0.25" opacity="0.8" />
                   <text
-                    x="40"
-                    y="62.5"
+                    x="46"
+                    y="67.4"
                     textAnchor="middle"
                     style={{
                       fontSize: "2.2px",
                       fontFamily: "'Cormorant Garamond', Georgia, serif",
                       fontStyle: "italic",
-                      fill: "#1c1917",
+                      fill: "#f9f6ef",
                     }}
                   >
                     Atlanta
@@ -997,12 +1004,12 @@ function CommunitiesMap({
                         y={c.label[1] - 3.5}
                         textAnchor="middle"
                         style={{
-                          fontSize: "2px",
+                          fontSize: "2.15px",
                           letterSpacing: "0.6px",
                           fontFamily: "Inter, system-ui, sans-serif",
                           textTransform: "uppercase",
-                          fill: "#e8dec8",
-                          opacity: 0.7,
+                          fill: "#f9f6ef",
+                          opacity: 0.75,
                         }}
                         pointerEvents="none"
                       >
@@ -1017,17 +1024,17 @@ function CommunitiesMap({
                             onSelectNeighborhood(n.name);
                           }}
                         >
-                          <circle cx={n.x} cy={n.y} r="0.8" fill="#f3ede2" />
-                          <circle cx={n.x} cy={n.y} r="1.6" fill="none" stroke="#f3ede2" strokeWidth="0.18" opacity="0.5" />
+                          <circle cx={n.x} cy={n.y} r="0.75" fill="#f9f6ef" />
+                          <circle cx={n.x} cy={n.y} r="1.55" fill="none" stroke="#f9f6ef" strokeWidth="0.18" opacity="0.6" />
                           <text
                             x={n.x}
                             y={n.y + 2.6}
                             textAnchor="middle"
                             style={{
-                              fontSize: "1.9px",
+                              fontSize: "1.75px",
                               fontFamily: "Inter, system-ui, sans-serif",
-                              fill: "#f3ede2",
-                              fontWeight: 400,
+                              fill: "#f9f6ef",
+                              fontWeight: 500,
                             }}
                           >
                             {n.name}
@@ -1040,21 +1047,21 @@ function CommunitiesMap({
 
               {/* Compass */}
               <g pointerEvents="none" opacity="0.55">
-                <text x="95" y="6" textAnchor="middle" style={{ fontSize: "2.4px", fontFamily: "'Cormorant Garamond', serif", fill: "#3f3326" }}>N</text>
-                <line x1="95" y1="7.5" x2="95" y2="11" stroke="#3f3326" strokeWidth="0.2" />
+                <text x="95" y="6" textAnchor="middle" style={{ fontSize: "2.4px", fontFamily: "'Cormorant Garamond', serif", fill: "#1c1917" }}>N</text>
+                <line x1="95" y1="7.5" x2="95" y2="11" stroke="#1c1917" strokeWidth="0.22" />
               </g>
             </svg>
 
             <div className="absolute bottom-3 left-4 text-[10px] tracking-[0.3em] uppercase text-stone-600/80">
-              Atlanta Metro · Counties
+              Atlanta Metro - Counties
             </div>
             <div className="absolute bottom-3 right-4 flex items-center gap-3 text-[9px] tracking-[0.2em] uppercase text-stone-600/70">
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#e9dcc4] border border-[#a89478]" />
+                <span className="inline-block w-2.5 h-2.5 bg-[#3f3c37] border border-[#f7f4ed]" />
                 Primary
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#ede5d5] border border-[#a89478]" />
+                <span className="inline-block w-2.5 h-2.5 bg-[#57534c] border border-[#f7f4ed]" />
                 Browse
               </span>
             </div>
