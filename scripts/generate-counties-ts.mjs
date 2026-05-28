@@ -34,7 +34,7 @@ function neighborhoodCoords(n, cx, cy) {
     return { x: cx + Math.cos(a)*r, y: cy + Math.sin(a)*r };
   });
 }
-
+const order = ["Gilmer","Pickens","Dawson","Bartow","Cherokee","Forsyth","Hall","Paulding","Cobb","Fulton","Gwinnett","Walton","DeKalb","Rockdale","Douglas","Clayton","Henry","Fayette","Coweta"];
 const order = ["Gilmer","Pickens","Bartow","Cherokee","Forsyth","Hall","Paulding","Cobb","Fulton","Gwinnett","Walton","DeKalb","Rockdale","Douglas","Clayton","Henry","Fayette"];
 
 let ts = `// AUTO-GENERATED from scripts/extract-counties.mjs + generate-counties-ts.mjs
