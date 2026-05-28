@@ -767,9 +767,12 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* County labels — manual overrides for awkward centroids */}
+              {/* County labels — manual overrides for awkward centroids.
+                  Hide the label of the selected county; its name shows in
+                  the side panel and would otherwise collide with pins. */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
+                if (active) return null;
                 const override = LABEL_OVERRIDES[c.name];
                 const lx = override?.x ?? c.label[0];
                 const ly = override?.y ?? c.label[1];
@@ -790,7 +793,7 @@ function CommunitiesMap({
                       textTransform: "uppercase",
                       fontWeight: 450,
                       fill: "#f7f0e6",
-                      opacity: active ? 1 : 0.85,
+                      opacity: 0.85,
                       paintOrder: "stroke",
                       stroke: "rgba(30,24,18,0.4)",
                       strokeWidth: 1.8,
@@ -801,6 +804,7 @@ function CommunitiesMap({
                   </text>
                 );
               })}
+
 
               {/* Selected county: neighborhood dots + labels (same viewBox).
                   Crowded counties show only a curated 2-3 map pins; the full
