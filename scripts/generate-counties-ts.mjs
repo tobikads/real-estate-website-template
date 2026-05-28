@@ -35,7 +35,6 @@ function neighborhoodCoords(n, cx, cy) {
   });
 }
 const order = ["Gilmer","Pickens","Dawson","Bartow","Cherokee","Forsyth","Hall","Paulding","Cobb","Fulton","Gwinnett","Walton","DeKalb","Rockdale","Douglas","Clayton","Henry","Fayette","Coweta"];
-const order = ["Gilmer","Pickens","Bartow","Cherokee","Forsyth","Hall","Paulding","Cobb","Fulton","Gwinnett","Walton","DeKalb","Rockdale","Douglas","Clayton","Henry","Fayette"];
 
 let ts = `// AUTO-GENERATED from scripts/extract-counties.mjs + generate-counties-ts.mjs
 // Real Atlanta metro county boundaries (US Census 2020) projected to a
