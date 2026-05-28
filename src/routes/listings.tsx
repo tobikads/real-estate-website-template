@@ -693,7 +693,7 @@ function CommunitiesMap({
             style={{ aspectRatio: `${MAP_W} / ${MAP_H}` }}
           >
             <svg
-              viewBox={`${-MAP_W * 0.06} ${-MAP_H * 0.06} ${MAP_W * 1.12} ${MAP_H * 1.12}`}
+              viewBox={`-10 -10 ${MAP_W + 20} ${MAP_H + 20}`}
               className="absolute inset-0 w-full h-full"
               preserveAspectRatio="xMidYMid meet"
             >
@@ -744,28 +744,33 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* County labels — same coordinate system */}
+              {/* County labels — manual overrides for awkward centroids */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
+                const override = LABEL_OVERRIDES[c.name];
+                const lx = override?.x ?? c.label[0];
+                const ly = override?.y ?? c.label[1];
+                const tracking = override?.tracking ?? 2.4;
+                const size = override?.size ?? 20;
                 return (
                   <text
                     key={`lbl-${c.name}`}
-                    x={c.label[0]}
-                    y={c.label[1]}
+                    x={lx}
+                    y={ly}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     className="pointer-events-none select-none"
                     style={{
-                      fontSize: "15px",
-                      letterSpacing: "2.2px",
+                      fontSize: `${size}px`,
+                      letterSpacing: `${tracking}px`,
                       fontFamily: "Inter, system-ui, sans-serif",
                       textTransform: "uppercase",
                       fontWeight: 450,
                       fill: "#f7f0e6",
-                      opacity: active ? 1 : 0.82,
+                      opacity: active ? 1 : 0.85,
                       paintOrder: "stroke",
-                      stroke: "rgba(30,24,18,0.32)",
-                      strokeWidth: 1.6,
+                      stroke: "rgba(30,24,18,0.4)",
+                      strokeWidth: 1.8,
                       strokeLinejoin: "round",
                     }}
                   >
@@ -774,47 +779,59 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* Selected county: neighborhood dots + labels (same viewBox) */}
+              {/* Selected county: neighborhood dots + labels (same viewBox).
+                  Crowded counties show only a curated 2-3 map pins; the full
+                  list still appears in the side panel. */}
               {selectedCounty &&
                 (() => {
                   const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
                   if (!c) return null;
+                  const allow = MAP_PIN_WHITELIST[c.name];
+                  const pins = allow
+                    ? c.neighborhoods.filter((n) => allow.includes(n.name))
+                    : c.neighborhoods.slice(0, 3);
                   return (
                     <g>
-                      {c.neighborhoods.map((n) => (
-                        <g
-                          key={n.name}
-                          className="cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSelectNeighborhood(n.name);
-                          }}
-                        >
-                          <circle cx={n.x} cy={n.y} r={9.5} fill="none" stroke="#b89b72" strokeWidth={0.9} opacity={0.75} />
-                          <circle cx={n.x} cy={n.y} r={4} fill="#f7f0e6" />
-                          <text
-                            x={n.x}
-                            y={n.y + 19}
-                            textAnchor="middle"
-                            style={{
-                              fontSize: "11.5px",
-                              fontFamily: "Inter, system-ui, sans-serif",
-                              fill: "#f7f0e6",
-                              fontWeight: 450,
-                              letterSpacing: "0.4px",
-                              paintOrder: "stroke",
-                              stroke: "rgba(30,24,18,0.55)",
-                              strokeWidth: 2,
-                              strokeLinejoin: "round",
+                      {pins.map((n, i) => {
+                        // fan labels slightly so they don't collide
+                        const offsetY = 22 + (i % 2) * 4;
+                        return (
+                          <g
+                            key={n.name}
+                            className="cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelectNeighborhood(n.name);
                             }}
                           >
-                            {n.name}
-                          </text>
-                        </g>
-                      ))}
+                            <circle cx={n.x} cy={n.y} r={11} fill="none" stroke="#b89b72" strokeWidth={1} opacity={0.8} />
+                            <circle cx={n.x} cy={n.y} r={4.5} fill="#f7f0e6" />
+                            <text
+                              x={n.x}
+                              y={n.y + offsetY}
+                              textAnchor="middle"
+                              style={{
+                                fontSize: "13px",
+                                fontFamily: "Inter, system-ui, sans-serif",
+                                fill: "#f7f0e6",
+                                fontWeight: 500,
+                                letterSpacing: "0.5px",
+                                paintOrder: "stroke",
+                                stroke: "rgba(30,24,18,0.6)",
+                                strokeWidth: 2.2,
+                                strokeLinejoin: "round",
+                              }}
+                            >
+                              {n.name}
+                            </text>
+                          </g>
+                        );
+                      })}
                     </g>
                   );
                 })()}
+
+
 
               {/* Compass */}
               <g pointerEvents="none" opacity={0.4}>
