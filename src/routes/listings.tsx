@@ -685,43 +685,46 @@ function CommunitiesMap({
         </div>
 
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
-          {/* Atlanta metro county map — real reference image as the visual,
-              with transparent SVG polygon overlays for click + selection */}
-          <div className="relative bg-[#1c1917] border border-stone-300/70 overflow-hidden shadow-[0_24px_80px_rgba(28,25,23,0.18)]" style={{ aspectRatio: `${MAP_W} / ${MAP_H}` }}>
-            {/* Reference map, desaturated and darkened into charcoal */}
-            <img
-              src={atlantaMap}
-              alt="Atlanta metro counties reference map"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
-              style={{
-                filter:
-                  "grayscale(1) brightness(0.42) contrast(1.15) saturate(0)",
-              }}
-              draggable={false}
-            />
-            {/* Warm charcoal wash to unify tones */}
-            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(28,25,23,0.55), rgba(28,25,23,0.4))" }} />
-
+          {/* Atlanta metro county map — one SVG, real county boundaries (US Census
+              2020) projected with d3-geo. Each <path> is BOTH the visible shape
+              and the click/hover/focus target — no overlay shenanigans. */}
+          <div
+            className="relative bg-[#f7f4ed] border border-stone-300/70 overflow-hidden shadow-[0_24px_80px_rgba(28,25,23,0.08)]"
+            style={{ aspectRatio: `${MAP_W} / ${MAP_H}` }}
+          >
             <svg
               viewBox={`0 0 ${MAP_W} ${MAP_H}`}
               className="absolute inset-0 w-full h-full"
               preserveAspectRatio="xMidYMid meet"
             >
-              {/* County hotspots — thin off-white borders, burgundy when selected */}
+              <defs>
+                <filter id="countyShadow" x="-10%" y="-10%" width="120%" height="120%">
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="4" />
+                  <feOffset dx="0" dy="3" result="o" />
+                  <feComponentTransfer><feFuncA type="linear" slope="0.35" /></feComponentTransfer>
+                  <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+              </defs>
+
+              {/* Counties — single path per county, visible + clickable */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
+                const baseFill = active ? "#6f1d20" : "#3a3633";
                 return (
-                  <polygon
+                  <path
                     key={c.name}
-                    points={c.points}
-                    fill={active ? "rgba(111,29,32,0.78)" : "rgba(255,255,255,0)"}
-                    stroke="rgba(249,246,239,0.45)"
-                    strokeWidth={active ? 2.2 : 1.1}
+                    id={`county-${c.name}`}
+                    d={c.d}
+                    fill={baseFill}
+                    stroke="#f7f4ed"
+                    strokeWidth={active ? 2.4 : 1.4}
                     strokeLinejoin="round"
                     role="button"
                     tabIndex={0}
                     aria-label={`Select ${c.name} County`}
-                    className="transition-all duration-300 cursor-pointer outline-none"
+                    aria-pressed={active}
+                    className="transition-[fill,stroke-width] duration-300 cursor-pointer outline-none focus-visible:stroke-[#f9f6ef]"
+                    style={{ filter: active ? "url(#countyShadow)" : undefined }}
                     onClick={() => handleSelect(c.name)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -730,16 +733,18 @@ function CommunitiesMap({
                       }
                     }}
                     onMouseEnter={(e) => {
-                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", "rgba(255,255,255,0.12)");
+                      if (!active)
+                        (e.currentTarget as SVGPathElement).setAttribute("fill", "#4a4541");
                     }}
                     onMouseLeave={(e) => {
-                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", "rgba(255,255,255,0)");
+                      if (!active)
+                        (e.currentTarget as SVGPathElement).setAttribute("fill", baseFill);
                     }}
                   />
                 );
               })}
 
-              {/* County labels — uppercase white, centered */}
+              {/* County labels — same coordinate system */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
                 return (
@@ -751,15 +756,15 @@ function CommunitiesMap({
                     dominantBaseline="middle"
                     className="pointer-events-none select-none"
                     style={{
-                      fontSize: "13px",
-                      letterSpacing: "1.6px",
+                      fontSize: "16px",
+                      letterSpacing: "1.8px",
                       fontFamily: "Inter, system-ui, sans-serif",
                       textTransform: "uppercase",
                       fontWeight: 600,
                       fill: "#f9f6ef",
-                      opacity: active ? 0.95 : 0.85,
+                      opacity: active ? 1 : 0.88,
                       paintOrder: "stroke",
-                      stroke: "rgba(28,25,23,0.55)",
+                      stroke: "rgba(20,18,16,0.55)",
                       strokeWidth: 2.5,
                       strokeLinejoin: "round",
                     }}
@@ -769,32 +774,7 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* Atlanta city marker */}
-              {!selectedCounty && (
-                <g pointerEvents="none">
-                  <circle cx={240} cy={465} r={5} fill="#f9f6ef" />
-                  <circle cx={240} cy={465} r={10} fill="none" stroke="#f9f6ef" strokeWidth={1.2} opacity={0.7} />
-                  <text
-                    x={240}
-                    y={488}
-                    textAnchor="middle"
-                    style={{
-                      fontSize: "12px",
-                      fontFamily: "'Cormorant Garamond', Georgia, serif",
-                      fontStyle: "italic",
-                      fill: "#f9f6ef",
-                      paintOrder: "stroke",
-                      stroke: "rgba(28,25,23,0.6)",
-                      strokeWidth: 2.5,
-                      strokeLinejoin: "round",
-                    }}
-                  >
-                    Atlanta
-                  </text>
-                </g>
-              )}
-
-              {/* Selected county: neighborhood dots + labels */}
+              {/* Selected county: neighborhood dots + labels (same viewBox) */}
               {selectedCounty &&
                 (() => {
                   const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
@@ -810,19 +790,19 @@ function CommunitiesMap({
                             onSelectNeighborhood(n.name);
                           }}
                         >
-                          <circle cx={n.x} cy={n.y} r={3.6} fill="#f9f6ef" />
-                          <circle cx={n.x} cy={n.y} r={7.5} fill="none" stroke="#f9f6ef" strokeWidth={0.9} opacity={0.6} />
+                          <circle cx={n.x} cy={n.y} r={4.5} fill="#f9f6ef" />
+                          <circle cx={n.x} cy={n.y} r={9} fill="none" stroke="#f9f6ef" strokeWidth={1} opacity={0.55} />
                           <text
                             x={n.x}
-                            y={n.y + 14}
+                            y={n.y + 18}
                             textAnchor="middle"
                             style={{
-                              fontSize: "10px",
+                              fontSize: "12px",
                               fontFamily: "Inter, system-ui, sans-serif",
                               fill: "#f9f6ef",
                               fontWeight: 500,
                               paintOrder: "stroke",
-                              stroke: "rgba(28,25,23,0.7)",
+                              stroke: "rgba(20,18,16,0.7)",
                               strokeWidth: 2.5,
                               strokeLinejoin: "round",
                             }}
@@ -836,26 +816,27 @@ function CommunitiesMap({
                 })()}
 
               {/* Compass */}
-              <g pointerEvents="none" opacity={0.6}>
-                <text x={465} y={28} textAnchor="middle" style={{ fontSize: "13px", fontFamily: "'Cormorant Garamond', serif", fill: "#f9f6ef" }}>N</text>
-                <line x1={465} y1={34} x2={465} y2={52} stroke="#f9f6ef" strokeWidth={1.1} />
+              <g pointerEvents="none" opacity={0.55}>
+                <text x={MAP_W - 30} y={28} textAnchor="middle" style={{ fontSize: "14px", fontFamily: "'Cormorant Garamond', serif", fill: "#1c1917" }}>N</text>
+                <line x1={MAP_W - 30} y1={36} x2={MAP_W - 30} y2={56} stroke="#1c1917" strokeWidth={1.2} />
               </g>
             </svg>
 
-            <div className="absolute bottom-3 left-4 text-[10px] tracking-[0.3em] uppercase text-stone-200/80">
+            <div className="absolute bottom-3 left-4 text-[10px] tracking-[0.3em] uppercase text-stone-600/80">
               Atlanta Metro — Counties
             </div>
-            <div className="absolute bottom-3 right-4 flex items-center gap-3 text-[9px] tracking-[0.2em] uppercase text-stone-200/70">
+            <div className="absolute bottom-3 right-4 flex items-center gap-3 text-[9px] tracking-[0.2em] uppercase text-stone-600/70">
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#6f1d20] border border-stone-200/60" />
+                <span className="inline-block w-2.5 h-2.5 bg-[#6f1d20] border border-stone-400" />
                 Selected
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 border border-stone-200/60" />
+                <span className="inline-block w-2.5 h-2.5 bg-[#3a3633] border border-stone-400" />
                 Browse
               </span>
             </div>
           </div>
+
 
 
 
