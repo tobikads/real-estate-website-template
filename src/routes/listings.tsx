@@ -85,26 +85,105 @@ const NEIGHBORHOODS_BY_COUNTY: Record<string, string[]> = {
 const PRIMARY_COUNTIES = new Set(["Fulton", "DeKalb", "Cobb", "Gwinnett", "Cherokee", "Forsyth"]);
 
 // Manual label tweaks where the geographic centroid falls in an awkward
-// spot (Fulton's narrow connector, Rockdale's small body, etc.). Coordinates
-// are in the d3-geo projected viewBox (0..1000).
+// spot. Coordinates are in the d3-geo projected viewBox (0..1000).
 const LABEL_OVERRIDES: Record<string, { x?: number; y?: number; size?: number; tracking?: number }> = {
-  Fulton:   { x: 395, y: 770, size: 24, tracking: 3.4 },  // anchor in the wide southern body
-  Rockdale: { x: 626, y: 754, size: 13, tracking: 1.1 },
-  Clayton:  { x: 454, y: 819, size: 15, tracking: 1.4 },
-  Fayette:  { x: 389, y: 895, size: 17, tracking: 1.8 },
-  Douglas:  { x: 245, y: 722, size: 17, tracking: 1.8 },
-  Walton:   { x: 782, y: 674, size: 18, tracking: 2 },
+  Fulton:   { x: 395, y: 760, size: 30, tracking: 4 },
+  DeKalb:   { x: 540, y: 695, size: 24, tracking: 2.6 },
+  Gwinnett: { x: 632, y: 560, size: 30, tracking: 3.6 },
+  Cobb:     { x: 345, y: 600, size: 28, tracking: 3.2 },
+  Fulton2:  { x: 0, y: 0 },
+  Cherokee: { x: 398, y: 385, size: 28, tracking: 3.2 },
+  Forsyth:  { x: 580, y: 395, size: 26, tracking: 3 },
+  Hall:     { x: 760, y: 320, size: 26, tracking: 3 },
+  Bartow:   { x: 200, y: 380, size: 26, tracking: 3 },
+  Paulding: { x: 197, y: 580, size: 24, tracking: 2.6 },
+  Douglas:  { x: 245, y: 720, size: 22, tracking: 2.2 },
+  Rockdale: { x: 632, y: 760, size: 16, tracking: 1.2 },
+  Clayton:  { x: 454, y: 815, size: 18, tracking: 1.6 },
+  Fayette:  { x: 389, y: 900, size: 20, tracking: 2 },
+  Henry:    { x: 559, y: 880, size: 22, tracking: 2.4 },
+  Walton:   { x: 782, y: 680, size: 22, tracking: 2.4 },
+  Pickens:  { x: 402, y: 246, size: 20, tracking: 2 },
+  Gilmer:   { x: 410, y: 104, size: 20, tracking: 2 },
+};
+
+// Per-county neighborhood pin placements on the map (in viewBox coords).
+// Only the names listed here will render as pins; the side panel still
+// shows the full list. Hand-placed to match reference screenshots.
+const MAP_PIN_COORDS: Record<string, Array<{ name: string; x: number; y: number; labelDx?: number; labelDy?: number; anchor?: "start" | "middle" | "end" }>> = {
+  Fulton: [
+    { name: "Alpharetta", x: 478, y: 535, labelDx: 10, anchor: "start" },
+    { name: "Sandy Springs", x: 448, y: 640, labelDx: 10, anchor: "start" },
+    { name: "Buckhead", x: 432, y: 700, labelDx: 10, anchor: "start" },
+    { name: "Atlanta", x: 410, y: 765, labelDx: 10, anchor: "start" },
+  ],
+  Gwinnett: [
+    { name: "Buford", x: 655, y: 510, labelDx: 10, anchor: "start" },
+    { name: "Suwanee", x: 625, y: 540, labelDx: 10, anchor: "start" },
+    { name: "Duluth", x: 605, y: 575, labelDx: -10, anchor: "end" },
+    { name: "Lawrenceville", x: 670, y: 590, labelDx: 10, anchor: "start" },
+  ],
+  DeKalb: [
+    { name: "Dunwoody", x: 510, y: 640, labelDx: 10, anchor: "start" },
+    { name: "Brookhaven", x: 530, y: 668, labelDx: 10, anchor: "start" },
+    { name: "Chamblee", x: 552, y: 660, labelDx: 10, anchor: "start" },
+    { name: "Decatur", x: 525, y: 710, labelDx: 10, anchor: "start" },
+  ],
+  Cobb: [
+    { name: "Acworth", x: 335, y: 525, labelDx: 10, anchor: "start" },
+    { name: "Kennesaw", x: 345, y: 558, labelDx: -10, anchor: "end" },
+    { name: "Marietta", x: 360, y: 590, labelDx: -10, anchor: "end" },
+    { name: "Smyrna", x: 350, y: 630, labelDx: -10, anchor: "end" },
+  ],
+  Clayton: [
+    { name: "Riverdale", x: 445, y: 800, labelDx: 10, anchor: "start" },
+    { name: "Jonesboro", x: 462, y: 835, labelDx: 10, anchor: "start" },
+  ],
+  Henry: [
+    { name: "Stockbridge", x: 530, y: 840, labelDx: 10, anchor: "start" },
+    { name: "McDonough", x: 580, y: 880, labelDx: 10, anchor: "start" },
+  ],
+  Fayette: [
+    { name: "Fayetteville", x: 410, y: 880, labelDx: 10, anchor: "start" },
+    { name: "Peachtree City", x: 380, y: 915, labelDx: 10, anchor: "start" },
+  ],
+  Rockdale: [
+    { name: "Conyers", x: 632, y: 758, labelDx: 10, anchor: "start" },
+  ],
+  Douglas: [
+    { name: "Douglasville", x: 248, y: 720, labelDx: 10, anchor: "start" },
+  ],
+  Cherokee: [
+    { name: "Canton", x: 398, y: 360, labelDx: 10, anchor: "start" },
+    { name: "Woodstock", x: 420, y: 410, labelDx: 10, anchor: "start" },
+  ],
+  Forsyth: [
+    { name: "Cumming", x: 580, y: 395, labelDx: 10, anchor: "start" },
+  ],
+  Hall: [
+    { name: "Gainesville", x: 740, y: 320, labelDx: 10, anchor: "start" },
+    { name: "Flowery Branch", x: 720, y: 380, labelDx: 10, anchor: "start" },
+  ],
+  Paulding: [
+    { name: "Dallas", x: 197, y: 580, labelDx: 10, anchor: "start" },
+    { name: "Hiram", x: 200, y: 615, labelDx: 10, anchor: "start" },
+  ],
+  Walton: [
+    { name: "Monroe", x: 780, y: 660, labelDx: 10, anchor: "start" },
+    { name: "Loganville", x: 770, y: 700, labelDx: 10, anchor: "start" },
+  ],
+  Bartow: [
+    { name: "Cartersville", x: 210, y: 360, labelDx: 10, anchor: "start" },
+  ],
+  Pickens: [
+    { name: "Jasper", x: 402, y: 246, labelDx: 10, anchor: "start" },
+  ],
+  Gilmer: [
+    { name: "Ellijay", x: 410, y: 104, labelDx: 10, anchor: "start" },
+  ],
 };
 
 
-// On the map we only render a curated 2-3 neighborhood pins for dense
-// counties — full list still appears in the side panel.
-const MAP_PIN_WHITELIST: Record<string, string[]> = {
-  Fulton: ["Atlanta", "Buckhead", "Sandy Springs"],
-  Gwinnett: ["Duluth", "Suwanee", "Lawrenceville"],
-  DeKalb: ["Decatur", "Brookhaven", "Dunwoody"],
-  Cobb: ["Marietta", "Smyrna", "Kennesaw"],
-};
 
 
 
