@@ -22,9 +22,15 @@ const path = geoPath(proj);
 const pathRound = geoPath(proj).digits(2);
 const out = {};
 for (const [name,f] of Object.entries(feats)) {
-  const b = path.bounds(f);
-  const cx = (b[0][0]+b[1][0])/2, cy = (b[0][1]+b[1][1])/2;
-  out[name] = { d: pathRound(f), cx: +cx.toFixed(1), cy: +cy.toFixed(1) };
+  const d = pathRound(f);
+  const nums = d.match(/-?\d+(\.\d+)?/g).map(Number);
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for (let i=0;i<nums.length;i+=2){
+    const x=nums[i], y=nums[i+1];
+    if(x<minX)minX=x; if(x>maxX)maxX=x;
+    if(y<minY)minY=y; if(y>maxY)maxY=y;
+  }
+  out[name] = { d, cx: +((minX+maxX)/2).toFixed(1), cy: +((minY+maxY)/2).toFixed(1) };
 }
-fs.writeFileSync('/tmp/counties-out.json', JSON.stringify({W,H,counties:out}));
+
 console.log('wrote', Object.keys(out).length);
