@@ -823,67 +823,252 @@ function CommunitiesMap({
         </div>
 
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
-          {/* Stylized map */}
-          <div className="relative bg-gradient-to-br from-[#f1ebe0] to-[#e8e0d2] border border-stone-200 aspect-[5/4] overflow-hidden">
-            {/* subtle grid */}
+          {/* Stylized Atlanta metro map */}
+          <div className="relative bg-gradient-to-br from-[#f3ede2] to-[#e6ddcc] border border-stone-300/70 aspect-[5/4] overflow-hidden">
+            {/* Parchment grain */}
             <div
-              className="absolute inset-0 opacity-[0.06]"
+              className="absolute inset-0 opacity-[0.05] pointer-events-none"
               style={{
                 backgroundImage:
-                  "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
-                backgroundSize: "40px 40px",
+                  "radial-gradient(circle at 20% 30%, #000 0.5px, transparent 0.5px), radial-gradient(circle at 70% 65%, #000 0.5px, transparent 0.5px)",
+                backgroundSize: "18px 18px, 24px 24px",
               }}
             />
-            {/* River line */}
+
             <svg
               viewBox="0 0 100 100"
               className="absolute inset-0 w-full h-full"
-              preserveAspectRatio="none"
+              preserveAspectRatio="xMidYMid meet"
             >
+              <defs>
+                <pattern id="hatchPrimary" patternUnits="userSpaceOnUse" width="2.4" height="2.4" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="2.4" stroke="#8a6a3a" strokeWidth="0.18" opacity="0.35" />
+                </pattern>
+                <filter id="countyShadow" x="-10%" y="-10%" width="120%" height="120%">
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="0.4" />
+                  <feOffset dx="0" dy="0.3" result="o" />
+                  <feComponentTransfer><feFuncA type="linear" slope="0.25" /></feComponentTransfer>
+                  <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+              </defs>
+
+              {/* Counties */}
+              {COUNTY_SHAPES.map((c) => {
+                const primary = PRIMARY_COUNTIES.has(c.name);
+                const active = selectedCounty === c.name;
+                const fill = active
+                  ? "#1c1917"
+                  : primary
+                    ? "#e9dcc4"
+                    : "#ede5d5";
+                return (
+                  <polygon
+                    key={c.name}
+                    points={c.points}
+                    fill={fill}
+                    stroke={active ? "#1c1917" : "#a89478"}
+                    strokeWidth={active ? "0.5" : "0.3"}
+                    strokeLinejoin="round"
+                    className="transition-all duration-300 cursor-pointer"
+                    style={{ filter: active ? "url(#countyShadow)" : undefined }}
+                    onClick={() => handleSelect(c.name)}
+                    onMouseEnter={(e) => {
+                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", primary ? "#d9c49f" : "#dfd3bd");
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", fill);
+                    }}
+                  />
+                );
+              })}
+
+              {/* Primary-county hatch overlay for subtle warmth */}
+              {COUNTY_SHAPES.filter((c) => PRIMARY_COUNTIES.has(c.name) && selectedCounty !== c.name).map((c) => (
+                <polygon
+                  key={`hatch-${c.name}`}
+                  points={c.points}
+                  fill="url(#hatchPrimary)"
+                  pointerEvents="none"
+                />
+              ))}
+
+              {/* Chattahoochee River */}
               <path
-                d="M 5 60 Q 25 40 45 55 T 95 50"
-                stroke="#a8c0c8"
-                strokeWidth="0.8"
+                d={RIVER_PATH}
+                stroke="#7d9aa3"
+                strokeWidth="0.55"
+                strokeLinecap="round"
                 fill="none"
-                opacity="0.55"
+                opacity="0.6"
+                pointerEvents="none"
               />
+
+              {/* I-285 Perimeter ring (only visible subtly) */}
+              <ellipse
+                cx={PERIMETER.cx}
+                cy={PERIMETER.cy}
+                rx={PERIMETER.rx}
+                ry={PERIMETER.ry}
+                fill="none"
+                stroke="#6b5a40"
+                strokeWidth="0.18"
+                strokeDasharray="0.8 0.8"
+                opacity="0.55"
+                pointerEvents="none"
+              />
+
+              {/* I-75 / I-85 hint lines crossing the metro */}
+              <path
+                d="M 20 4 L 50 56 L 72 96"
+                stroke="#6b5a40"
+                strokeWidth="0.15"
+                strokeDasharray="0.6 0.9"
+                opacity="0.4"
+                fill="none"
+                pointerEvents="none"
+              />
+              <path
+                d="M 90 18 L 50 56 L 18 96"
+                stroke="#6b5a40"
+                strokeWidth="0.15"
+                strokeDasharray="0.6 0.9"
+                opacity="0.4"
+                fill="none"
+                pointerEvents="none"
+              />
+
+              {/* County labels */}
+              {COUNTY_SHAPES.map((c) => {
+                const active = selectedCounty === c.name;
+                if (active) return null; // hidden when active to make room for neighborhoods
+                return (
+                  <text
+                    key={`lbl-${c.name}`}
+                    x={c.label[0]}
+                    y={c.label[1]}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="pointer-events-none select-none"
+                    style={{
+                      fontSize: "2.4px",
+                      letterSpacing: "0.5px",
+                      fontFamily: "Inter, system-ui, sans-serif",
+                      textTransform: "uppercase",
+                      fontWeight: 500,
+                      fill: "#3f3326",
+                    }}
+                  >
+                    {c.name}
+                  </text>
+                );
+              })}
+
+              {/* Atlanta city marker */}
+              {!selectedCounty && (
+                <g pointerEvents="none">
+                  <circle cx="40" cy="58" r="0.9" fill="#1c1917" />
+                  <circle cx="40" cy="58" r="1.8" fill="none" stroke="#1c1917" strokeWidth="0.2" opacity="0.5" />
+                  <text
+                    x="40"
+                    y="62.5"
+                    textAnchor="middle"
+                    style={{
+                      fontSize: "2.2px",
+                      fontFamily: "'Cormorant Garamond', Georgia, serif",
+                      fontStyle: "italic",
+                      fill: "#1c1917",
+                    }}
+                  >
+                    Atlanta
+                  </text>
+                </g>
+              )}
+
+              {/* Selected county: show neighborhoods inside */}
+              {selectedCounty &&
+                (() => {
+                  const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
+                  if (!c) return null;
+                  return (
+                    <g>
+                      {/* Selected county label */}
+                      <text
+                        x={c.label[0]}
+                        y={c.label[1] - 3.5}
+                        textAnchor="middle"
+                        style={{
+                          fontSize: "2px",
+                          letterSpacing: "0.6px",
+                          fontFamily: "Inter, system-ui, sans-serif",
+                          textTransform: "uppercase",
+                          fill: "#e8dec8",
+                          opacity: 0.7,
+                        }}
+                        pointerEvents="none"
+                      >
+                        {c.name} County
+                      </text>
+                      {c.neighborhoods.map((n) => (
+                        <g
+                          key={n.name}
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectNeighborhood(n.name);
+                          }}
+                        >
+                          <circle cx={n.x} cy={n.y} r="0.8" fill="#f3ede2" />
+                          <circle cx={n.x} cy={n.y} r="1.6" fill="none" stroke="#f3ede2" strokeWidth="0.18" opacity="0.5" />
+                          <text
+                            x={n.x}
+                            y={n.y + 2.6}
+                            textAnchor="middle"
+                            style={{
+                              fontSize: "1.9px",
+                              fontFamily: "Inter, system-ui, sans-serif",
+                              fill: "#f3ede2",
+                              fontWeight: 400,
+                            }}
+                          >
+                            {n.name}
+                          </text>
+                        </g>
+                      ))}
+                    </g>
+                  );
+                })()}
+
+              {/* Compass */}
+              <g pointerEvents="none" opacity="0.55">
+                <text x="95" y="6" textAnchor="middle" style={{ fontSize: "2.4px", fontFamily: "'Cormorant Garamond', serif", fill: "#3f3326" }}>N</text>
+                <line x1="95" y1="7.5" x2="95" y2="11" stroke="#3f3326" strokeWidth="0.2" />
+              </g>
             </svg>
 
-            {/* County dots */}
-            {Object.entries(COUNTY_POSITIONS).map(([name, p]) => {
-              const primary = PRIMARY_COUNTIES.has(name);
-              const active = selectedCounty === name;
-              return (
-                <button
-                  key={name}
-                  onClick={() => handleSelect(name)}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 group"
-                  style={{ left: `${p.x}%`, top: `${p.y}%` }}
-                >
-                  <span
-                    className={`block rounded-full transition-all duration-300 ${
-                      active
-                        ? "bg-stone-900 ring-4 ring-stone-900/15"
-                        : primary
-                          ? "bg-amber-800/80 group-hover:bg-stone-900"
-                          : "bg-stone-400/70 group-hover:bg-stone-700"
-                    }`}
-                    style={{ width: `${p.r * 2}px`, height: `${p.r * 2}px` }}
-                  />
-                  <span
-                    className={`absolute left-1/2 -translate-x-1/2 mt-1.5 whitespace-nowrap text-[10px] tracking-[0.2em] uppercase transition-colors ${
-                      active ? "text-stone-900 font-medium" : "text-stone-600 group-hover:text-stone-900"
-                    }`}
-                  >
-                    {name}
-                  </span>
-                </button>
-              );
-            })}
-
-            <div className="absolute bottom-3 right-4 text-[10px] tracking-[0.25em] uppercase text-stone-500">
-              Atlanta Metro
+            <div className="absolute bottom-3 left-4 text-[10px] tracking-[0.3em] uppercase text-stone-600/80">
+              Atlanta Metro · Counties
             </div>
+            <div className="absolute bottom-3 right-4 flex items-center gap-3 text-[9px] tracking-[0.2em] uppercase text-stone-600/70">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 bg-[#e9dcc4] border border-[#a89478]" />
+                Primary
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 bg-[#ede5d5] border border-[#a89478]" />
+                Browse
+              </span>
+            </div>
+          </div>
+
+          {/* Desktop side panel */}
+          <div className="hidden lg:block">
+            <CountyPanel
+              county={selectedCounty}
+              onSelectNeighborhood={onSelectNeighborhood}
+              onClear={() => onSelectCounty(null)}
+            />
+          </div>
+        </div>
           </div>
 
           {/* Desktop side panel */}
