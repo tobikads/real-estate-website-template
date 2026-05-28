@@ -786,47 +786,36 @@ function CommunitiesMap({
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
-          {/* Atlanta metro county map — one SVG, real county boundaries (US Census
-              2020) projected with d3-geo. Each <path> is BOTH the visible shape
-              and the click/hover/focus target — no overlay shenanigans. */}
+        <div className="grid lg:grid-cols-[1.6fr_1fr] gap-6 lg:gap-10 items-start">
+          {/* Atlanta metro county map — one SVG, real county boundaries.
+              Each <path> is BOTH the visible shape and the click target. */}
           <div
-            className="relative bg-[#f4efe7] rounded-[2px] border border-[#e9dfd0] overflow-hidden shadow-[0_8px_28px_rgba(70,55,40,0.08)]"
+            className="relative bg-white"
             style={{ aspectRatio: `${MAP_W} / ${MAP_H}` }}
           >
             <svg
-              viewBox={`-10 -10 ${MAP_W + 20} ${MAP_H + 20}`}
+              viewBox={`0 0 ${MAP_W} ${MAP_H}`}
               className="absolute inset-0 w-full h-full"
               preserveAspectRatio="xMidYMid meet"
             >
-              <defs>
-                <filter id="countyShadow" x="-10%" y="-10%" width="120%" height="120%">
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
-                  <feOffset dx="0" dy="2" result="o" />
-                  <feComponentTransfer><feFuncA type="linear" slope="0.22" /></feComponentTransfer>
-                  <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
-                </filter>
-              </defs>
-
-              {/* Counties — single path per county, visible + clickable */}
+              {/* Counties */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
-                const baseFill = active ? "#8a6f4d" : "#35302b";
+                const baseFill = active ? "#b8a07a" : "#4a4744";
                 return (
                   <path
                     key={c.name}
                     id={`county-${c.name}`}
                     d={c.d}
                     fill={baseFill}
-                    stroke="#e9dfd0"
-                    strokeWidth={active ? 1.6 : 1.1}
+                    stroke="#ffffff"
+                    strokeWidth={1.2}
                     strokeLinejoin="round"
                     role="button"
                     tabIndex={0}
                     aria-label={`Select ${c.name} County`}
                     aria-pressed={active}
-                    className="transition-[fill,stroke-width] duration-300 cursor-pointer outline-none focus-visible:stroke-[#f7f0e6]"
-                    style={{ filter: active ? "url(#countyShadow)" : undefined }}
+                    className="transition-[fill] duration-300 cursor-pointer outline-none focus-visible:stroke-[#b8a07a]"
                     onClick={() => handleSelect(c.name)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -836,7 +825,7 @@ function CommunitiesMap({
                     }}
                     onMouseEnter={(e) => {
                       if (!active)
-                        (e.currentTarget as SVGPathElement).setAttribute("fill", "#554d44");
+                        (e.currentTarget as SVGPathElement).setAttribute("fill", "#5e5a55");
                     }}
                     onMouseLeave={(e) => {
                       if (!active)
@@ -846,9 +835,7 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* County labels — manual overrides for awkward centroids.
-                  Hide the label of the selected county; its name shows in
-                  the side panel and would otherwise collide with pins. */}
+              {/* County labels — hide for selected county (neighborhood dots take over) */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
                 if (active) return null;
@@ -856,7 +843,7 @@ function CommunitiesMap({
                 const lx = override?.x ?? c.label[0];
                 const ly = override?.y ?? c.label[1];
                 const tracking = override?.tracking ?? 2.4;
-                const size = override?.size ?? 20;
+                const size = override?.size ?? 22;
                 return (
                   <text
                     key={`lbl-${c.name}`}
@@ -870,67 +857,21 @@ function CommunitiesMap({
                       letterSpacing: `${tracking}px`,
                       fontFamily: "Inter, system-ui, sans-serif",
                       textTransform: "uppercase",
-                      fontWeight: 450,
-                      fill: "#f7f0e6",
-                      opacity: 0.85,
-                      paintOrder: "stroke",
-                      stroke: "rgba(30,24,18,0.4)",
-                      strokeWidth: 1.8,
-                      strokeLinejoin: "round",
+                      fontWeight: 600,
+                      fill: "#ffffff",
                     }}
                   >
-                    {c.name}
+                    {c.name.toUpperCase()}
                   </text>
                 );
               })}
 
-
-              {/* Selected county: neighborhood dots + labels (same viewBox). */}
-
+              {/* Selected county: neighborhood dots + black labels */}
               {selectedCounty &&
                 (() => {
-                  const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
-                  if (!c) return null;
-                  const allow = MAP_PIN_WHITELIST[c.name];
-                  const pinNames = allow
-                    ? allow.filter((nm) => c.neighborhoods.some((n) => n.name === nm))
-                    : c.neighborhoods.slice(0, 3).map((n) => n.name);
-                  // spread pins around the county centroid so they don't stack
-                  const [cx, cy] = c.label;
-                  const radius = 55;
-                  const pins = pinNames.map((nm, i) => {
-                    const angle = (-Math.PI / 2) + (i * (2 * Math.PI)) / pinNames.length;
-                    return {
-                      name: nm,
-                      x: cx + Math.cos(angle) * radius,
-                      y: cy + Math.sin(angle) * radius,
-                      // label position: above the dot when in upper half, below in lower half
-                      labelY: Math.sin(angle) < 0 ? -16 : 22,
-                    };
-                  });
+                  const pins = MAP_PIN_COORDS[selectedCounty] ?? [];
                   return (
                     <g>
-                      {/* Selected county header label, anchored at top */}
-                      <text
-                        x={cx}
-                        y={cy - radius - 32}
-                        textAnchor="middle"
-                        className="pointer-events-none select-none"
-                        style={{
-                          fontSize: "16px",
-                          letterSpacing: "3px",
-                          fontFamily: "Inter, system-ui, sans-serif",
-                          textTransform: "uppercase",
-                          fontWeight: 500,
-                          fill: "#f7f0e6",
-                          paintOrder: "stroke",
-                          stroke: "rgba(30,24,18,0.45)",
-                          strokeWidth: 2,
-                          strokeLinejoin: "round",
-                        }}
-                      >
-                        {c.name}
-                      </text>
                       {pins.map((n) => (
                         <g
                           key={n.name}
@@ -940,22 +881,17 @@ function CommunitiesMap({
                             onSelectNeighborhood(n.name);
                           }}
                         >
-                          <circle cx={n.x} cy={n.y} r={11} fill="none" stroke="#b89b72" strokeWidth={1} opacity={0.8} />
-                          <circle cx={n.x} cy={n.y} r={4.5} fill="#f7f0e6" />
+                          <circle cx={n.x} cy={n.y} r={4} fill="#1a1a1a" />
                           <text
-                            x={n.x}
-                            y={n.y + n.labelY}
-                            textAnchor="middle"
+                            x={n.x + (n.labelDx ?? 8)}
+                            y={n.y + (n.labelDy ?? 4)}
+                            textAnchor={n.anchor ?? "start"}
                             style={{
-                              fontSize: "13px",
+                              fontSize: "16px",
                               fontFamily: "Inter, system-ui, sans-serif",
-                              fill: "#f7f0e6",
+                              fill: "#1a1a1a",
                               fontWeight: 500,
-                              letterSpacing: "0.5px",
-                              paintOrder: "stroke",
-                              stroke: "rgba(30,24,18,0.6)",
-                              strokeWidth: 2.2,
-                              strokeLinejoin: "round",
+                              letterSpacing: "0.2px",
                             }}
                           >
                             {n.name}
@@ -965,30 +901,19 @@ function CommunitiesMap({
                     </g>
                   );
                 })()}
-
-
-
-              {/* Compass */}
-              <g pointerEvents="none" opacity={0.4}>
-                <text x={MAP_W - 30} y={28} textAnchor="middle" style={{ fontSize: "13px", fontFamily: "'Cormorant Garamond', serif", fill: "#6b5d4a" }}>N</text>
-                <line x1={MAP_W - 30} y1={36} x2={MAP_W - 30} y2={54} stroke="#6b5d4a" strokeWidth={1} />
-              </g>
             </svg>
-
-            <div className="absolute bottom-4 left-5 text-[10px] tracking-[0.32em] uppercase text-[#8a7c68]/80">
-              Atlanta Metro — Counties
-            </div>
-            <div className="absolute bottom-4 right-5 flex items-center gap-3 text-[9px] tracking-[0.22em] uppercase text-[#8a7c68]/75">
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#8a6f4d] border border-[#e9dfd0]" />
-                Selected
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#35302b] border border-[#e9dfd0]" />
-                Browse
-              </span>
-            </div>
           </div>
+
+          {/* Desktop side panel */}
+          <div className="hidden lg:block">
+            <CountyPanel
+              county={selectedCounty}
+              onSelectNeighborhood={onSelectNeighborhood}
+              onClear={() => onSelectCounty(null)}
+            />
+          </div>
+        </div>
+
 
 
 
