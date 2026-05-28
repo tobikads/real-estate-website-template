@@ -85,26 +85,105 @@ const NEIGHBORHOODS_BY_COUNTY: Record<string, string[]> = {
 const PRIMARY_COUNTIES = new Set(["Fulton", "DeKalb", "Cobb", "Gwinnett", "Cherokee", "Forsyth"]);
 
 // Manual label tweaks where the geographic centroid falls in an awkward
-// spot (Fulton's narrow connector, Rockdale's small body, etc.). Coordinates
-// are in the d3-geo projected viewBox (0..1000).
+// spot. Coordinates are in the d3-geo projected viewBox (0..1000).
 const LABEL_OVERRIDES: Record<string, { x?: number; y?: number; size?: number; tracking?: number }> = {
-  Fulton:   { x: 395, y: 770, size: 24, tracking: 3.4 },  // anchor in the wide southern body
-  Rockdale: { x: 626, y: 754, size: 13, tracking: 1.1 },
-  Clayton:  { x: 454, y: 819, size: 15, tracking: 1.4 },
-  Fayette:  { x: 389, y: 895, size: 17, tracking: 1.8 },
-  Douglas:  { x: 245, y: 722, size: 17, tracking: 1.8 },
-  Walton:   { x: 782, y: 674, size: 18, tracking: 2 },
+  Fulton:   { x: 395, y: 760, size: 30, tracking: 4 },
+  DeKalb:   { x: 540, y: 695, size: 24, tracking: 2.6 },
+  Gwinnett: { x: 632, y: 560, size: 30, tracking: 3.6 },
+  Cobb:     { x: 345, y: 600, size: 28, tracking: 3.2 },
+  Fulton2:  { x: 0, y: 0 },
+  Cherokee: { x: 398, y: 385, size: 28, tracking: 3.2 },
+  Forsyth:  { x: 580, y: 395, size: 26, tracking: 3 },
+  Hall:     { x: 760, y: 320, size: 26, tracking: 3 },
+  Bartow:   { x: 200, y: 380, size: 26, tracking: 3 },
+  Paulding: { x: 197, y: 580, size: 24, tracking: 2.6 },
+  Douglas:  { x: 245, y: 720, size: 22, tracking: 2.2 },
+  Rockdale: { x: 632, y: 760, size: 16, tracking: 1.2 },
+  Clayton:  { x: 454, y: 815, size: 18, tracking: 1.6 },
+  Fayette:  { x: 389, y: 900, size: 20, tracking: 2 },
+  Henry:    { x: 559, y: 880, size: 22, tracking: 2.4 },
+  Walton:   { x: 782, y: 680, size: 22, tracking: 2.4 },
+  Pickens:  { x: 402, y: 246, size: 20, tracking: 2 },
+  Gilmer:   { x: 410, y: 104, size: 20, tracking: 2 },
+};
+
+// Per-county neighborhood pin placements on the map (in viewBox coords).
+// Only the names listed here will render as pins; the side panel still
+// shows the full list. Hand-placed to match reference screenshots.
+const MAP_PIN_COORDS: Record<string, Array<{ name: string; x: number; y: number; labelDx?: number; labelDy?: number; anchor?: "start" | "middle" | "end" }>> = {
+  Fulton: [
+    { name: "Alpharetta", x: 478, y: 535, labelDx: 10, anchor: "start" },
+    { name: "Sandy Springs", x: 448, y: 640, labelDx: 10, anchor: "start" },
+    { name: "Buckhead", x: 432, y: 700, labelDx: 10, anchor: "start" },
+    { name: "Atlanta", x: 410, y: 765, labelDx: 10, anchor: "start" },
+  ],
+  Gwinnett: [
+    { name: "Buford", x: 655, y: 510, labelDx: 10, anchor: "start" },
+    { name: "Suwanee", x: 625, y: 540, labelDx: 10, anchor: "start" },
+    { name: "Duluth", x: 605, y: 575, labelDx: -10, anchor: "end" },
+    { name: "Lawrenceville", x: 670, y: 590, labelDx: 10, anchor: "start" },
+  ],
+  DeKalb: [
+    { name: "Dunwoody", x: 510, y: 640, labelDx: 10, anchor: "start" },
+    { name: "Brookhaven", x: 530, y: 668, labelDx: 10, anchor: "start" },
+    { name: "Chamblee", x: 552, y: 660, labelDx: 10, anchor: "start" },
+    { name: "Decatur", x: 525, y: 710, labelDx: 10, anchor: "start" },
+  ],
+  Cobb: [
+    { name: "Acworth", x: 335, y: 525, labelDx: 10, anchor: "start" },
+    { name: "Kennesaw", x: 345, y: 558, labelDx: -10, anchor: "end" },
+    { name: "Marietta", x: 360, y: 590, labelDx: -10, anchor: "end" },
+    { name: "Smyrna", x: 350, y: 630, labelDx: -10, anchor: "end" },
+  ],
+  Clayton: [
+    { name: "Riverdale", x: 445, y: 800, labelDx: 10, anchor: "start" },
+    { name: "Jonesboro", x: 462, y: 835, labelDx: 10, anchor: "start" },
+  ],
+  Henry: [
+    { name: "Stockbridge", x: 530, y: 840, labelDx: 10, anchor: "start" },
+    { name: "McDonough", x: 580, y: 880, labelDx: 10, anchor: "start" },
+  ],
+  Fayette: [
+    { name: "Fayetteville", x: 410, y: 880, labelDx: 10, anchor: "start" },
+    { name: "Peachtree City", x: 380, y: 915, labelDx: 10, anchor: "start" },
+  ],
+  Rockdale: [
+    { name: "Conyers", x: 632, y: 758, labelDx: 10, anchor: "start" },
+  ],
+  Douglas: [
+    { name: "Douglasville", x: 248, y: 720, labelDx: 10, anchor: "start" },
+  ],
+  Cherokee: [
+    { name: "Canton", x: 398, y: 360, labelDx: 10, anchor: "start" },
+    { name: "Woodstock", x: 420, y: 410, labelDx: 10, anchor: "start" },
+  ],
+  Forsyth: [
+    { name: "Cumming", x: 580, y: 395, labelDx: 10, anchor: "start" },
+  ],
+  Hall: [
+    { name: "Gainesville", x: 740, y: 320, labelDx: 10, anchor: "start" },
+    { name: "Flowery Branch", x: 720, y: 380, labelDx: 10, anchor: "start" },
+  ],
+  Paulding: [
+    { name: "Dallas", x: 197, y: 580, labelDx: 10, anchor: "start" },
+    { name: "Hiram", x: 200, y: 615, labelDx: 10, anchor: "start" },
+  ],
+  Walton: [
+    { name: "Monroe", x: 780, y: 660, labelDx: 10, anchor: "start" },
+    { name: "Loganville", x: 770, y: 700, labelDx: 10, anchor: "start" },
+  ],
+  Bartow: [
+    { name: "Cartersville", x: 210, y: 360, labelDx: 10, anchor: "start" },
+  ],
+  Pickens: [
+    { name: "Jasper", x: 402, y: 246, labelDx: 10, anchor: "start" },
+  ],
+  Gilmer: [
+    { name: "Ellijay", x: 410, y: 104, labelDx: 10, anchor: "start" },
+  ],
 };
 
 
-// On the map we only render a curated 2-3 neighborhood pins for dense
-// counties — full list still appears in the side panel.
-const MAP_PIN_WHITELIST: Record<string, string[]> = {
-  Fulton: ["Atlanta", "Buckhead", "Sandy Springs"],
-  Gwinnett: ["Duluth", "Suwanee", "Lawrenceville"],
-  DeKalb: ["Decatur", "Brookhaven", "Dunwoody"],
-  Cobb: ["Marietta", "Smyrna", "Kennesaw"],
-};
 
 
 
@@ -707,47 +786,36 @@ function CommunitiesMap({
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
-          {/* Atlanta metro county map — one SVG, real county boundaries (US Census
-              2020) projected with d3-geo. Each <path> is BOTH the visible shape
-              and the click/hover/focus target — no overlay shenanigans. */}
+        <div className="grid lg:grid-cols-[1.6fr_1fr] gap-6 lg:gap-10 items-start">
+          {/* Atlanta metro county map — one SVG, real county boundaries.
+              Each <path> is BOTH the visible shape and the click target. */}
           <div
-            className="relative bg-[#f4efe7] rounded-[2px] border border-[#e9dfd0] overflow-hidden shadow-[0_8px_28px_rgba(70,55,40,0.08)]"
+            className="relative bg-white"
             style={{ aspectRatio: `${MAP_W} / ${MAP_H}` }}
           >
             <svg
-              viewBox={`-10 -10 ${MAP_W + 20} ${MAP_H + 20}`}
+              viewBox={`0 0 ${MAP_W} ${MAP_H}`}
               className="absolute inset-0 w-full h-full"
               preserveAspectRatio="xMidYMid meet"
             >
-              <defs>
-                <filter id="countyShadow" x="-10%" y="-10%" width="120%" height="120%">
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
-                  <feOffset dx="0" dy="2" result="o" />
-                  <feComponentTransfer><feFuncA type="linear" slope="0.22" /></feComponentTransfer>
-                  <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
-                </filter>
-              </defs>
-
-              {/* Counties — single path per county, visible + clickable */}
+              {/* Counties */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
-                const baseFill = active ? "#8a6f4d" : "#35302b";
+                const baseFill = active ? "#b8a07a" : "#4a4744";
                 return (
                   <path
                     key={c.name}
                     id={`county-${c.name}`}
                     d={c.d}
                     fill={baseFill}
-                    stroke="#e9dfd0"
-                    strokeWidth={active ? 1.6 : 1.1}
+                    stroke="#ffffff"
+                    strokeWidth={1.2}
                     strokeLinejoin="round"
                     role="button"
                     tabIndex={0}
                     aria-label={`Select ${c.name} County`}
                     aria-pressed={active}
-                    className="transition-[fill,stroke-width] duration-300 cursor-pointer outline-none focus-visible:stroke-[#f7f0e6]"
-                    style={{ filter: active ? "url(#countyShadow)" : undefined }}
+                    className="transition-[fill] duration-300 cursor-pointer outline-none focus-visible:stroke-[#b8a07a]"
                     onClick={() => handleSelect(c.name)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -757,7 +825,7 @@ function CommunitiesMap({
                     }}
                     onMouseEnter={(e) => {
                       if (!active)
-                        (e.currentTarget as SVGPathElement).setAttribute("fill", "#554d44");
+                        (e.currentTarget as SVGPathElement).setAttribute("fill", "#5e5a55");
                     }}
                     onMouseLeave={(e) => {
                       if (!active)
@@ -767,9 +835,7 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* County labels — manual overrides for awkward centroids.
-                  Hide the label of the selected county; its name shows in
-                  the side panel and would otherwise collide with pins. */}
+              {/* County labels — hide for selected county (neighborhood dots take over) */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
                 if (active) return null;
@@ -777,7 +843,7 @@ function CommunitiesMap({
                 const lx = override?.x ?? c.label[0];
                 const ly = override?.y ?? c.label[1];
                 const tracking = override?.tracking ?? 2.4;
-                const size = override?.size ?? 20;
+                const size = override?.size ?? 22;
                 return (
                   <text
                     key={`lbl-${c.name}`}
@@ -791,67 +857,21 @@ function CommunitiesMap({
                       letterSpacing: `${tracking}px`,
                       fontFamily: "Inter, system-ui, sans-serif",
                       textTransform: "uppercase",
-                      fontWeight: 450,
-                      fill: "#f7f0e6",
-                      opacity: 0.85,
-                      paintOrder: "stroke",
-                      stroke: "rgba(30,24,18,0.4)",
-                      strokeWidth: 1.8,
-                      strokeLinejoin: "round",
+                      fontWeight: 600,
+                      fill: "#ffffff",
                     }}
                   >
-                    {c.name}
+                    {c.name.toUpperCase()}
                   </text>
                 );
               })}
 
-
-              {/* Selected county: neighborhood dots + labels (same viewBox). */}
-
+              {/* Selected county: neighborhood dots + black labels */}
               {selectedCounty &&
                 (() => {
-                  const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
-                  if (!c) return null;
-                  const allow = MAP_PIN_WHITELIST[c.name];
-                  const pinNames = allow
-                    ? allow.filter((nm) => c.neighborhoods.some((n) => n.name === nm))
-                    : c.neighborhoods.slice(0, 3).map((n) => n.name);
-                  // spread pins around the county centroid so they don't stack
-                  const [cx, cy] = c.label;
-                  const radius = 55;
-                  const pins = pinNames.map((nm, i) => {
-                    const angle = (-Math.PI / 2) + (i * (2 * Math.PI)) / pinNames.length;
-                    return {
-                      name: nm,
-                      x: cx + Math.cos(angle) * radius,
-                      y: cy + Math.sin(angle) * radius,
-                      // label position: above the dot when in upper half, below in lower half
-                      labelY: Math.sin(angle) < 0 ? -16 : 22,
-                    };
-                  });
+                  const pins = MAP_PIN_COORDS[selectedCounty] ?? [];
                   return (
                     <g>
-                      {/* Selected county header label, anchored at top */}
-                      <text
-                        x={cx}
-                        y={cy - radius - 32}
-                        textAnchor="middle"
-                        className="pointer-events-none select-none"
-                        style={{
-                          fontSize: "16px",
-                          letterSpacing: "3px",
-                          fontFamily: "Inter, system-ui, sans-serif",
-                          textTransform: "uppercase",
-                          fontWeight: 500,
-                          fill: "#f7f0e6",
-                          paintOrder: "stroke",
-                          stroke: "rgba(30,24,18,0.45)",
-                          strokeWidth: 2,
-                          strokeLinejoin: "round",
-                        }}
-                      >
-                        {c.name}
-                      </text>
                       {pins.map((n) => (
                         <g
                           key={n.name}
@@ -861,22 +881,17 @@ function CommunitiesMap({
                             onSelectNeighborhood(n.name);
                           }}
                         >
-                          <circle cx={n.x} cy={n.y} r={11} fill="none" stroke="#b89b72" strokeWidth={1} opacity={0.8} />
-                          <circle cx={n.x} cy={n.y} r={4.5} fill="#f7f0e6" />
+                          <circle cx={n.x} cy={n.y} r={4} fill="#1a1a1a" />
                           <text
-                            x={n.x}
-                            y={n.y + n.labelY}
-                            textAnchor="middle"
+                            x={n.x + (n.labelDx ?? 8)}
+                            y={n.y + (n.labelDy ?? 4)}
+                            textAnchor={n.anchor ?? "start"}
                             style={{
-                              fontSize: "13px",
+                              fontSize: "16px",
                               fontFamily: "Inter, system-ui, sans-serif",
-                              fill: "#f7f0e6",
+                              fill: "#1a1a1a",
                               fontWeight: 500,
-                              letterSpacing: "0.5px",
-                              paintOrder: "stroke",
-                              stroke: "rgba(30,24,18,0.6)",
-                              strokeWidth: 2.2,
-                              strokeLinejoin: "round",
+                              letterSpacing: "0.2px",
                             }}
                           >
                             {n.name}
@@ -886,34 +901,8 @@ function CommunitiesMap({
                     </g>
                   );
                 })()}
-
-
-
-              {/* Compass */}
-              <g pointerEvents="none" opacity={0.4}>
-                <text x={MAP_W - 30} y={28} textAnchor="middle" style={{ fontSize: "13px", fontFamily: "'Cormorant Garamond', serif", fill: "#6b5d4a" }}>N</text>
-                <line x1={MAP_W - 30} y1={36} x2={MAP_W - 30} y2={54} stroke="#6b5d4a" strokeWidth={1} />
-              </g>
             </svg>
-
-            <div className="absolute bottom-4 left-5 text-[10px] tracking-[0.32em] uppercase text-[#8a7c68]/80">
-              Atlanta Metro — Counties
-            </div>
-            <div className="absolute bottom-4 right-5 flex items-center gap-3 text-[9px] tracking-[0.22em] uppercase text-[#8a7c68]/75">
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#8a6f4d] border border-[#e9dfd0]" />
-                Selected
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#35302b] border border-[#e9dfd0]" />
-                Browse
-              </span>
-            </div>
           </div>
-
-
-
-
 
           {/* Desktop side panel */}
           <div className="hidden lg:block">
@@ -924,6 +913,8 @@ function CommunitiesMap({
             />
           </div>
         </div>
+
+
 
         {/* Mobile county cards */}
         <div className="lg:hidden mt-8">
