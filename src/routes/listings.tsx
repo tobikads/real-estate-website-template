@@ -807,53 +807,81 @@ function CommunitiesMap({
 
 
               {/* Selected county: neighborhood dots + labels (same viewBox).
-                  Crowded counties show only a curated 2-3 map pins; the full
-                  list still appears in the side panel. */}
               {selectedCounty &&
                 (() => {
                   const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
                   if (!c) return null;
                   const allow = MAP_PIN_WHITELIST[c.name];
-                  const pins = allow
-                    ? c.neighborhoods.filter((n) => allow.includes(n.name))
-                    : c.neighborhoods.slice(0, 3);
+                  const pinNames = allow
+                    ? allow.filter((nm) => c.neighborhoods.some((n) => n.name === nm))
+                    : c.neighborhoods.slice(0, 3).map((n) => n.name);
+                  // spread pins around the county centroid so they don't stack
+                  const [cx, cy] = c.label;
+                  const radius = 55;
+                  const pins = pinNames.map((nm, i) => {
+                    const angle = (-Math.PI / 2) + (i * (2 * Math.PI)) / pinNames.length;
+                    return {
+                      name: nm,
+                      x: cx + Math.cos(angle) * radius,
+                      y: cy + Math.sin(angle) * radius,
+                      // label position: above the dot when in upper half, below in lower half
+                      labelY: Math.sin(angle) < 0 ? -16 : 22,
+                    };
+                  });
                   return (
                     <g>
-                      {pins.map((n, i) => {
-                        // fan labels slightly so they don't collide
-                        const offsetY = 22 + (i % 2) * 4;
-                        return (
-                          <g
-                            key={n.name}
-                            className="cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onSelectNeighborhood(n.name);
+                      {/* Selected county header label, anchored at top */}
+                      <text
+                        x={cx}
+                        y={cy - radius - 32}
+                        textAnchor="middle"
+                        className="pointer-events-none select-none"
+                        style={{
+                          fontSize: "16px",
+                          letterSpacing: "3px",
+                          fontFamily: "Inter, system-ui, sans-serif",
+                          textTransform: "uppercase",
+                          fontWeight: 500,
+                          fill: "#f7f0e6",
+                          paintOrder: "stroke",
+                          stroke: "rgba(30,24,18,0.45)",
+                          strokeWidth: 2,
+                          strokeLinejoin: "round",
+                        }}
+                      >
+                        {c.name}
+                      </text>
+                      {pins.map((n) => (
+                        <g
+                          key={n.name}
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectNeighborhood(n.name);
+                          }}
+                        >
+                          <circle cx={n.x} cy={n.y} r={11} fill="none" stroke="#b89b72" strokeWidth={1} opacity={0.8} />
+                          <circle cx={n.x} cy={n.y} r={4.5} fill="#f7f0e6" />
+                          <text
+                            x={n.x}
+                            y={n.y + n.labelY}
+                            textAnchor="middle"
+                            style={{
+                              fontSize: "13px",
+                              fontFamily: "Inter, system-ui, sans-serif",
+                              fill: "#f7f0e6",
+                              fontWeight: 500,
+                              letterSpacing: "0.5px",
+                              paintOrder: "stroke",
+                              stroke: "rgba(30,24,18,0.6)",
+                              strokeWidth: 2.2,
+                              strokeLinejoin: "round",
                             }}
                           >
-                            <circle cx={n.x} cy={n.y} r={11} fill="none" stroke="#b89b72" strokeWidth={1} opacity={0.8} />
-                            <circle cx={n.x} cy={n.y} r={4.5} fill="#f7f0e6" />
-                            <text
-                              x={n.x}
-                              y={n.y + offsetY}
-                              textAnchor="middle"
-                              style={{
-                                fontSize: "13px",
-                                fontFamily: "Inter, system-ui, sans-serif",
-                                fill: "#f7f0e6",
-                                fontWeight: 500,
-                                letterSpacing: "0.5px",
-                                paintOrder: "stroke",
-                                stroke: "rgba(30,24,18,0.6)",
-                                strokeWidth: 2.2,
-                                strokeLinejoin: "round",
-                              }}
-                            >
-                              {n.name}
-                            </text>
-                          </g>
-                        );
-                      })}
+                            {n.name}
+                          </text>
+                        </g>
+                      ))}
                     </g>
                   );
                 })()}
