@@ -22,10 +22,12 @@ const path = geoPath(proj);
 const pathRound = geoPath(proj).digits(2);
 const out = {};
 for (const [name,f] of Object.entries(feats)) {
-  const c = path.centroid(f);
-  out[name] = { d: pathRound(f), cx: +c[0].toFixed(1), cy: +c[1].toFixed(1) };
+for (const [name,f] of Object.entries(feats)) {
+  const b = path.bounds(f);
+  const cx = (b[0][0]+b[1][0])/2, cy = (b[0][1]+b[1][1])/2;
+  out[name] = { d: pathRound(f), cx: +cx.toFixed(1), cy: +cy.toFixed(1) };
 }
-fs.writeFileSync('/tmp/counties-out.json', JSON.stringify({W,H,counties:out}));
+
 console.log('wrote', Object.keys(out).length);
 
 
