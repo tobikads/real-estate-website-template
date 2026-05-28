@@ -84,6 +84,29 @@ const NEIGHBORHOODS_BY_COUNTY: Record<string, string[]> = {
 
 const PRIMARY_COUNTIES = new Set(["Fulton", "DeKalb", "Cobb", "Gwinnett", "Cherokee", "Forsyth"]);
 
+// Manual label tweaks where the geographic centroid falls in an awkward
+// spot (Fulton's narrow connector, Rockdale's small body, etc.). Coordinates
+// are in the d3-geo projected viewBox (0..1000).
+const LABEL_OVERRIDES: Record<string, { x?: number; y?: number; size?: number; tracking?: number }> = {
+  Fulton:   { x: 395, y: 770, size: 24, tracking: 3.4 },  // anchor in the wide southern body
+  Rockdale: { x: 626, y: 754, size: 13, tracking: 1.1 },
+  Clayton:  { x: 454, y: 819, size: 15, tracking: 1.4 },
+  Fayette:  { x: 389, y: 895, size: 17, tracking: 1.8 },
+  Douglas:  { x: 245, y: 722, size: 17, tracking: 1.8 },
+  Walton:   { x: 782, y: 674, size: 18, tracking: 2 },
+};
+
+
+// On the map we only render a curated 2-3 neighborhood pins for dense
+// counties — full list still appears in the side panel.
+const MAP_PIN_WHITELIST: Record<string, string[]> = {
+  Fulton: ["Atlanta", "Buckhead", "Sandy Springs"],
+  Gwinnett: ["Duluth", "Suwanee", "Lawrenceville"],
+  DeKalb: ["Decatur", "Brookhaven", "Dunwoody"],
+  Cobb: ["Marietta", "Smyrna", "Kennesaw"],
+};
+
+
 
 
 
@@ -693,7 +716,7 @@ function CommunitiesMap({
             style={{ aspectRatio: `${MAP_W} / ${MAP_H}` }}
           >
             <svg
-              viewBox={`${-MAP_W * 0.06} ${-MAP_H * 0.06} ${MAP_W * 1.12} ${MAP_H * 1.12}`}
+              viewBox={`-10 -10 ${MAP_W + 20} ${MAP_H + 20}`}
               className="absolute inset-0 w-full h-full"
               preserveAspectRatio="xMidYMid meet"
             >
@@ -744,28 +767,36 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* County labels — same coordinate system */}
+              {/* County labels — manual overrides for awkward centroids.
+                  Hide the label of the selected county; its name shows in
+                  the side panel and would otherwise collide with pins. */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
+                if (active) return null;
+                const override = LABEL_OVERRIDES[c.name];
+                const lx = override?.x ?? c.label[0];
+                const ly = override?.y ?? c.label[1];
+                const tracking = override?.tracking ?? 2.4;
+                const size = override?.size ?? 20;
                 return (
                   <text
                     key={`lbl-${c.name}`}
-                    x={c.label[0]}
-                    y={c.label[1]}
+                    x={lx}
+                    y={ly}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     className="pointer-events-none select-none"
                     style={{
-                      fontSize: "15px",
-                      letterSpacing: "2.2px",
+                      fontSize: `${size}px`,
+                      letterSpacing: `${tracking}px`,
                       fontFamily: "Inter, system-ui, sans-serif",
                       textTransform: "uppercase",
                       fontWeight: 450,
                       fill: "#f7f0e6",
-                      opacity: active ? 1 : 0.82,
+                      opacity: 0.85,
                       paintOrder: "stroke",
-                      stroke: "rgba(30,24,18,0.32)",
-                      strokeWidth: 1.6,
+                      stroke: "rgba(30,24,18,0.4)",
+                      strokeWidth: 1.8,
                       strokeLinejoin: "round",
                     }}
                   >
@@ -774,14 +805,54 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* Selected county: neighborhood dots + labels (same viewBox) */}
+
+              {/* Selected county: neighborhood dots + labels (same viewBox). */}
+
               {selectedCounty &&
                 (() => {
                   const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
                   if (!c) return null;
+                  const allow = MAP_PIN_WHITELIST[c.name];
+                  const pinNames = allow
+                    ? allow.filter((nm) => c.neighborhoods.some((n) => n.name === nm))
+                    : c.neighborhoods.slice(0, 3).map((n) => n.name);
+                  // spread pins around the county centroid so they don't stack
+                  const [cx, cy] = c.label;
+                  const radius = 55;
+                  const pins = pinNames.map((nm, i) => {
+                    const angle = (-Math.PI / 2) + (i * (2 * Math.PI)) / pinNames.length;
+                    return {
+                      name: nm,
+                      x: cx + Math.cos(angle) * radius,
+                      y: cy + Math.sin(angle) * radius,
+                      // label position: above the dot when in upper half, below in lower half
+                      labelY: Math.sin(angle) < 0 ? -16 : 22,
+                    };
+                  });
                   return (
                     <g>
-                      {c.neighborhoods.map((n) => (
+                      {/* Selected county header label, anchored at top */}
+                      <text
+                        x={cx}
+                        y={cy - radius - 32}
+                        textAnchor="middle"
+                        className="pointer-events-none select-none"
+                        style={{
+                          fontSize: "16px",
+                          letterSpacing: "3px",
+                          fontFamily: "Inter, system-ui, sans-serif",
+                          textTransform: "uppercase",
+                          fontWeight: 500,
+                          fill: "#f7f0e6",
+                          paintOrder: "stroke",
+                          stroke: "rgba(30,24,18,0.45)",
+                          strokeWidth: 2,
+                          strokeLinejoin: "round",
+                        }}
+                      >
+                        {c.name}
+                      </text>
+                      {pins.map((n) => (
                         <g
                           key={n.name}
                           className="cursor-pointer"
@@ -790,21 +861,21 @@ function CommunitiesMap({
                             onSelectNeighborhood(n.name);
                           }}
                         >
-                          <circle cx={n.x} cy={n.y} r={9.5} fill="none" stroke="#b89b72" strokeWidth={0.9} opacity={0.75} />
-                          <circle cx={n.x} cy={n.y} r={4} fill="#f7f0e6" />
+                          <circle cx={n.x} cy={n.y} r={11} fill="none" stroke="#b89b72" strokeWidth={1} opacity={0.8} />
+                          <circle cx={n.x} cy={n.y} r={4.5} fill="#f7f0e6" />
                           <text
                             x={n.x}
-                            y={n.y + 19}
+                            y={n.y + n.labelY}
                             textAnchor="middle"
                             style={{
-                              fontSize: "11.5px",
+                              fontSize: "13px",
                               fontFamily: "Inter, system-ui, sans-serif",
                               fill: "#f7f0e6",
-                              fontWeight: 450,
-                              letterSpacing: "0.4px",
+                              fontWeight: 500,
+                              letterSpacing: "0.5px",
                               paintOrder: "stroke",
-                              stroke: "rgba(30,24,18,0.55)",
-                              strokeWidth: 2,
+                              stroke: "rgba(30,24,18,0.6)",
+                              strokeWidth: 2.2,
                               strokeLinejoin: "round",
                             }}
                           >
@@ -815,6 +886,8 @@ function CommunitiesMap({
                     </g>
                   );
                 })()}
+
+
 
               {/* Compass */}
               <g pointerEvents="none" opacity={0.4}>
