@@ -84,27 +84,18 @@ const NEIGHBORHOODS_BY_COUNTY: Record<string, string[]> = {
 
 const PRIMARY_COUNTIES = new Set(["Fulton", "DeKalb", "Cobb", "Gwinnett", "Cherokee", "Forsyth"]);
 
-// Manual label tweaks for counties whose geographic centroid is awkward
-// (Fulton's narrow connector, Rockdale's tiny size, Clayton near borders, etc.).
+// Manual label tweaks where the geographic centroid falls in an awkward
+// spot (Fulton's narrow connector, Rockdale's small body, etc.). Coordinates
+// are in the d3-geo projected viewBox (0..1000).
 const LABEL_OVERRIDES: Record<string, { x?: number; y?: number; size?: number; tracking?: number }> = {
-  Fulton:   { x: 470, y: 760, size: 22, tracking: 3 },   // anchor in the wide south body
-  Rockdale: { x: 760, y: 770, size: 14, tracking: 1.2 },
-  Clayton:  { x: 540, y: 850, size: 15, tracking: 1.4 },
-  Fayette:  { x: 440, y: 900, size: 17, tracking: 1.8 },
-  Henry:    { x: 660, y: 900, size: 18, tracking: 2 },
-  DeKalb:   { x: 660, y: 720, size: 18, tracking: 2 },
-  Douglas:  { x: 300, y: 760, size: 17, tracking: 1.8 },
-  Paulding: { x: 230, y: 600, size: 18, tracking: 2 },
-  Walton:   { x: 870, y: 720, size: 18, tracking: 2 },
-  Forsyth:  { x: 620, y: 380, size: 18, tracking: 2 },
-  Pickens:  { x: 410, y: 240, size: 18, tracking: 2 },
-  Gilmer:   { x: 410, y: 110, size: 20, tracking: 2.4 },
-  Cherokee: { x: 410, y: 400, size: 19, tracking: 2.2 },
-  Bartow:   { x: 210, y: 400, size: 19, tracking: 2.2 },
-  Cobb:     { x: 320, y: 580, size: 19, tracking: 2.2 },
-  Gwinnett: { x: 780, y: 530, size: 20, tracking: 2.4 },
-  Hall:     { x: 870, y: 400, size: 19, tracking: 2.2 },
+  Fulton:   { x: 395, y: 770, size: 24, tracking: 3.4 },  // anchor in the wide southern body
+  Rockdale: { x: 626, y: 754, size: 13, tracking: 1.1 },
+  Clayton:  { x: 454, y: 819, size: 15, tracking: 1.4 },
+  Fayette:  { x: 389, y: 895, size: 17, tracking: 1.8 },
+  Douglas:  { x: 245, y: 722, size: 17, tracking: 1.8 },
+  Walton:   { x: 782, y: 674, size: 18, tracking: 2 },
 };
+
 
 // On the map we only render a curated 2-3 neighborhood pins for dense
 // counties — full list still appears in the side panel.
