@@ -83,8 +83,8 @@ const NEIGHBORHOODS_BY_COUNTY: Record<string, string[]> = {
 
 const PRIMARY_COUNTIES = new Set(["Fulton", "DeKalb", "Cobb", "Gwinnett", "Cherokee", "Forsyth"]);
 
-// Atlanta metro county shapes — stylized polygons drawn over a 100x100 viewBox.
-// North at top. Coordinates approximate real relative geography.
+// Atlanta metro county shapes — polygons approximating the real metro layout
+// on a 100x100 viewBox (north up). Shapes are stylized but geographically grounded.
 type CountyShape = {
   name: string;
   points: string;
@@ -95,134 +95,184 @@ type CountyShape = {
 
 const COUNTY_SHAPES: CountyShape[] = [
   {
-    name: "Cherokee",
-    points: "19,6 42,5 45,27 30,30 17,22",
-    label: [30, 17],
+    name: "Gilmer",
+    points: "33,2 71,2 73,17 51,19 33,17",
+    label: [52, 10],
+    neighborhoods: [{ name: "Ellijay", x: 52, y: 11 }],
+  },
+  {
+    name: "Pickens",
+    points: "33,17 51,19 54,33 33,33",
+    label: [43, 26],
+    neighborhoods: [{ name: "Jasper", x: 43, y: 26 }],
+  },
+  {
+    name: "Bartow",
+    points: "0,22 33,17 33,33 30,48 6,49 0,40",
+    label: [15, 35],
     neighborhoods: [
-      { name: "Canton", x: 29, y: 15 },
-      { name: "Woodstock", x: 34, y: 24 },
+      { name: "Cartersville", x: 14, y: 37 },
+      { name: "Adairsville", x: 10, y: 27 },
+    ],
+  },
+  {
+    name: "Cherokee",
+    points: "33,33 54,33 56,48 30,48",
+    label: [43, 41],
+    neighborhoods: [
+      { name: "Canton", x: 42, y: 38 },
+      { name: "Woodstock", x: 48, y: 45 },
+      { name: "Holly Springs", x: 44, y: 42 },
     ],
   },
   {
     name: "Forsyth",
-    points: "45,9 64,7 68,29 46,29 45,27",
-    label: [57, 18],
-    neighborhoods: [{ name: "Cumming", x: 58, y: 18 }],
-  },
-  {
-    name: "Paulding",
-    points: "5,31 23,29 25,50 8,53 2,42",
-    label: [14, 42],
-    neighborhoods: [{ name: "Dallas", x: 14, y: 42 }],
-  },
-  {
-    name: "Cobb",
-    points: "23,29 45,27 44,51 27,55 25,50",
-    label: [34, 42],
+    points: "54,33 73,32 76,49 56,49 56,48",
+    label: [64, 41],
     neighborhoods: [
-      { name: "Acworth", x: 31, y: 32 },
-      { name: "Kennesaw", x: 33, y: 37 },
-      { name: "Marietta", x: 36, y: 43 },
-      { name: "Smyrna", x: 40, y: 49 },
-      { name: "Powder Springs", x: 29, y: 49 },
+      { name: "Cumming", x: 64, y: 42 },
+      { name: "Vickery", x: 67, y: 46 },
     ],
   },
   {
-    name: "Gwinnett",
-    points: "67,25 92,27 97,49 79,64 63,50 58,39",
-    label: [78, 43],
+    name: "Hall",
+    points: "73,32 100,27 100,52 78,55 76,49",
+    label: [87, 42],
     neighborhoods: [
-      { name: "Buford", x: 78, y: 31 },
-      { name: "Suwanee", x: 73, y: 37 },
-      { name: "Lawrenceville", x: 82, y: 46 },
-      { name: "Duluth", x: 71, y: 45 },
-      { name: "Peachtree Corners", x: 66, y: 48 },
-      { name: "Norcross", x: 68, y: 53 },
+      { name: "Gainesville", x: 86, y: 44 },
+      { name: "Flowery Branch", x: 81, y: 49 },
+    ],
+  },
+  {
+    name: "Paulding",
+    points: "6,49 30,48 32,62 8,62",
+    label: [18, 56],
+    neighborhoods: [
+      { name: "Dallas", x: 18, y: 56 },
+      { name: "Hiram", x: 22, y: 60 },
+    ],
+  },
+  {
+    name: "Cobb",
+    points: "30,48 56,48 56,49 54,60 52,62 32,62",
+    label: [40, 56],
+    neighborhoods: [
+      { name: "Acworth", x: 36, y: 51 },
+      { name: "Kennesaw", x: 38, y: 54 },
+      { name: "Marietta", x: 42, y: 57 },
+      { name: "Smyrna", x: 46, y: 61 },
+      { name: "Powder Springs", x: 35, y: 60 },
     ],
   },
   {
     name: "Fulton",
+    // North Fulton arm + central + south arm, drawn as one bowtie-style polygon
     points:
-      "45,27 58,31 58,43 52,52 55,64 51,78 36,80 31,67 38,56 41,43",
-    label: [45, 67],
+      "56,49 65,49 64,58 56,66 56,72 55,80 38,82 31,72 31,62 39,62 47,62 52,62 54,60 56,49",
+    label: [46, 72],
     neighborhoods: [
-      { name: "Alpharetta", x: 52, y: 33 },
-      { name: "Roswell", x: 50, y: 39 },
-      { name: "Sandy Springs", x: 50, y: 47 },
-      { name: "Buckhead", x: 48, y: 54 },
-      { name: "Atlanta", x: 46, y: 63 },
-      { name: "Midtown", x: 47, y: 59 },
+      { name: "Alpharetta", x: 60, y: 51 },
+      { name: "Roswell", x: 59, y: 55 },
+      { name: "Sandy Springs", x: 56, y: 60 },
+      { name: "Buckhead", x: 50, y: 64 },
+      { name: "Midtown", x: 47, y: 67 },
+      { name: "Atlanta", x: 46, y: 70 },
+      { name: "East Point", x: 43, y: 76 },
+    ],
+  },
+  {
+    name: "Gwinnett",
+    points: "65,49 95,51 96,66 80,68 65,65 64,58",
+    label: [79, 58],
+    neighborhoods: [
+      { name: "Buford", x: 84, y: 53 },
+      { name: "Suwanee", x: 76, y: 56 },
+      { name: "Lawrenceville", x: 84, y: 60 },
+      { name: "Duluth", x: 72, y: 60 },
+      { name: "Peachtree Corners", x: 68, y: 62 },
+      { name: "Norcross", x: 70, y: 65 },
+    ],
+  },
+  {
+    name: "Walton",
+    points: "80,68 96,66 100,82 82,82",
+    label: [89, 75],
+    neighborhoods: [
+      { name: "Monroe", x: 90, y: 74 },
+      { name: "Loganville", x: 84, y: 73 },
     ],
   },
   {
     name: "DeKalb",
-    points: "58,43 63,50 79,64 69,76 55,64 52,52",
-    label: [64, 61],
+    points: "56,66 65,65 80,68 78,82 65,80 56,72",
+    label: [68, 73],
     neighborhoods: [
-      { name: "Dunwoody", x: 61, y: 50 },
-      { name: "Chamblee", x: 64, y: 54 },
-      { name: "Brookhaven", x: 60, y: 56 },
-      { name: "Tucker", x: 70, y: 58 },
-      { name: "Decatur", x: 62, y: 64 },
-      { name: "Stone Mountain", x: 71, y: 68 },
+      { name: "Dunwoody", x: 60, y: 67 },
+      { name: "Brookhaven", x: 60, y: 70 },
+      { name: "Chamblee", x: 64, y: 69 },
+      { name: "Tucker", x: 72, y: 71 },
+      { name: "Decatur", x: 62, y: 75 },
+      { name: "Stone Mountain", x: 74, y: 76 },
     ],
   },
   {
-    name: "Douglas",
-    points: "8,54 27,55 31,69 15,76 5,68",
-    label: [18, 64],
-    neighborhoods: [{ name: "Douglasville", x: 18, y: 64 }],
+    name: "Rockdale",
+    points: "78,82 92,80 92,90 80,90",
+    label: [85, 85],
+    neighborhoods: [{ name: "Conyers", x: 85, y: 85 }],
   },
   {
-    name: "Rockdale",
-    points: "79,64 91,62 94,76 82,85 69,76",
-    label: [82, 73],
-    neighborhoods: [{ name: "Conyers", x: 83, y: 73 }],
+    name: "Douglas",
+    points: "8,62 31,62 31,72 31,77 8,76",
+    label: [19, 69],
+    neighborhoods: [
+      { name: "Douglasville", x: 19, y: 69 },
+      { name: "Lithia Springs", x: 25, y: 66 },
+    ],
   },
   {
     name: "Clayton",
-    points: "36,80 51,78 57,87 43,92 35,85",
-    label: [45, 84],
+    points: "38,82 55,80 56,90 42,92",
+    label: [47, 86],
     neighborhoods: [
-      { name: "College Park", x: 41, y: 81 },
-      { name: "Forest Park", x: 48, y: 83 },
-      { name: "Riverdale", x: 44, y: 87 },
-      { name: "Jonesboro", x: 51, y: 88 },
+      { name: "College Park", x: 41, y: 83 },
+      { name: "Forest Park", x: 49, y: 85 },
+      { name: "Riverdale", x: 45, y: 88 },
+      { name: "Jonesboro", x: 51, y: 89 },
     ],
   },
   {
     name: "Henry",
-    points: "57,76 77,76 84,92 64,99 51,87",
-    label: [66, 87],
+    points: "55,80 78,82 80,90 80,99 60,99 56,90",
+    label: [68, 90],
     neighborhoods: [
-      { name: "Stockbridge", x: 62, y: 81 },
-      { name: "McDonough", x: 70, y: 90 },
+      { name: "Stockbridge", x: 62, y: 85 },
+      { name: "McDonough", x: 70, y: 92 },
+      { name: "Hampton", x: 64, y: 96 },
     ],
   },
   {
     name: "Fayette",
-    points: "27,75 42,80 43,92 30,99 21,89",
-    label: [32, 88],
+    points: "31,77 38,82 42,92 42,99 22,99 22,87",
+    label: [33, 91],
     neighborhoods: [
-      { name: "Tyrone", x: 29, y: 84 },
-      { name: "Fayetteville", x: 36, y: 88 },
-      { name: "Peachtree City", x: 31, y: 93 },
+      { name: "Tyrone", x: 28, y: 87 },
+      { name: "Fayetteville", x: 36, y: 91 },
+      { name: "Peachtree City", x: 30, y: 95 },
     ],
-  },
-  {
-    name: "Coweta",
-    points: "5,72 27,75 21,89 9,99 0,93 0,80",
-    label: [13, 86],
-    neighborhoods: [{ name: "Newnan", x: 13, y: 86 }],
   },
 ];
 
-// Chattahoochee River — flows NE to SW through the metro, forming part of the Cobb/Fulton border.
+// Lake Lanier — sprawling reservoir at the Hall/Forsyth border
+const LAKE_LANIER_PATH =
+  "M 80 32 Q 86 33 88 36 Q 90 40 86 42 Q 88 44 85 46 Q 82 45 80 43 Q 76 44 75 41 Q 74 38 77 36 Q 79 34 80 32 Z";
+
+// Chattahoochee River — exits Lake Lanier and flows SW along the Cobb/Fulton border
 const RIVER_PATH =
-  "M 69 8 Q 62 20 56 30 Q 49 39 48 48 Q 46 58 37 66 Q 25 75 9 92";
+  "M 80 43 Q 72 47 66 52 Q 60 56 56 60 Q 52 64 48 66 Q 38 72 26 82 Q 16 90 6 96";
 
 // Stylized I-285 perimeter ring around central Atlanta (in Fulton/DeKalb).
-const PERIMETER = { cx: 50, cy: 61, rx: 13, ry: 10 };
+const PERIMETER = { cx: 50, cy: 70, rx: 12, ry: 9 };
 
 function makeListings(): Listing[] {
   const list: Listing[] = [];
