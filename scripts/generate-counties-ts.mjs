@@ -20,7 +20,10 @@ const NB = {
   Bartow: ["Cartersville","Adairsville"],
   Pickens: ["Jasper"],
   Gilmer: ["Ellijay"],
+  Dawson: ["Dawsonville"],
+  Coweta: ["Newnan"],
 };
+
 
 // distribute neighborhoods around county centroid
 function neighborhoodCoords(n, cx, cy) {
@@ -31,8 +34,7 @@ function neighborhoodCoords(n, cx, cy) {
     return { x: cx + Math.cos(a)*r, y: cy + Math.sin(a)*r };
   });
 }
-
-const order = ["Gilmer","Pickens","Bartow","Cherokee","Forsyth","Hall","Paulding","Cobb","Fulton","Gwinnett","Walton","DeKalb","Rockdale","Douglas","Clayton","Henry","Fayette"];
+const order = ["Gilmer","Pickens","Dawson","Bartow","Cherokee","Forsyth","Hall","Paulding","Cobb","Fulton","Gwinnett","Walton","DeKalb","Rockdale","Douglas","Clayton","Henry","Fayette","Coweta"];
 
 let ts = `// AUTO-GENERATED from scripts/extract-counties.mjs + generate-counties-ts.mjs
 // Real Atlanta metro county boundaries (US Census 2020) projected to a
