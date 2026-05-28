@@ -1069,17 +1069,6 @@ function CommunitiesMap({
             />
           </div>
         </div>
-          </div>
-
-          {/* Desktop side panel */}
-          <div className="hidden lg:block">
-            <CountyPanel
-              county={selectedCounty}
-              onSelectNeighborhood={onSelectNeighborhood}
-              onClear={() => onSelectCounty(null)}
-            />
-          </div>
-        </div>
 
         {/* Mobile county cards */}
         <div className="lg:hidden mt-8">
