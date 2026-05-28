@@ -868,60 +868,43 @@ function CommunitiesMap({
         </div>
 
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
-          {/* Stylized Atlanta metro map */}
-          <div className="relative bg-[#f7f4ed] border border-stone-300/70 aspect-[5/4] overflow-hidden shadow-[0_24px_80px_rgba(28,25,23,0.08)]">
-            {/* Quiet map paper texture */}
-            <div
-              className="absolute inset-0 opacity-[0.045] pointer-events-none"
+          {/* Atlanta metro county map — real reference image as the visual,
+              with transparent SVG polygon overlays for click + selection */}
+          <div className="relative bg-[#1c1917] border border-stone-300/70 overflow-hidden shadow-[0_24px_80px_rgba(28,25,23,0.18)]" style={{ aspectRatio: `${MAP_W} / ${MAP_H}` }}>
+            {/* Reference map, desaturated and darkened into charcoal */}
+            <img
+              src={atlantaMap}
+              alt="Atlanta metro counties reference map"
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
               style={{
-                backgroundImage:
-                  "linear-gradient(#1c1917 1px, transparent 1px), linear-gradient(90deg, #1c1917 1px, transparent 1px)",
-                backgroundSize: "7.5% 7.5%",
+                filter:
+                  "grayscale(1) brightness(0.42) contrast(1.15) saturate(0)",
               }}
+              draggable={false}
             />
+            {/* Warm charcoal wash to unify tones */}
+            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(28,25,23,0.55), rgba(28,25,23,0.4))" }} />
 
             <svg
-              viewBox="0 0 100 100"
+              viewBox={`0 0 ${MAP_W} ${MAP_H}`}
               className="absolute inset-0 w-full h-full"
               preserveAspectRatio="xMidYMid meet"
             >
-              <defs>
-                <filter id="countyShadow" x="-18%" y="-18%" width="136%" height="136%">
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="0.9" />
-                  <feOffset dx="0" dy="0.8" result="offset" />
-                  <feComponentTransfer>
-                    <feFuncA type="linear" slope="0.32" />
-                  </feComponentTransfer>
-                  <feMerge>
-                    <feMergeNode />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-
-              {/* Counties */}
+              {/* County hotspots — thin off-white borders, burgundy when selected */}
               {COUNTY_SHAPES.map((c) => {
-                const primary = PRIMARY_COUNTIES.has(c.name);
                 const active = selectedCounty === c.name;
-                const fill = active
-                  ? "#6f1d20"
-                  : primary
-                    ? "#3f3c37"
-                    : "#57534c";
-                const hoverFill = active ? fill : primary ? "#5b5146" : "#6b6258";
                 return (
                   <polygon
                     key={c.name}
                     points={c.points}
-                    fill={fill}
-                    stroke="#f7f4ed"
-                    strokeWidth={active ? "0.8" : "0.45"}
+                    fill={active ? "rgba(111,29,32,0.78)" : "rgba(255,255,255,0)"}
+                    stroke="rgba(249,246,239,0.45)"
+                    strokeWidth={active ? 2.2 : 1.1}
                     strokeLinejoin="round"
                     role="button"
                     tabIndex={0}
                     aria-label={`Select ${c.name} County`}
                     className="transition-all duration-300 cursor-pointer outline-none"
-                    style={{ filter: active ? "url(#countyShadow)" : undefined }}
                     onClick={() => handleSelect(c.name)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -930,109 +913,18 @@ function CommunitiesMap({
                       }
                     }}
                     onMouseEnter={(e) => {
-                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", hoverFill);
+                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", "rgba(255,255,255,0.12)");
                     }}
                     onMouseLeave={(e) => {
-                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", fill);
+                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", "rgba(255,255,255,0)");
                     }}
                   />
                 );
               })}
 
-              {/* Lake Lanier */}
-              <path
-                d={LAKE_LANIER_PATH}
-                fill="#7fb8d4"
-                stroke="#4f8fb0"
-                strokeWidth="0.18"
-                opacity="0.88"
-                pointerEvents="none"
-              />
-
-              {/* Chattahoochee River */}
-              <path
-                d={RIVER_PATH}
-                stroke="#7fb8d4"
-                strokeWidth="0.6"
-                strokeLinecap="round"
-                fill="none"
-                opacity="0.85"
-                pointerEvents="none"
-              />
-
-              {/* I-285 Perimeter ring */}
-              <ellipse
-                cx={PERIMETER.cx}
-                cy={PERIMETER.cy}
-                rx={PERIMETER.rx}
-                ry={PERIMETER.ry}
-                fill="none"
-                stroke="#9a2a23"
-                strokeWidth="0.35"
-                opacity="0.55"
-                pointerEvents="none"
-              />
-
-              {/* I-75 — NW (Bartow/Cobb) through Atlanta down to Henry */}
-              <path
-                d="M 8 30 C 18 40 30 52 40 60 C 46 66 50 72 54 82 C 58 92 62 98 66 99"
-                stroke="#9a2a23"
-                strokeWidth="0.4"
-                opacity="0.7"
-                fill="none"
-                pointerEvents="none"
-              />
-              {/* I-85 — NE (Gwinnett/Hall) through Atlanta down to Coweta */}
-              <path
-                d="M 98 38 C 86 46 74 54 64 60 C 56 65 52 68 50 70 C 44 76 32 86 18 99"
-                stroke="#9a2a23"
-                strokeWidth="0.4"
-                opacity="0.7"
-                fill="none"
-                pointerEvents="none"
-              />
-              {/* I-20 — west (Douglas) through Atlanta east (Rockdale/Walton) */}
-              <path
-                d="M 2 70 C 18 70 34 70 50 70 C 66 70 82 76 100 78"
-                stroke="#9a2a23"
-                strokeWidth="0.38"
-                opacity="0.7"
-                fill="none"
-                pointerEvents="none"
-              />
-              {/* I-575 — north spur from I-75 into Cherokee/Pickens */}
-              <path
-                d="M 38 58 C 40 50 42 42 44 32 C 45 22 46 12 47 4"
-                stroke="#9a2a23"
-                strokeWidth="0.3"
-                opacity="0.6"
-                fill="none"
-                pointerEvents="none"
-              />
-              {/* I-985 — NE spur from I-85 to Hall */}
-              <path
-                d="M 76 52 C 80 48 84 44 88 40"
-                stroke="#9a2a23"
-                strokeWidth="0.3"
-                opacity="0.6"
-                fill="none"
-                pointerEvents="none"
-              />
-              {/* GA-400 — north from Atlanta through Fulton/Forsyth */}
-              <path
-                d="M 50 70 C 54 60 58 50 62 38 C 64 30 65 24 66 18"
-                stroke="#9a2a23"
-                strokeWidth="0.3"
-                opacity="0.55"
-                fill="none"
-                pointerEvents="none"
-              />
-
-
-              {/* County labels */}
+              {/* County labels — uppercase white, centered */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
-                if (active) return null; // hidden when active to make room for neighborhoods
                 return (
                   <text
                     key={`lbl-${c.name}`}
@@ -1042,12 +934,17 @@ function CommunitiesMap({
                     dominantBaseline="middle"
                     className="pointer-events-none select-none"
                     style={{
-                      fontSize: "2.55px",
-                      letterSpacing: "0.45px",
+                      fontSize: "13px",
+                      letterSpacing: "1.6px",
                       fontFamily: "Inter, system-ui, sans-serif",
                       textTransform: "uppercase",
-                      fontWeight: 650,
+                      fontWeight: 600,
                       fill: "#f9f6ef",
+                      opacity: active ? 0.95 : 0.85,
+                      paintOrder: "stroke",
+                      stroke: "rgba(28,25,23,0.55)",
+                      strokeWidth: 2.5,
+                      strokeLinejoin: "round",
                     }}
                   >
                     {c.name}
@@ -1058,17 +955,21 @@ function CommunitiesMap({
               {/* Atlanta city marker */}
               {!selectedCounty && (
                 <g pointerEvents="none">
-                  <circle cx="46" cy="70" r="1.05" fill="#f9f6ef" />
-                  <circle cx="46" cy="70" r="2.1" fill="none" stroke="#f9f6ef" strokeWidth="0.25" opacity="0.8" />
+                  <circle cx={240} cy={465} r={5} fill="#f9f6ef" />
+                  <circle cx={240} cy={465} r={10} fill="none" stroke="#f9f6ef" strokeWidth={1.2} opacity={0.7} />
                   <text
-                    x="46"
-                    y="74.4"
+                    x={240}
+                    y={488}
                     textAnchor="middle"
                     style={{
-                      fontSize: "2.2px",
+                      fontSize: "12px",
                       fontFamily: "'Cormorant Garamond', Georgia, serif",
                       fontStyle: "italic",
                       fill: "#f9f6ef",
+                      paintOrder: "stroke",
+                      stroke: "rgba(28,25,23,0.6)",
+                      strokeWidth: 2.5,
+                      strokeLinejoin: "round",
                     }}
                   >
                     Atlanta
@@ -1076,30 +977,13 @@ function CommunitiesMap({
                 </g>
               )}
 
-              {/* Selected county: show neighborhoods inside */}
+              {/* Selected county: neighborhood dots + labels */}
               {selectedCounty &&
                 (() => {
                   const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
                   if (!c) return null;
                   return (
                     <g>
-                      {/* Selected county label */}
-                      <text
-                        x={c.label[0]}
-                        y={c.label[1] - 3.5}
-                        textAnchor="middle"
-                        style={{
-                          fontSize: "2.15px",
-                          letterSpacing: "0.6px",
-                          fontFamily: "Inter, system-ui, sans-serif",
-                          textTransform: "uppercase",
-                          fill: "#f9f6ef",
-                          opacity: 0.75,
-                        }}
-                        pointerEvents="none"
-                      >
-                        {c.name} County
-                      </text>
                       {c.neighborhoods.map((n) => (
                         <g
                           key={n.name}
@@ -1109,17 +993,21 @@ function CommunitiesMap({
                             onSelectNeighborhood(n.name);
                           }}
                         >
-                          <circle cx={n.x} cy={n.y} r="0.75" fill="#f9f6ef" />
-                          <circle cx={n.x} cy={n.y} r="1.55" fill="none" stroke="#f9f6ef" strokeWidth="0.18" opacity="0.6" />
+                          <circle cx={n.x} cy={n.y} r={3.6} fill="#f9f6ef" />
+                          <circle cx={n.x} cy={n.y} r={7.5} fill="none" stroke="#f9f6ef" strokeWidth={0.9} opacity={0.6} />
                           <text
                             x={n.x}
-                            y={n.y + 2.6}
+                            y={n.y + 14}
                             textAnchor="middle"
                             style={{
-                              fontSize: "1.75px",
+                              fontSize: "10px",
                               fontFamily: "Inter, system-ui, sans-serif",
                               fill: "#f9f6ef",
                               fontWeight: 500,
+                              paintOrder: "stroke",
+                              stroke: "rgba(28,25,23,0.7)",
+                              strokeWidth: 2.5,
+                              strokeLinejoin: "round",
                             }}
                           >
                             {n.name}
@@ -1131,25 +1019,27 @@ function CommunitiesMap({
                 })()}
 
               {/* Compass */}
-              <g pointerEvents="none" opacity="0.55">
-                <text x="95" y="6" textAnchor="middle" style={{ fontSize: "2.4px", fontFamily: "'Cormorant Garamond', serif", fill: "#1c1917" }}>N</text>
-                <line x1="95" y1="7.5" x2="95" y2="11" stroke="#1c1917" strokeWidth="0.22" />
+              <g pointerEvents="none" opacity={0.6}>
+                <text x={465} y={28} textAnchor="middle" style={{ fontSize: "13px", fontFamily: "'Cormorant Garamond', serif", fill: "#f9f6ef" }}>N</text>
+                <line x1={465} y1={34} x2={465} y2={52} stroke="#f9f6ef" strokeWidth={1.1} />
               </g>
             </svg>
 
-            <div className="absolute bottom-3 left-4 text-[10px] tracking-[0.3em] uppercase text-stone-600/80">
-              Atlanta Metro - Counties
+            <div className="absolute bottom-3 left-4 text-[10px] tracking-[0.3em] uppercase text-stone-200/80">
+              Atlanta Metro — Counties
             </div>
-            <div className="absolute bottom-3 right-4 flex items-center gap-3 text-[9px] tracking-[0.2em] uppercase text-stone-600/70">
+            <div className="absolute bottom-3 right-4 flex items-center gap-3 text-[9px] tracking-[0.2em] uppercase text-stone-200/70">
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#3f3c37] border border-[#f7f4ed]" />
-                Primary
+                <span className="inline-block w-2.5 h-2.5 bg-[#6f1d20] border border-stone-200/60" />
+                Selected
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#57534c] border border-[#f7f4ed]" />
+                <span className="inline-block w-2.5 h-2.5 border border-stone-200/60" />
                 Browse
               </span>
             </div>
+          </div>
+
           </div>
 
           {/* Desktop side panel */}
