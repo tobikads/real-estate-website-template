@@ -20,7 +20,10 @@ const NB = {
   Bartow: ["Cartersville","Adairsville"],
   Pickens: ["Jasper"],
   Gilmer: ["Ellijay"],
+  Dawson: ["Dawsonville"],
+  Coweta: ["Newnan"],
 };
+
 
 // distribute neighborhoods around county centroid
 function neighborhoodCoords(n, cx, cy) {
