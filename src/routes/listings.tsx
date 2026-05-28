@@ -689,19 +689,19 @@ function CommunitiesMap({
               2020) projected with d3-geo. Each <path> is BOTH the visible shape
               and the click/hover/focus target — no overlay shenanigans. */}
           <div
-            className="relative bg-[#f7f4ed] border border-stone-300/70 overflow-hidden shadow-[0_24px_80px_rgba(28,25,23,0.08)]"
+            className="relative bg-[#f4efe7] rounded-[2px] border border-[#e9dfd0] overflow-hidden shadow-[0_8px_28px_rgba(70,55,40,0.08)]"
             style={{ aspectRatio: `${MAP_W} / ${MAP_H}` }}
           >
             <svg
-              viewBox={`0 0 ${MAP_W} ${MAP_H}`}
+              viewBox={`${-MAP_W * 0.06} ${-MAP_H * 0.06} ${MAP_W * 1.12} ${MAP_H * 1.12}`}
               className="absolute inset-0 w-full h-full"
               preserveAspectRatio="xMidYMid meet"
             >
               <defs>
                 <filter id="countyShadow" x="-10%" y="-10%" width="120%" height="120%">
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="4" />
-                  <feOffset dx="0" dy="3" result="o" />
-                  <feComponentTransfer><feFuncA type="linear" slope="0.35" /></feComponentTransfer>
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                  <feOffset dx="0" dy="2" result="o" />
+                  <feComponentTransfer><feFuncA type="linear" slope="0.22" /></feComponentTransfer>
                   <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
                 </filter>
               </defs>
@@ -709,21 +709,21 @@ function CommunitiesMap({
               {/* Counties — single path per county, visible + clickable */}
               {COUNTY_SHAPES.map((c) => {
                 const active = selectedCounty === c.name;
-                const baseFill = active ? "#6f1d20" : "#3a3633";
+                const baseFill = active ? "#8a6f4d" : "#35302b";
                 return (
                   <path
                     key={c.name}
                     id={`county-${c.name}`}
                     d={c.d}
                     fill={baseFill}
-                    stroke="#f7f4ed"
-                    strokeWidth={active ? 2.4 : 1.4}
+                    stroke="#e9dfd0"
+                    strokeWidth={active ? 1.6 : 1.1}
                     strokeLinejoin="round"
                     role="button"
                     tabIndex={0}
                     aria-label={`Select ${c.name} County`}
                     aria-pressed={active}
-                    className="transition-[fill,stroke-width] duration-300 cursor-pointer outline-none focus-visible:stroke-[#f9f6ef]"
+                    className="transition-[fill,stroke-width] duration-300 cursor-pointer outline-none focus-visible:stroke-[#f7f0e6]"
                     style={{ filter: active ? "url(#countyShadow)" : undefined }}
                     onClick={() => handleSelect(c.name)}
                     onKeyDown={(e) => {
@@ -734,7 +734,7 @@ function CommunitiesMap({
                     }}
                     onMouseEnter={(e) => {
                       if (!active)
-                        (e.currentTarget as SVGPathElement).setAttribute("fill", "#4a4541");
+                        (e.currentTarget as SVGPathElement).setAttribute("fill", "#554d44");
                     }}
                     onMouseLeave={(e) => {
                       if (!active)
@@ -756,16 +756,16 @@ function CommunitiesMap({
                     dominantBaseline="middle"
                     className="pointer-events-none select-none"
                     style={{
-                      fontSize: "16px",
-                      letterSpacing: "1.8px",
+                      fontSize: "15px",
+                      letterSpacing: "2.2px",
                       fontFamily: "Inter, system-ui, sans-serif",
                       textTransform: "uppercase",
-                      fontWeight: 600,
-                      fill: "#f9f6ef",
-                      opacity: active ? 1 : 0.88,
+                      fontWeight: 450,
+                      fill: "#f7f0e6",
+                      opacity: active ? 1 : 0.82,
                       paintOrder: "stroke",
-                      stroke: "rgba(20,18,16,0.55)",
-                      strokeWidth: 2.5,
+                      stroke: "rgba(30,24,18,0.32)",
+                      strokeWidth: 1.6,
                       strokeLinejoin: "round",
                     }}
                   >
@@ -790,20 +790,21 @@ function CommunitiesMap({
                             onSelectNeighborhood(n.name);
                           }}
                         >
-                          <circle cx={n.x} cy={n.y} r={4.5} fill="#f9f6ef" />
-                          <circle cx={n.x} cy={n.y} r={9} fill="none" stroke="#f9f6ef" strokeWidth={1} opacity={0.55} />
+                          <circle cx={n.x} cy={n.y} r={9.5} fill="none" stroke="#b89b72" strokeWidth={0.9} opacity={0.75} />
+                          <circle cx={n.x} cy={n.y} r={4} fill="#f7f0e6" />
                           <text
                             x={n.x}
-                            y={n.y + 18}
+                            y={n.y + 19}
                             textAnchor="middle"
                             style={{
-                              fontSize: "12px",
+                              fontSize: "11.5px",
                               fontFamily: "Inter, system-ui, sans-serif",
-                              fill: "#f9f6ef",
-                              fontWeight: 500,
+                              fill: "#f7f0e6",
+                              fontWeight: 450,
+                              letterSpacing: "0.4px",
                               paintOrder: "stroke",
-                              stroke: "rgba(20,18,16,0.7)",
-                              strokeWidth: 2.5,
+                              stroke: "rgba(30,24,18,0.55)",
+                              strokeWidth: 2,
                               strokeLinejoin: "round",
                             }}
                           >
@@ -816,26 +817,27 @@ function CommunitiesMap({
                 })()}
 
               {/* Compass */}
-              <g pointerEvents="none" opacity={0.55}>
-                <text x={MAP_W - 30} y={28} textAnchor="middle" style={{ fontSize: "14px", fontFamily: "'Cormorant Garamond', serif", fill: "#1c1917" }}>N</text>
-                <line x1={MAP_W - 30} y1={36} x2={MAP_W - 30} y2={56} stroke="#1c1917" strokeWidth={1.2} />
+              <g pointerEvents="none" opacity={0.4}>
+                <text x={MAP_W - 30} y={28} textAnchor="middle" style={{ fontSize: "13px", fontFamily: "'Cormorant Garamond', serif", fill: "#6b5d4a" }}>N</text>
+                <line x1={MAP_W - 30} y1={36} x2={MAP_W - 30} y2={54} stroke="#6b5d4a" strokeWidth={1} />
               </g>
             </svg>
 
-            <div className="absolute bottom-3 left-4 text-[10px] tracking-[0.3em] uppercase text-stone-600/80">
+            <div className="absolute bottom-4 left-5 text-[10px] tracking-[0.32em] uppercase text-[#8a7c68]/80">
               Atlanta Metro — Counties
             </div>
-            <div className="absolute bottom-3 right-4 flex items-center gap-3 text-[9px] tracking-[0.2em] uppercase text-stone-600/70">
+            <div className="absolute bottom-4 right-5 flex items-center gap-3 text-[9px] tracking-[0.22em] uppercase text-[#8a7c68]/75">
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#6f1d20] border border-stone-400" />
+                <span className="inline-block w-2.5 h-2.5 bg-[#8a6f4d] border border-[#e9dfd0]" />
                 Selected
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 bg-[#3a3633] border border-stone-400" />
+                <span className="inline-block w-2.5 h-2.5 bg-[#35302b] border border-[#e9dfd0]" />
                 Browse
               </span>
             </div>
           </div>
+
 
 
 
