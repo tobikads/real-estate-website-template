@@ -24,7 +24,7 @@ import listing1 from "@/assets/listing-1.jpg";
 import listing2 from "@/assets/listing-2.jpg";
 import listing3 from "@/assets/listing-3.jpg";
 import listing4 from "@/assets/listing-4.jpg";
-import atlantaMap from "@/assets/atlanta-counties-map.jpg";
+import { COUNTY_SHAPES, MAP_W, MAP_H, type CountyShape } from "@/data/atlanta-counties";
 
 export const Route = createFileRoute("/listings")({
   head: () => ({
