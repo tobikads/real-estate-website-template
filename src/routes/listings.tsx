@@ -806,7 +806,8 @@ function CommunitiesMap({
               })}
 
 
-              {/* Selected county: neighborhood dots + labels (same viewBox).
+              {/* Selected county: neighborhood dots + labels (same viewBox). */}
+
               {selectedCounty &&
                 (() => {
                   const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
