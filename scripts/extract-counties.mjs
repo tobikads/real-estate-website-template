@@ -19,9 +19,12 @@ const fc = { type:'FeatureCollection', features: Object.values(feats) };
 const W=1000, H=1000;
 const proj = geoMercator().fitSize([W,H], fc);
 const path = geoPath(proj).digits(2);
+const proj = geoMercator().fitSize([W,H], fc);
+const path = geoPath(proj);
+const pathRound = geoPath(proj).digits(2);
 const out = {};
 for (const [name,f] of Object.entries(feats)) {
-  out[name] = { d: path(f), cx: +path.centroid(f)[0].toFixed(1), cy: +path.centroid(f)[1].toFixed(1) };
+  const c = path.centroid(f);
+  out[name] = { d: pathRound(f), cx: +c[0].toFixed(1), cy: +c[1].toFixed(1) };
 }
-fs.writeFileSync('/tmp/counties-out.json', JSON.stringify({W,H,counties:out}));
-console.log('wrote', Object.keys(out).length);
+
