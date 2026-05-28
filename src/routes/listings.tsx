@@ -943,56 +943,95 @@ function CommunitiesMap({
                 );
               })}
 
-              {/* Chattahoochee River */}
+              {/* Lake Lanier */}
               <path
-                d={RIVER_PATH}
-                stroke="#8ee5e7"
-                strokeWidth="0.7"
-                strokeLinecap="round"
-                fill="none"
+                d={LAKE_LANIER_PATH}
+                fill="#7fb8d4"
+                stroke="#4f8fb0"
+                strokeWidth="0.18"
                 opacity="0.88"
                 pointerEvents="none"
               />
 
-              {/* I-285 Perimeter ring (only visible subtly) */}
+              {/* Chattahoochee River */}
+              <path
+                d={RIVER_PATH}
+                stroke="#7fb8d4"
+                strokeWidth="0.6"
+                strokeLinecap="round"
+                fill="none"
+                opacity="0.85"
+                pointerEvents="none"
+              />
+
+              {/* I-285 Perimeter ring */}
               <ellipse
                 cx={PERIMETER.cx}
                 cy={PERIMETER.cy}
                 rx={PERIMETER.rx}
                 ry={PERIMETER.ry}
                 fill="none"
-                stroke="#171412"
-                strokeWidth="0.22"
-                strokeDasharray="0.9 0.9"
-                opacity="0.58"
+                stroke="#9a2a23"
+                strokeWidth="0.35"
+                opacity="0.55"
                 pointerEvents="none"
               />
 
-              {/* Interstate hints crossing the metro */}
+              {/* I-75 — NW (Bartow/Cobb) through Atlanta down to Henry */}
               <path
-                d="M 30 5 C 32 24 39 45 48 62 C 56 76 64 88 74 98"
-                stroke="#171412"
-                strokeWidth="0.35"
-                opacity="0.65"
+                d="M 8 30 C 18 40 30 52 40 60 C 46 66 50 72 54 82 C 58 92 62 98 66 99"
+                stroke="#9a2a23"
+                strokeWidth="0.4"
+                opacity="0.7"
                 fill="none"
                 pointerEvents="none"
               />
+              {/* I-85 — NE (Gwinnett/Hall) through Atlanta down to Coweta */}
               <path
-                d="M 92 23 C 73 35 60 48 49 62 C 36 76 24 88 13 99"
-                stroke="#171412"
-                strokeWidth="0.28"
+                d="M 98 38 C 86 46 74 54 64 60 C 56 65 52 68 50 70 C 44 76 32 86 18 99"
+                stroke="#9a2a23"
+                strokeWidth="0.4"
+                opacity="0.7"
+                fill="none"
+                pointerEvents="none"
+              />
+              {/* I-20 — west (Douglas) through Atlanta east (Rockdale/Walton) */}
+              <path
+                d="M 2 70 C 18 70 34 70 50 70 C 66 70 82 76 100 78"
+                stroke="#9a2a23"
+                strokeWidth="0.38"
+                opacity="0.7"
+                fill="none"
+                pointerEvents="none"
+              />
+              {/* I-575 — north spur from I-75 into Cherokee/Pickens */}
+              <path
+                d="M 38 58 C 40 50 42 42 44 32 C 45 22 46 12 47 4"
+                stroke="#9a2a23"
+                strokeWidth="0.3"
+                opacity="0.6"
+                fill="none"
+                pointerEvents="none"
+              />
+              {/* I-985 — NE spur from I-85 to Hall */}
+              <path
+                d="M 76 52 C 80 48 84 44 88 40"
+                stroke="#9a2a23"
+                strokeWidth="0.3"
+                opacity="0.6"
+                fill="none"
+                pointerEvents="none"
+              />
+              {/* GA-400 — north from Atlanta through Fulton/Forsyth */}
+              <path
+                d="M 50 70 C 54 60 58 50 62 38 C 64 30 65 24 66 18"
+                stroke="#9a2a23"
+                strokeWidth="0.3"
                 opacity="0.55"
                 fill="none"
                 pointerEvents="none"
               />
-              <path
-                d="M 2 66 C 27 60 48 60 66 66 C 77 70 88 72 98 73"
-                stroke="#171412"
-                strokeWidth="0.28"
-                opacity="0.5"
-                fill="none"
-                pointerEvents="none"
-              />
+
 
               {/* County labels */}
               {COUNTY_SHAPES.map((c) => {
