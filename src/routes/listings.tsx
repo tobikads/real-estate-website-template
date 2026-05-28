@@ -83,22 +83,147 @@ const NEIGHBORHOODS_BY_COUNTY: Record<string, string[]> = {
 
 const PRIMARY_COUNTIES = new Set(["Fulton", "DeKalb", "Cobb", "Gwinnett", "Cherokee", "Forsyth"]);
 
-// Map polygon-ish positions (percentages over a stylized box)
-const COUNTY_POSITIONS: Record<string, { x: number; y: number; r: number }> = {
-  Cherokee: { x: 30, y: 14, r: 8 },
-  Forsyth: { x: 52, y: 14, r: 7 },
-  Paulding: { x: 14, y: 32, r: 7 },
-  Cobb: { x: 30, y: 32, r: 8 },
-  Fulton: { x: 44, y: 44, r: 11 },
-  Gwinnett: { x: 64, y: 30, r: 9 },
-  DeKalb: { x: 58, y: 48, r: 8 },
-  Rockdale: { x: 72, y: 56, r: 5.5 },
-  Douglas: { x: 18, y: 52, r: 7 },
-  Clayton: { x: 48, y: 64, r: 6 },
-  Henry: { x: 62, y: 72, r: 8 },
-  Fayette: { x: 38, y: 72, r: 6.5 },
-  Coweta: { x: 22, y: 78, r: 8 },
+// Atlanta metro county shapes — stylized polygons drawn over a 100x100 viewBox.
+// North at top. Coordinates approximate real relative geography.
+type CountyShape = {
+  name: string;
+  points: string;
+  label: [number, number];
+  labelAnchor?: "start" | "middle" | "end";
+  neighborhoods: Array<{ name: string; x: number; y: number }>;
 };
+
+const COUNTY_SHAPES: CountyShape[] = [
+  {
+    name: "Cherokee",
+    points: "6,6 36,4 42,14 40,26 14,28 4,18",
+    label: [22, 16],
+    neighborhoods: [
+      { name: "Canton", x: 20, y: 12 },
+      { name: "Woodstock", x: 30, y: 22 },
+    ],
+  },
+  {
+    name: "Forsyth",
+    points: "42,14 66,10 70,26 44,28 40,26",
+    label: [55, 19],
+    neighborhoods: [{ name: "Cumming", x: 55, y: 19 }],
+  },
+  {
+    name: "Paulding",
+    points: "4,30 16,30 18,44 14,48 4,48",
+    label: [10, 39],
+    neighborhoods: [{ name: "Dallas", x: 10, y: 39 }],
+  },
+  {
+    name: "Cobb",
+    points: "16,30 40,28 44,34 42,44 22,48 18,44",
+    label: [30, 38],
+    neighborhoods: [
+      { name: "Acworth", x: 22, y: 32 },
+      { name: "Kennesaw", x: 26, y: 36 },
+      { name: "Marietta", x: 33, y: 39 },
+      { name: "Smyrna", x: 38, y: 43 },
+      { name: "Powder Springs", x: 24, y: 44 },
+    ],
+  },
+  {
+    name: "Gwinnett",
+    points: "50,28 78,28 82,42 70,48 56,48 50,40",
+    label: [65, 38],
+    neighborhoods: [
+      { name: "Buford", x: 66, y: 31 },
+      { name: "Suwanee", x: 60, y: 34 },
+      { name: "Lawrenceville", x: 72, y: 38 },
+      { name: "Duluth", x: 62, y: 39 },
+      { name: "Peachtree Corners", x: 56, y: 42 },
+      { name: "Norcross", x: 58, y: 45 },
+    ],
+  },
+  {
+    // Concave "peanut" approximating Fulton's narrow waist at Atlanta
+    name: "Fulton",
+    points:
+      "40,28 50,28 50,40 52,48 50,54 52,60 50,68 46,76 38,82 26,84 22,76 24,68 30,60 34,52 36,44 38,36",
+    label: [38, 70],
+    neighborhoods: [
+      { name: "Alpharetta", x: 45, y: 31 },
+      { name: "Roswell", x: 43, y: 36 },
+      { name: "Sandy Springs", x: 45, y: 43 },
+      { name: "Buckhead", x: 44, y: 50 },
+      { name: "Atlanta", x: 38, y: 58 },
+      { name: "Midtown", x: 41, y: 55 },
+    ],
+  },
+  {
+    name: "DeKalb",
+    points: "50,42 56,48 70,48 72,60 64,64 54,62 50,54",
+    label: [62, 55],
+    neighborhoods: [
+      { name: "Dunwoody", x: 56, y: 49 },
+      { name: "Chamblee", x: 60, y: 52 },
+      { name: "Brookhaven", x: 56, y: 54 },
+      { name: "Tucker", x: 66, y: 53 },
+      { name: "Decatur", x: 58, y: 58 },
+      { name: "Stone Mountain", x: 68, y: 58 },
+    ],
+  },
+  {
+    name: "Douglas",
+    points: "4,50 18,46 22,54 18,62 6,62",
+    label: [12, 55],
+    neighborhoods: [{ name: "Douglasville", x: 12, y: 55 }],
+  },
+  {
+    name: "Rockdale",
+    points: "72,60 82,60 84,70 72,70",
+    label: [78, 65],
+    neighborhoods: [{ name: "Conyers", x: 78, y: 65 }],
+  },
+  {
+    name: "Clayton",
+    points: "38,70 50,68 50,78 38,80 34,74",
+    label: [43, 74],
+    neighborhoods: [
+      { name: "College Park", x: 39, y: 72 },
+      { name: "Forest Park", x: 44, y: 73 },
+      { name: "Riverdale", x: 42, y: 76 },
+      { name: "Jonesboro", x: 46, y: 77 },
+    ],
+  },
+  {
+    name: "Henry",
+    points: "50,68 72,68 80,84 62,92 52,84",
+    label: [64, 78],
+    neighborhoods: [
+      { name: "Stockbridge", x: 58, y: 74 },
+      { name: "McDonough", x: 66, y: 82 },
+    ],
+  },
+  {
+    name: "Fayette",
+    points: "22,76 38,80 40,88 30,92 20,86",
+    label: [30, 84],
+    neighborhoods: [
+      { name: "Tyrone", x: 26, y: 82 },
+      { name: "Fayetteville", x: 33, y: 85 },
+      { name: "Peachtree City", x: 28, y: 89 },
+    ],
+  },
+  {
+    name: "Coweta",
+    points: "0,64 18,62 22,80 12,96 0,90",
+    label: [11, 80],
+    neighborhoods: [{ name: "Newnan", x: 11, y: 80 }],
+  },
+];
+
+// Chattahoochee River — flows NE to SW through the metro, forming part of the Cobb/Fulton border.
+const RIVER_PATH =
+  "M 70 8 Q 60 22 50 30 Q 44 36 42 44 Q 40 52 34 58 Q 24 66 14 78";
+
+// Stylized I-285 perimeter ring around central Atlanta (in Fulton/DeKalb).
+const PERIMETER = { cx: 44, cy: 56, rx: 11, ry: 9 };
 
 function makeListings(): Listing[] {
   const list: Listing[] = [];
