@@ -1040,7 +1040,7 @@ function CommunitiesMap({
             </div>
           </div>
 
-          </div>
+
 
           {/* Desktop side panel */}
           <div className="hidden lg:block">
