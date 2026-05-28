@@ -83,22 +83,147 @@ const NEIGHBORHOODS_BY_COUNTY: Record<string, string[]> = {
 
 const PRIMARY_COUNTIES = new Set(["Fulton", "DeKalb", "Cobb", "Gwinnett", "Cherokee", "Forsyth"]);
 
-// Map polygon-ish positions (percentages over a stylized box)
-const COUNTY_POSITIONS: Record<string, { x: number; y: number; r: number }> = {
-  Cherokee: { x: 30, y: 14, r: 8 },
-  Forsyth: { x: 52, y: 14, r: 7 },
-  Paulding: { x: 14, y: 32, r: 7 },
-  Cobb: { x: 30, y: 32, r: 8 },
-  Fulton: { x: 44, y: 44, r: 11 },
-  Gwinnett: { x: 64, y: 30, r: 9 },
-  DeKalb: { x: 58, y: 48, r: 8 },
-  Rockdale: { x: 72, y: 56, r: 5.5 },
-  Douglas: { x: 18, y: 52, r: 7 },
-  Clayton: { x: 48, y: 64, r: 6 },
-  Henry: { x: 62, y: 72, r: 8 },
-  Fayette: { x: 38, y: 72, r: 6.5 },
-  Coweta: { x: 22, y: 78, r: 8 },
+// Atlanta metro county shapes — stylized polygons drawn over a 100x100 viewBox.
+// North at top. Coordinates approximate real relative geography.
+type CountyShape = {
+  name: string;
+  points: string;
+  label: [number, number];
+  labelAnchor?: "start" | "middle" | "end";
+  neighborhoods: Array<{ name: string; x: number; y: number }>;
 };
+
+const COUNTY_SHAPES: CountyShape[] = [
+  {
+    name: "Cherokee",
+    points: "6,6 36,4 42,14 40,26 14,28 4,18",
+    label: [22, 16],
+    neighborhoods: [
+      { name: "Canton", x: 20, y: 12 },
+      { name: "Woodstock", x: 30, y: 22 },
+    ],
+  },
+  {
+    name: "Forsyth",
+    points: "42,14 66,10 70,26 44,28 40,26",
+    label: [55, 19],
+    neighborhoods: [{ name: "Cumming", x: 55, y: 19 }],
+  },
+  {
+    name: "Paulding",
+    points: "4,30 16,30 18,44 14,48 4,48",
+    label: [10, 39],
+    neighborhoods: [{ name: "Dallas", x: 10, y: 39 }],
+  },
+  {
+    name: "Cobb",
+    points: "16,30 40,28 44,34 42,44 22,48 18,44",
+    label: [30, 38],
+    neighborhoods: [
+      { name: "Acworth", x: 22, y: 32 },
+      { name: "Kennesaw", x: 26, y: 36 },
+      { name: "Marietta", x: 33, y: 39 },
+      { name: "Smyrna", x: 38, y: 43 },
+      { name: "Powder Springs", x: 24, y: 44 },
+    ],
+  },
+  {
+    name: "Gwinnett",
+    points: "50,28 78,28 82,42 70,48 56,48 50,40",
+    label: [65, 38],
+    neighborhoods: [
+      { name: "Buford", x: 66, y: 31 },
+      { name: "Suwanee", x: 60, y: 34 },
+      { name: "Lawrenceville", x: 72, y: 38 },
+      { name: "Duluth", x: 62, y: 39 },
+      { name: "Peachtree Corners", x: 56, y: 42 },
+      { name: "Norcross", x: 58, y: 45 },
+    ],
+  },
+  {
+    // Concave "peanut" approximating Fulton's narrow waist at Atlanta
+    name: "Fulton",
+    points:
+      "40,28 50,28 50,40 52,48 50,54 52,60 50,68 46,76 38,82 26,84 22,76 24,68 30,60 34,52 36,44 38,36",
+    label: [38, 70],
+    neighborhoods: [
+      { name: "Alpharetta", x: 45, y: 31 },
+      { name: "Roswell", x: 43, y: 36 },
+      { name: "Sandy Springs", x: 45, y: 43 },
+      { name: "Buckhead", x: 44, y: 50 },
+      { name: "Atlanta", x: 38, y: 58 },
+      { name: "Midtown", x: 41, y: 55 },
+    ],
+  },
+  {
+    name: "DeKalb",
+    points: "50,42 56,48 70,48 72,60 64,64 54,62 50,54",
+    label: [62, 55],
+    neighborhoods: [
+      { name: "Dunwoody", x: 56, y: 49 },
+      { name: "Chamblee", x: 60, y: 52 },
+      { name: "Brookhaven", x: 56, y: 54 },
+      { name: "Tucker", x: 66, y: 53 },
+      { name: "Decatur", x: 58, y: 58 },
+      { name: "Stone Mountain", x: 68, y: 58 },
+    ],
+  },
+  {
+    name: "Douglas",
+    points: "4,50 18,46 22,54 18,62 6,62",
+    label: [12, 55],
+    neighborhoods: [{ name: "Douglasville", x: 12, y: 55 }],
+  },
+  {
+    name: "Rockdale",
+    points: "72,60 82,60 84,70 72,70",
+    label: [78, 65],
+    neighborhoods: [{ name: "Conyers", x: 78, y: 65 }],
+  },
+  {
+    name: "Clayton",
+    points: "38,70 50,68 50,78 38,80 34,74",
+    label: [43, 74],
+    neighborhoods: [
+      { name: "College Park", x: 39, y: 72 },
+      { name: "Forest Park", x: 44, y: 73 },
+      { name: "Riverdale", x: 42, y: 76 },
+      { name: "Jonesboro", x: 46, y: 77 },
+    ],
+  },
+  {
+    name: "Henry",
+    points: "50,68 72,68 80,84 62,92 52,84",
+    label: [64, 78],
+    neighborhoods: [
+      { name: "Stockbridge", x: 58, y: 74 },
+      { name: "McDonough", x: 66, y: 82 },
+    ],
+  },
+  {
+    name: "Fayette",
+    points: "22,76 38,80 40,88 30,92 20,86",
+    label: [30, 84],
+    neighborhoods: [
+      { name: "Tyrone", x: 26, y: 82 },
+      { name: "Fayetteville", x: 33, y: 85 },
+      { name: "Peachtree City", x: 28, y: 89 },
+    ],
+  },
+  {
+    name: "Coweta",
+    points: "0,64 18,62 22,80 12,96 0,90",
+    label: [11, 80],
+    neighborhoods: [{ name: "Newnan", x: 11, y: 80 }],
+  },
+];
+
+// Chattahoochee River — flows NE to SW through the metro, forming part of the Cobb/Fulton border.
+const RIVER_PATH =
+  "M 70 8 Q 60 22 50 30 Q 44 36 42 44 Q 40 52 34 58 Q 24 66 14 78";
+
+// Stylized I-285 perimeter ring around central Atlanta (in Fulton/DeKalb).
+const PERIMETER = { cx: 44, cy: 56, rx: 11, ry: 9 };
 
 function makeListings(): Listing[] {
   const list: Listing[] = [];
@@ -698,66 +823,240 @@ function CommunitiesMap({
         </div>
 
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
-          {/* Stylized map */}
-          <div className="relative bg-gradient-to-br from-[#f1ebe0] to-[#e8e0d2] border border-stone-200 aspect-[5/4] overflow-hidden">
-            {/* subtle grid */}
+          {/* Stylized Atlanta metro map */}
+          <div className="relative bg-gradient-to-br from-[#f3ede2] to-[#e6ddcc] border border-stone-300/70 aspect-[5/4] overflow-hidden">
+            {/* Parchment grain */}
             <div
-              className="absolute inset-0 opacity-[0.06]"
+              className="absolute inset-0 opacity-[0.05] pointer-events-none"
               style={{
                 backgroundImage:
-                  "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
-                backgroundSize: "40px 40px",
+                  "radial-gradient(circle at 20% 30%, #000 0.5px, transparent 0.5px), radial-gradient(circle at 70% 65%, #000 0.5px, transparent 0.5px)",
+                backgroundSize: "18px 18px, 24px 24px",
               }}
             />
-            {/* River line */}
+
             <svg
               viewBox="0 0 100 100"
               className="absolute inset-0 w-full h-full"
-              preserveAspectRatio="none"
+              preserveAspectRatio="xMidYMid meet"
             >
+              <defs>
+                <pattern id="hatchPrimary" patternUnits="userSpaceOnUse" width="2.4" height="2.4" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="2.4" stroke="#8a6a3a" strokeWidth="0.18" opacity="0.35" />
+                </pattern>
+                <filter id="countyShadow" x="-10%" y="-10%" width="120%" height="120%">
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="0.4" />
+                  <feOffset dx="0" dy="0.3" result="o" />
+                  <feComponentTransfer><feFuncA type="linear" slope="0.25" /></feComponentTransfer>
+                  <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+              </defs>
+
+              {/* Counties */}
+              {COUNTY_SHAPES.map((c) => {
+                const primary = PRIMARY_COUNTIES.has(c.name);
+                const active = selectedCounty === c.name;
+                const fill = active
+                  ? "#1c1917"
+                  : primary
+                    ? "#e9dcc4"
+                    : "#ede5d5";
+                return (
+                  <polygon
+                    key={c.name}
+                    points={c.points}
+                    fill={fill}
+                    stroke={active ? "#1c1917" : "#a89478"}
+                    strokeWidth={active ? "0.5" : "0.3"}
+                    strokeLinejoin="round"
+                    className="transition-all duration-300 cursor-pointer"
+                    style={{ filter: active ? "url(#countyShadow)" : undefined }}
+                    onClick={() => handleSelect(c.name)}
+                    onMouseEnter={(e) => {
+                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", primary ? "#d9c49f" : "#dfd3bd");
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!active) (e.currentTarget as SVGPolygonElement).setAttribute("fill", fill);
+                    }}
+                  />
+                );
+              })}
+
+              {/* Primary-county hatch overlay for subtle warmth */}
+              {COUNTY_SHAPES.filter((c) => PRIMARY_COUNTIES.has(c.name) && selectedCounty !== c.name).map((c) => (
+                <polygon
+                  key={`hatch-${c.name}`}
+                  points={c.points}
+                  fill="url(#hatchPrimary)"
+                  pointerEvents="none"
+                />
+              ))}
+
+              {/* Chattahoochee River */}
               <path
-                d="M 5 60 Q 25 40 45 55 T 95 50"
-                stroke="#a8c0c8"
-                strokeWidth="0.8"
+                d={RIVER_PATH}
+                stroke="#7d9aa3"
+                strokeWidth="0.55"
+                strokeLinecap="round"
                 fill="none"
-                opacity="0.55"
+                opacity="0.6"
+                pointerEvents="none"
               />
+
+              {/* I-285 Perimeter ring (only visible subtly) */}
+              <ellipse
+                cx={PERIMETER.cx}
+                cy={PERIMETER.cy}
+                rx={PERIMETER.rx}
+                ry={PERIMETER.ry}
+                fill="none"
+                stroke="#6b5a40"
+                strokeWidth="0.18"
+                strokeDasharray="0.8 0.8"
+                opacity="0.55"
+                pointerEvents="none"
+              />
+
+              {/* I-75 / I-85 hint lines crossing the metro */}
+              <path
+                d="M 20 4 L 50 56 L 72 96"
+                stroke="#6b5a40"
+                strokeWidth="0.15"
+                strokeDasharray="0.6 0.9"
+                opacity="0.4"
+                fill="none"
+                pointerEvents="none"
+              />
+              <path
+                d="M 90 18 L 50 56 L 18 96"
+                stroke="#6b5a40"
+                strokeWidth="0.15"
+                strokeDasharray="0.6 0.9"
+                opacity="0.4"
+                fill="none"
+                pointerEvents="none"
+              />
+
+              {/* County labels */}
+              {COUNTY_SHAPES.map((c) => {
+                const active = selectedCounty === c.name;
+                if (active) return null; // hidden when active to make room for neighborhoods
+                return (
+                  <text
+                    key={`lbl-${c.name}`}
+                    x={c.label[0]}
+                    y={c.label[1]}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="pointer-events-none select-none"
+                    style={{
+                      fontSize: "2.4px",
+                      letterSpacing: "0.5px",
+                      fontFamily: "Inter, system-ui, sans-serif",
+                      textTransform: "uppercase",
+                      fontWeight: 500,
+                      fill: "#3f3326",
+                    }}
+                  >
+                    {c.name}
+                  </text>
+                );
+              })}
+
+              {/* Atlanta city marker */}
+              {!selectedCounty && (
+                <g pointerEvents="none">
+                  <circle cx="40" cy="58" r="0.9" fill="#1c1917" />
+                  <circle cx="40" cy="58" r="1.8" fill="none" stroke="#1c1917" strokeWidth="0.2" opacity="0.5" />
+                  <text
+                    x="40"
+                    y="62.5"
+                    textAnchor="middle"
+                    style={{
+                      fontSize: "2.2px",
+                      fontFamily: "'Cormorant Garamond', Georgia, serif",
+                      fontStyle: "italic",
+                      fill: "#1c1917",
+                    }}
+                  >
+                    Atlanta
+                  </text>
+                </g>
+              )}
+
+              {/* Selected county: show neighborhoods inside */}
+              {selectedCounty &&
+                (() => {
+                  const c = COUNTY_SHAPES.find((x) => x.name === selectedCounty);
+                  if (!c) return null;
+                  return (
+                    <g>
+                      {/* Selected county label */}
+                      <text
+                        x={c.label[0]}
+                        y={c.label[1] - 3.5}
+                        textAnchor="middle"
+                        style={{
+                          fontSize: "2px",
+                          letterSpacing: "0.6px",
+                          fontFamily: "Inter, system-ui, sans-serif",
+                          textTransform: "uppercase",
+                          fill: "#e8dec8",
+                          opacity: 0.7,
+                        }}
+                        pointerEvents="none"
+                      >
+                        {c.name} County
+                      </text>
+                      {c.neighborhoods.map((n) => (
+                        <g
+                          key={n.name}
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectNeighborhood(n.name);
+                          }}
+                        >
+                          <circle cx={n.x} cy={n.y} r="0.8" fill="#f3ede2" />
+                          <circle cx={n.x} cy={n.y} r="1.6" fill="none" stroke="#f3ede2" strokeWidth="0.18" opacity="0.5" />
+                          <text
+                            x={n.x}
+                            y={n.y + 2.6}
+                            textAnchor="middle"
+                            style={{
+                              fontSize: "1.9px",
+                              fontFamily: "Inter, system-ui, sans-serif",
+                              fill: "#f3ede2",
+                              fontWeight: 400,
+                            }}
+                          >
+                            {n.name}
+                          </text>
+                        </g>
+                      ))}
+                    </g>
+                  );
+                })()}
+
+              {/* Compass */}
+              <g pointerEvents="none" opacity="0.55">
+                <text x="95" y="6" textAnchor="middle" style={{ fontSize: "2.4px", fontFamily: "'Cormorant Garamond', serif", fill: "#3f3326" }}>N</text>
+                <line x1="95" y1="7.5" x2="95" y2="11" stroke="#3f3326" strokeWidth="0.2" />
+              </g>
             </svg>
 
-            {/* County dots */}
-            {Object.entries(COUNTY_POSITIONS).map(([name, p]) => {
-              const primary = PRIMARY_COUNTIES.has(name);
-              const active = selectedCounty === name;
-              return (
-                <button
-                  key={name}
-                  onClick={() => handleSelect(name)}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 group"
-                  style={{ left: `${p.x}%`, top: `${p.y}%` }}
-                >
-                  <span
-                    className={`block rounded-full transition-all duration-300 ${
-                      active
-                        ? "bg-stone-900 ring-4 ring-stone-900/15"
-                        : primary
-                          ? "bg-amber-800/80 group-hover:bg-stone-900"
-                          : "bg-stone-400/70 group-hover:bg-stone-700"
-                    }`}
-                    style={{ width: `${p.r * 2}px`, height: `${p.r * 2}px` }}
-                  />
-                  <span
-                    className={`absolute left-1/2 -translate-x-1/2 mt-1.5 whitespace-nowrap text-[10px] tracking-[0.2em] uppercase transition-colors ${
-                      active ? "text-stone-900 font-medium" : "text-stone-600 group-hover:text-stone-900"
-                    }`}
-                  >
-                    {name}
-                  </span>
-                </button>
-              );
-            })}
-
-            <div className="absolute bottom-3 right-4 text-[10px] tracking-[0.25em] uppercase text-stone-500">
-              Atlanta Metro
+            <div className="absolute bottom-3 left-4 text-[10px] tracking-[0.3em] uppercase text-stone-600/80">
+              Atlanta Metro · Counties
+            </div>
+            <div className="absolute bottom-3 right-4 flex items-center gap-3 text-[9px] tracking-[0.2em] uppercase text-stone-600/70">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 bg-[#e9dcc4] border border-[#a89478]" />
+                Primary
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 bg-[#ede5d5] border border-[#a89478]" />
+                Browse
+              </span>
             </div>
           </div>
 
