@@ -268,7 +268,7 @@ const COUNTY_SHAPES: CountyShape[] = [
 ];
 
 
-const PERIMETER = { cx: 50, cy: 70, rx: 12, ry: 9 };
+
 
 function makeListings(): Listing[] {
   const list: Listing[] = [];
