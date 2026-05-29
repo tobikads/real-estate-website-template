@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Menu, X } from "lucide-react";
-import startHereBg from "@/assets/start-here-bg.jpg";
+import startHereBg from "@/assets/Alexandra/start-here-bg.jpg";
 
 export const Route = createFileRoute("/start-here")({
   head: () => ({

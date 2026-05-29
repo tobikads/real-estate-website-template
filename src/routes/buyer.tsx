@@ -16,10 +16,10 @@ import {
 
 
 import { Header } from "@/components/Header";
-import buyerHero from "@/assets/buyer-hero.jpg";
-import listing1 from "@/assets/listing-1.jpg";
-import listing2 from "@/assets/listing-2.jpg";
-import listing3 from "@/assets/listing-3.jpg";
+import buyerHero from "@/assets/Alexandra/buyer-hero.jpg";
+import listing1 from "@/assets/Alexandra/listing-1.jpg";
+import listing2 from "@/assets/Alexandra/listing-2.jpg";
+import listing3 from "@/assets/Alexandra/listing-3.jpg";
 
 export const Route = createFileRoute("/buyer")({
   head: () => ({

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
-import questionHero from "@/assets/question-hero.jpg";
+import questionHero from "@/assets/Alexandra/question-hero.jpg";
 
 export const Route = createFileRoute("/question")({
   head: () => ({

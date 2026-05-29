@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
-import sellerHero from "@/assets/seller-hero.jpg";
+import sellerHero from "@/assets/Alexandra/seller-hero.jpg";
 
 export const Route = createFileRoute("/seller")({
   head: () => ({
