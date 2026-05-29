@@ -1,36 +1,23 @@
 import fs from 'fs';
-import { geoMercator, geoPath } from 'd3-geo';
+import { geoMercator, geoPath, geoCentroid } from 'd3-geo';
 
-const data = JSON.parse(fs.readFileSync('/tmp/ga-counties.json','utf8'));
-const want = {
-  Gilmer:'13123', Pickens:'13227', Bartow:'13015', Cherokee:'13057',
-  Forsyth:'13117', Hall:'13139', Paulding:'13223', Cobb:'13067',
-  Fulton:'13121', DeKalb:'13089', Gwinnett:'13135', Walton:'13297',
-  Douglas:'13097', Clayton:'13063', Fayette:'13113', Henry:'13151',
-  Rockdale:'13247', Dawson:'13085', Coweta:'13077',
-};
-const feats = {};
-for (const [name,fips] of Object.entries(want)) {
-  const f = data.features.find(x => x.properties.GEOID === fips);
-  if (!f) { console.error('missing',name,fips); continue; }
-  feats[name] = f;
-}
-const fc = { type:'FeatureCollection', features: Object.values(feats) };
-const W=1000, H=1000;
-const proj = geoMercator().fitSize([W,H], fc);
-const path = geoPath(proj);
-const pathRound = geoPath(proj).digits(2);
-const out = {};
-for (const [name,f] of Object.entries(feats)) {
-  const d = pathRound(f);
-  const nums = d.match(/-?\d+(\.\d+)?/g).map(Number);
-  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
-  for (let i=0;i<nums.length;i+=2){
-    const x=nums[i], y=nums[i+1];
-    if(x<minX)minX=x; if(x>maxX)maxX=x;
-    if(y<minY)minY=y; if(y>maxY)maxY=y;
-  }
-  out[name] = { d, cx: +((minX+maxX)/2).toFixed(1), cy: +((minY+maxY)/2).toFixed(1) };
+const data = JSON.parse(fs.readFileSync('/tmp/ga-metro.json', 'utf8'));
+const W = 1000, H = 1000;
+const proj = geoMercator().fitSize([W, H], data);
+const pathStr = geoPath(proj);
+
+const counties = {};
+for (const f of data.features) {
+  const name = f.properties.NAME_KEY;
+  const d = pathStr(f);
+  // compute projected centroid for label
+  const [cx, cy] = proj(geoCentroid(f));
+  counties[name] = {
+    d,
+    cx: +cx.toFixed(1),
+    cy: +cy.toFixed(1),
+  };
 }
 
-console.log('wrote', Object.keys(out).length);
+fs.writeFileSync('/tmp/counties-out.json', JSON.stringify({ W, H, counties }));
+console.log('wrote', Object.keys(counties).length, 'counties');
