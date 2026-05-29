@@ -20,20 +20,23 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { REALTOR_PROFILE } from "@/data/realtor-profile";
 import listing1 from "@/assets/Alexandra/listing-1.jpg";
 import listing2 from "@/assets/Alexandra/listing-2.jpg";
 import listing3 from "@/assets/Alexandra/listing-3.jpg";
 import listing4 from "@/assets/Alexandra/listing-4.jpg";
 import { COUNTY_SHAPES, MAP_W, MAP_H, type CountyShape } from "@/data/atlanta-counties";
 
+const REALTOR_FIRST_NAME = REALTOR_PROFILE.name.split(" ")[0];
+
 export const Route = createFileRoute("/listings")({
   head: () => ({
     meta: [
-      { title: "Listings | Alexandra Carter" },
+      { title: `Listings | ${REALTOR_PROFILE.name}` },
       {
         name: "description",
         content:
-          "Browse Atlanta-area homes, explore by community, and save favorites — a guided property discovery experience with Alexandra Carter.",
+          `Browse Atlanta-area homes, explore by community, and save favorites — a guided property discovery experience with ${REALTOR_PROFILE.name}.`,
       },
     ],
   }),
@@ -87,24 +90,24 @@ const PRIMARY_COUNTIES = new Set(["Fulton", "DeKalb", "Cobb", "Gwinnett", "Chero
 // Manual label tweaks where the geographic centroid falls in an awkward
 // spot. Coordinates are in the d3-geo projected viewBox (0..1000).
 const LABEL_OVERRIDES: Record<string, { x?: number; y?: number; size?: number; tracking?: number }> = {
-  Fulton:   { x: 395, y: 760, size: 30, tracking: 4 },
-  DeKalb:   { x: 540, y: 695, size: 24, tracking: 2.6 },
+  Fulton: { x: 395, y: 760, size: 30, tracking: 4 },
+  DeKalb: { x: 540, y: 695, size: 24, tracking: 2.6 },
   Gwinnett: { x: 632, y: 560, size: 30, tracking: 3.6 },
-  Cobb:     { x: 345, y: 600, size: 28, tracking: 3.2 },
-  Fulton2:  { x: 0, y: 0 },
+  Cobb: { x: 345, y: 600, size: 28, tracking: 3.2 },
+  Fulton2: { x: 0, y: 0 },
   Cherokee: { x: 398, y: 385, size: 28, tracking: 3.2 },
-  Forsyth:  { x: 580, y: 395, size: 26, tracking: 3 },
-  Hall:     { x: 760, y: 320, size: 26, tracking: 3 },
-  Bartow:   { x: 200, y: 380, size: 26, tracking: 3 },
+  Forsyth: { x: 580, y: 395, size: 26, tracking: 3 },
+  Hall: { x: 760, y: 320, size: 26, tracking: 3 },
+  Bartow: { x: 200, y: 380, size: 26, tracking: 3 },
   Paulding: { x: 197, y: 580, size: 24, tracking: 2.6 },
-  Douglas:  { x: 245, y: 720, size: 22, tracking: 2.2 },
+  Douglas: { x: 245, y: 720, size: 22, tracking: 2.2 },
   Rockdale: { x: 632, y: 760, size: 16, tracking: 1.2 },
-  Clayton:  { x: 454, y: 815, size: 18, tracking: 1.6 },
-  Fayette:  { x: 389, y: 900, size: 20, tracking: 2 },
-  Henry:    { x: 559, y: 880, size: 22, tracking: 2.4 },
-  Walton:   { x: 782, y: 680, size: 22, tracking: 2.4 },
-  Pickens:  { x: 402, y: 246, size: 20, tracking: 2 },
-  Gilmer:   { x: 410, y: 104, size: 20, tracking: 2 },
+  Clayton: { x: 454, y: 815, size: 18, tracking: 1.6 },
+  Fayette: { x: 389, y: 900, size: 20, tracking: 2 },
+  Henry: { x: 559, y: 880, size: 22, tracking: 2.4 },
+  Walton: { x: 782, y: 680, size: 22, tracking: 2.4 },
+  Pickens: { x: 402, y: 246, size: 20, tracking: 2 },
+  Gilmer: { x: 410, y: 104, size: 20, tracking: 2 },
 };
 
 // Per-county neighborhood pin placements on the map (in viewBox coords).
@@ -198,35 +201,35 @@ function makeListings(): Listing[] {
     base: number;
     type: Listing["type"];
   }> = [
-    { n: "Buckhead", c: "Fulton", base: 2400000, type: "Estate" },
-    { n: "Midtown", c: "Fulton", base: 950000, type: "Condo" },
-    { n: "Sandy Springs", c: "Fulton", base: 1450000, type: "Single Family" },
-    { n: "Alpharetta", c: "Fulton", base: 1180000, type: "Single Family" },
-    { n: "Roswell", c: "Fulton", base: 875000, type: "Single Family" },
-    { n: "Atlanta", c: "Fulton", base: 720000, type: "Townhome" },
-    { n: "Brookhaven", c: "DeKalb", base: 1690000, type: "Single Family" },
-    { n: "Decatur", c: "DeKalb", base: 845000, type: "Single Family" },
-    { n: "Dunwoody", c: "DeKalb", base: 1120000, type: "Single Family" },
-    { n: "Chamblee", c: "DeKalb", base: 695000, type: "Townhome" },
-    { n: "Marietta", c: "Cobb", base: 765000, type: "Single Family" },
-    { n: "Smyrna", c: "Cobb", base: 615000, type: "Townhome" },
-    { n: "Kennesaw", c: "Cobb", base: 545000, type: "Single Family" },
-    { n: "Duluth", c: "Gwinnett", base: 680000, type: "Single Family" },
-    { n: "Suwanee", c: "Gwinnett", base: 925000, type: "Single Family" },
-    { n: "Peachtree Corners", c: "Gwinnett", base: 815000, type: "Single Family" },
-    { n: "Woodstock", c: "Cherokee", base: 720000, type: "Single Family" },
-    { n: "Canton", c: "Cherokee", base: 595000, type: "Single Family" },
-    { n: "Cumming", c: "Forsyth", base: 825000, type: "Single Family" },
-    { n: "Peachtree City", c: "Fayette", base: 705000, type: "Single Family" },
-    { n: "McDonough", c: "Henry", base: 465000, type: "Single Family" },
-    { n: "Newnan", c: "Coweta", base: 525000, type: "Single Family" },
-    { n: "Douglasville", c: "Douglas", base: 415000, type: "Single Family" },
-    { n: "Conyers", c: "Rockdale", base: 385000, type: "Single Family" },
-    { n: "College Park", c: "Clayton", base: 345000, type: "Townhome" },
-    { n: "Lawrenceville", c: "Gwinnett", base: 525000, type: "Single Family" },
-    { n: "Tucker", c: "DeKalb", base: 575000, type: "Single Family" },
-    { n: "Acworth", c: "Cobb", base: 495000, type: "Single Family" },
-  ];
+      { n: "Buckhead", c: "Fulton", base: 2400000, type: "Estate" },
+      { n: "Midtown", c: "Fulton", base: 950000, type: "Condo" },
+      { n: "Sandy Springs", c: "Fulton", base: 1450000, type: "Single Family" },
+      { n: "Alpharetta", c: "Fulton", base: 1180000, type: "Single Family" },
+      { n: "Roswell", c: "Fulton", base: 875000, type: "Single Family" },
+      { n: "Atlanta", c: "Fulton", base: 720000, type: "Townhome" },
+      { n: "Brookhaven", c: "DeKalb", base: 1690000, type: "Single Family" },
+      { n: "Decatur", c: "DeKalb", base: 845000, type: "Single Family" },
+      { n: "Dunwoody", c: "DeKalb", base: 1120000, type: "Single Family" },
+      { n: "Chamblee", c: "DeKalb", base: 695000, type: "Townhome" },
+      { n: "Marietta", c: "Cobb", base: 765000, type: "Single Family" },
+      { n: "Smyrna", c: "Cobb", base: 615000, type: "Townhome" },
+      { n: "Kennesaw", c: "Cobb", base: 545000, type: "Single Family" },
+      { n: "Duluth", c: "Gwinnett", base: 680000, type: "Single Family" },
+      { n: "Suwanee", c: "Gwinnett", base: 925000, type: "Single Family" },
+      { n: "Peachtree Corners", c: "Gwinnett", base: 815000, type: "Single Family" },
+      { n: "Woodstock", c: "Cherokee", base: 720000, type: "Single Family" },
+      { n: "Canton", c: "Cherokee", base: 595000, type: "Single Family" },
+      { n: "Cumming", c: "Forsyth", base: 825000, type: "Single Family" },
+      { n: "Peachtree City", c: "Fayette", base: 705000, type: "Single Family" },
+      { n: "McDonough", c: "Henry", base: 465000, type: "Single Family" },
+      { n: "Newnan", c: "Coweta", base: 525000, type: "Single Family" },
+      { n: "Douglasville", c: "Douglas", base: 415000, type: "Single Family" },
+      { n: "Conyers", c: "Rockdale", base: 385000, type: "Single Family" },
+      { n: "College Park", c: "Clayton", base: 345000, type: "Townhome" },
+      { n: "Lawrenceville", c: "Gwinnett", base: 525000, type: "Single Family" },
+      { n: "Tucker", c: "DeKalb", base: 575000, type: "Single Family" },
+      { n: "Acworth", c: "Cobb", base: 495000, type: "Single Family" },
+    ];
 
   const streets = [
     "Magnolia Lane",
@@ -361,12 +364,12 @@ function ListingsPage() {
     try {
       const raw = localStorage.getItem("ac_saved_listings");
       if (raw) setSavedIds(JSON.parse(raw));
-    } catch {}
+    } catch { }
   }, []);
   useEffect(() => {
     try {
       localStorage.setItem("ac_saved_listings", JSON.stringify(savedIds));
-    } catch {}
+    } catch { }
   }, [savedIds]);
 
   const toggleSave = (id: string) =>
@@ -579,9 +582,8 @@ function GlobalCategorySection({
             <button
               key={c}
               onClick={() => setCategory(c)}
-              className={`relative px-3 sm:px-5 py-3 text-[11px] tracking-[0.3em] uppercase transition-colors ${
-                active ? "text-stone-900" : "text-stone-500 hover:text-stone-800"
-              }`}
+              className={`relative px-3 sm:px-5 py-3 text-[11px] tracking-[0.3em] uppercase transition-colors ${active ? "text-stone-900" : "text-stone-500 hover:text-stone-800"
+                }`}
             >
               {CATEGORY_META[c].label}
               {active && (
@@ -659,17 +661,15 @@ function ListingCard({
       onClick={() => setExpanded(true)}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
-      className={`group relative bg-white border border-stone-200/70 overflow-hidden cursor-pointer transition-all duration-500 ease-out ${
-        expanded ? "shadow-2xl shadow-stone-900/10 -translate-y-1" : "shadow-sm"
-      }`}
+      className={`group relative bg-white border border-stone-200/70 overflow-hidden cursor-pointer transition-all duration-500 ease-out ${expanded ? "shadow-2xl shadow-stone-900/10 -translate-y-1" : "shadow-sm"
+        }`}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
         <img
           src={listing.image}
           alt={listing.address}
-          className={`w-full h-full object-cover transition-transform duration-700 ${
-            expanded ? "scale-105" : "scale-100"
-          }`}
+          className={`w-full h-full object-cover transition-transform duration-700 ${expanded ? "scale-105" : "scale-100"
+            }`}
           loading="lazy"
         />
         <div className="absolute top-3 left-3">
@@ -684,9 +684,8 @@ function ListingCard({
           className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors"
         >
           <Heart
-            className={`h-4 w-4 transition-colors ${
-              saved ? "text-stone-900 fill-stone-900" : "text-stone-700"
-            }`}
+            className={`h-4 w-4 transition-colors ${saved ? "text-stone-900 fill-stone-900" : "text-stone-700"
+              }`}
             strokeWidth={1.5}
           />
         </button>
@@ -712,9 +711,8 @@ function ListingCard({
         </div>
 
         <div
-          className={`grid transition-all duration-500 ease-out ${
-            expanded ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0 mt-0"
-          }`}
+          className={`grid transition-all duration-500 ease-out ${expanded ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0 mt-0"
+            }`}
         >
           <div className="overflow-hidden">
             <p className="text-sm text-stone-600 font-light leading-relaxed line-clamp-2">
@@ -926,13 +924,12 @@ function CommunitiesMap({
                 <button
                   key={c}
                   onClick={() => handleSelect(c)}
-                  className={`px-4 py-3.5 text-sm border transition-colors text-left ${
-                    active
-                      ? "bg-stone-900 text-stone-50 border-stone-900"
-                      : PRIMARY_COUNTIES.has(c)
-                        ? "bg-white border-stone-300 text-stone-900 hover:border-stone-900"
-                        : "bg-stone-50 border-stone-200 text-stone-700 hover:border-stone-500"
-                  }`}
+                  className={`px-4 py-3.5 text-sm border transition-colors text-left ${active
+                    ? "bg-stone-900 text-stone-50 border-stone-900"
+                    : PRIMARY_COUNTIES.has(c)
+                      ? "bg-white border-stone-300 text-stone-900 hover:border-stone-900"
+                      : "bg-stone-50 border-stone-200 text-stone-700 hover:border-stone-500"
+                    }`}
                 >
                   {c}
                 </button>
@@ -1115,11 +1112,10 @@ function NeighborhoodView({
             <button
               key={c.key}
               onClick={() => setCategory(c.key)}
-              className={`px-4 py-2.5 text-[11px] tracking-[0.25em] uppercase border transition-colors ${
-                active
-                  ? "bg-stone-900 text-stone-50 border-stone-900"
-                  : "bg-white border-stone-300 text-stone-700 hover:border-stone-900"
-              }`}
+              className={`px-4 py-2.5 text-[11px] tracking-[0.25em] uppercase border transition-colors ${active
+                ? "bg-stone-900 text-stone-50 border-stone-900"
+                : "bg-white border-stone-300 text-stone-700 hover:border-stone-900"
+                }`}
             >
               {c.label}
             </button>
@@ -1320,9 +1316,8 @@ function ListingDetailOverlay({
               {listing.gallery.map((_, i) => (
                 <span
                   key={i}
-                  className={`h-1.5 rounded-full transition-all ${
-                    i === imgIdx ? "w-6 bg-white" : "w-1.5 bg-white/60"
-                  }`}
+                  className={`h-1.5 rounded-full transition-all ${i === imgIdx ? "w-6 bg-white" : "w-1.5 bg-white/60"
+                    }`}
                 />
               ))}
             </div>
@@ -1382,11 +1377,10 @@ function ListingDetailOverlay({
                   <>
                     <button
                       onClick={toggleSave}
-                      className={`w-full inline-flex items-center justify-center gap-2 text-[11px] tracking-[0.3em] uppercase border transition-colors px-5 py-3 mb-3 ${
-                        saved
-                          ? "border-stone-900 bg-stone-900 text-stone-50"
-                          : "border-stone-300 text-stone-800 hover:border-stone-900"
-                      }`}
+                      className={`w-full inline-flex items-center justify-center gap-2 text-[11px] tracking-[0.3em] uppercase border transition-colors px-5 py-3 mb-3 ${saved
+                        ? "border-stone-900 bg-stone-900 text-stone-50"
+                        : "border-stone-300 text-stone-800 hover:border-stone-900"
+                        }`}
                     >
                       <Heart
                         className={`h-3.5 w-3.5 ${saved ? "fill-stone-50" : ""}`}
@@ -1407,7 +1401,7 @@ function ListingDetailOverlay({
                       Schedule a Showing
                     </button>
                     <p className="mt-5 text-xs text-stone-500 font-light leading-relaxed">
-                      Alexandra typically responds within a few hours.
+                      {REALTOR_FIRST_NAME} typically responds within a few hours.
                     </p>
                   </>
                 ) : (
@@ -1483,7 +1477,7 @@ function ListingLeadForm({
       <div className="text-center py-6">
         <p className="font-serif text-2xl text-stone-900">Thank you.</p>
         <p className="mt-3 text-sm text-stone-600 font-light leading-relaxed">
-          Alexandra will follow up about <span className="italic">{listing.address}</span> shortly.
+          {REALTOR_FIRST_NAME} will follow up about <span className="italic">{listing.address}</span> shortly.
         </p>
         <button
           onClick={onCancel}
@@ -1540,11 +1534,10 @@ function ListingLeadForm({
               key={p}
               type="button"
               onClick={() => setPreferred(p)}
-              className={`px-3.5 py-2 text-[11px] tracking-[0.25em] uppercase border transition-colors ${
-                preferred === p
-                  ? "bg-stone-900 text-stone-50 border-stone-900"
-                  : "bg-white border-stone-300 text-stone-700 hover:border-stone-900"
-              }`}
+              className={`px-3.5 py-2 text-[11px] tracking-[0.25em] uppercase border transition-colors ${preferred === p
+                ? "bg-stone-900 text-stone-50 border-stone-900"
+                : "bg-white border-stone-300 text-stone-700 hover:border-stone-900"
+                }`}
             >
               {p}
             </button>
@@ -1595,11 +1588,10 @@ function ListingLeadForm({
                   key={p}
                   type="button"
                   onClick={() => setPreApproved(p)}
-                  className={`px-3.5 py-2 text-[11px] tracking-[0.25em] uppercase border transition-colors ${
-                    preApproved === p
-                      ? "bg-stone-900 text-stone-50 border-stone-900"
-                      : "bg-white border-stone-300 text-stone-700 hover:border-stone-900"
-                  }`}
+                  className={`px-3.5 py-2 text-[11px] tracking-[0.25em] uppercase border transition-colors ${preApproved === p
+                    ? "bg-stone-900 text-stone-50 border-stone-900"
+                    : "bg-white border-stone-300 text-stone-700 hover:border-stone-900"
+                    }`}
                 >
                   {p}
                 </button>
@@ -1729,7 +1721,7 @@ function CantFindCTA() {
             Can't find the right home yet?
           </h3>
           <p className="mt-5 max-w-xl mx-auto text-stone-300 font-light leading-relaxed">
-            Tell Alexandra what you're looking for, and she'll follow up with homes that fit.
+            Tell {REALTOR_FIRST_NAME} what you're looking for, and she'll follow up with homes that fit.
           </p>
           <Link
             to="/buyer"
@@ -1752,15 +1744,15 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
           <div>
-            <p className="font-serif text-2xl text-white">Alexandra Carter</p>
+            <p className="font-serif text-2xl text-white">{REALTOR_PROFILE.name}</p>
             <p className="mt-2 text-xs tracking-[0.25em] uppercase text-stone-400">
-              Real Estate Agent · Atlanta, Georgia
+              {REALTOR_PROFILE.title} in {REALTOR_PROFILE.location}
             </p>
             <div className="mt-6 flex items-center gap-4">
-              <a href="#" aria-label="LinkedIn" className="text-stone-400 hover:text-white transition-colors">
+              <a href={REALTOR_PROFILE.socialLinks.linkedin} aria-label="LinkedIn" className="text-stone-400 hover:text-white transition-colors">
                 <Linkedin className="h-4 w-4" strokeWidth={1.5} />
               </a>
-              <a href="#" aria-label="Instagram" className="text-stone-400 hover:text-white transition-colors">
+              <a href={REALTOR_PROFILE.socialLinks.instagram} aria-label="Instagram" className="text-stone-400 hover:text-white transition-colors">
                 <Instagram className="h-4 w-4" strokeWidth={1.5} />
               </a>
             </div>
@@ -1768,11 +1760,11 @@ function Footer() {
 
           <div className="text-sm font-light space-y-2">
             <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">Contact</p>
-            <a href="tel:+14045550123" className="flex items-center gap-2 hover:text-white transition-colors">
-              <Phone className="h-3.5 w-3.5" strokeWidth={1.5} /> (404) 555-0123
+            <a href={`tel:${REALTOR_PROFILE.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 hover:text-white transition-colors">
+              <Phone className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.phone}
             </a>
-            <a href="mailto:hello@alexandracarter.com" className="flex items-center gap-2 hover:text-white transition-colors">
-              <Mail className="h-3.5 w-3.5" strokeWidth={1.5} /> hello@alexandracarter.com
+            <a href={`mailto:${REALTOR_PROFILE.email}`} className="flex items-center gap-2 hover:text-white transition-colors">
+              <Mail className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.email}
             </a>
           </div>
 
@@ -1788,7 +1780,7 @@ function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-[11px] text-stone-500 font-light">
           <p>Demo listings shown for design purposes only. Not live MLS/IDX data.</p>
-          <p>© {new Date().getFullYear()} Alexandra Carter. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {REALTOR_PROFILE.name}. All rights reserved.</p>
         </div>
       </div>
     </footer>

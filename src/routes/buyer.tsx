@@ -14,21 +14,23 @@ import {
   Check,
 } from "lucide-react";
 
-
 import { Header } from "@/components/Header";
+import { REALTOR_PROFILE } from "@/data/realtor-profile";
 import buyerHero from "@/assets/Alexandra/buyer-hero.jpg";
 import listing1 from "@/assets/Alexandra/listing-1.jpg";
 import listing2 from "@/assets/Alexandra/listing-2.jpg";
 import listing3 from "@/assets/Alexandra/listing-3.jpg";
 
+const REALTOR_FIRST_NAME = REALTOR_PROFILE.name.split(" ")[0];
+
 export const Route = createFileRoute("/buyer")({
   head: () => ({
     meta: [
-      { title: "Buying a Home | Alexandra Carter" },
+      { title: `Buying a Home | ${REALTOR_PROFILE.name}` },
       {
         name: "description",
         content:
-          "Share what you're looking for in an Atlanta home. Alexandra Carter follows up with homes and next steps that fit your search.",
+          `Share what you're looking for in an Atlanta home. ${REALTOR_FIRST_NAME} follows up with homes and next steps that fit your search.`,
       },
     ],
   }),
@@ -368,7 +370,7 @@ function BuyerWizard() {
       return;
     }
     if (!state.phone.trim() && !state.email.trim()) {
-      setNotice("Please share a phone or email so Alexandra can follow up.");
+      setNotice(`Please share a phone or email so ${REALTOR_FIRST_NAME} can follow up.`);
       return;
     }
     setNotice(null);
@@ -389,7 +391,7 @@ function BuyerWizard() {
             Takes about 2 minutes.
           </p>
           <p className="mt-3 text-stone-400 text-xs font-light italic max-w-md mx-auto">
-            Your answers are only used to help Alexandra follow up with more
+            Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more
             relevant homes.
           </p>
         </div>
@@ -478,7 +480,7 @@ function BuyerWizard() {
                     onClick={handleSubmit}
                     className="inline-flex items-center gap-2 min-h-12 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-6 sm:px-8 py-3.5 hover:bg-stone-800 transition-colors"
                   >
-                    Send to Alexandra
+                    Send to {REALTOR_FIRST_NAME}
                   </button>
                 )}
               </div>
@@ -494,7 +496,7 @@ function BuyerWizard() {
             href="tel:+14045550123"
             className="text-stone-900 underline underline-offset-4 hover:text-stone-700"
           >
-            call Alexandra directly
+            call {REALTOR_FIRST_NAME} directly
           </a>
           , or submit the form so she has your details before following up.
         </p>
@@ -538,10 +540,9 @@ function Chip({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center justify-center px-4 py-2.5 text-sm font-light border transition-all min-h-11
-        ${
-          active
-            ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
-            : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
+        ${active
+          ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
+          : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
         }`}
     >
       {children}
@@ -789,7 +790,7 @@ function Step5({
           </div>
           <div>
             <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-              Phone <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
+              Phone <span className="normal-case tracking-normal italic text-stone-400">*</span>
             </label>
             <input
               type="tel"
@@ -941,10 +942,10 @@ function BuyerReassurance() {
           From buyers
         </p>
         <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 leading-[1.15] max-w-2xl mx-auto">
-          Alexandra has helped buyers like you move from unsure to clear.
+          {REALTOR_FIRST_NAME} has helped buyers like you move from unsure to clear.
         </h2>
         <blockquote className="mt-12 font-serif italic text-xl sm:text-2xl text-stone-700 leading-relaxed">
-          &ldquo;Alexandra made the process clear from the first call.&rdquo;
+          &ldquo;{REALTOR_FIRST_NAME} made the process clear from the first call.&rdquo;
         </blockquote>
         <div className="mt-12">
           <Link
@@ -969,15 +970,15 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
           <div>
-            <p className="font-serif text-2xl text-white">Alexandra Carter</p>
+            <p className="font-serif text-2xl text-white">{REALTOR_PROFILE.name}</p>
             <p className="mt-2 text-xs tracking-[0.25em] uppercase text-stone-400">
-              Real Estate Agent · Atlanta, Georgia
+              {REALTOR_PROFILE.title} in {REALTOR_PROFILE.location}
             </p>
             <div className="mt-6 flex items-center gap-4">
-              <a href="#" aria-label="LinkedIn" className="text-stone-400 hover:text-white transition-colors">
+              <a href={REALTOR_PROFILE.socialLinks.linkedin} aria-label="LinkedIn" className="text-stone-400 hover:text-white transition-colors">
                 <Linkedin className="h-4 w-4" strokeWidth={1.5} />
               </a>
-              <a href="#" aria-label="Instagram" className="text-stone-400 hover:text-white transition-colors">
+              <a href={REALTOR_PROFILE.socialLinks.instagram} aria-label="Instagram" className="text-stone-400 hover:text-white transition-colors">
                 <Instagram className="h-4 w-4" strokeWidth={1.5} />
               </a>
             </div>
@@ -985,11 +986,11 @@ function Footer() {
 
           <div className="text-sm font-light space-y-2">
             <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">Contact</p>
-            <a href="tel:+14045550123" className="flex items-center gap-2 hover:text-white transition-colors">
-              <Phone className="h-3.5 w-3.5" strokeWidth={1.5} /> (404) 555-0123
+            <a href={`tel:${REALTOR_PROFILE.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 hover:text-white transition-colors">
+              <Phone className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.phone}
             </a>
-            <a href="mailto:hello@alexandracarter.com" className="flex items-center gap-2 hover:text-white transition-colors">
-              <Mail className="h-3.5 w-3.5" strokeWidth={1.5} /> hello@alexandracarter.com
+            <a href={`mailto:${REALTOR_PROFILE.email}`} className="flex items-center gap-2 hover:text-white transition-colors">
+              <Mail className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.email}
             </a>
           </div>
 
@@ -1004,8 +1005,8 @@ function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-[11px] text-stone-500 font-light">
-          <p>Brokerage: Carter & Co. Realty · GA License #000000 · Equal Housing Opportunity</p>
-          <p>© {new Date().getFullYear()} Alexandra Carter. All rights reserved.</p>
+          <p>Brokerage: {REALTOR_PROFILE.company} · GA License {REALTOR_PROFILE.licenseNumber}· Equal Housing Opportunity</p>
+          <p>© {new Date().getFullYear()} {REALTOR_PROFILE.name}. All rights reserved.</p>
         </div>
       </div>
     </footer>

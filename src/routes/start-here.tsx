@@ -3,21 +3,22 @@ import { createPortal } from "react-dom";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Menu, X } from "lucide-react";
 import startHereBg from "@/assets/Alexandra/start-here-bg.jpg";
+import { REALTOR_PROFILE } from "@/data/realtor-profile";
 
 export const Route = createFileRoute("/start-here")({
   head: () => ({
     meta: [
-      { title: "Start Here | Alexandra Carter" },
+      { title: `Start Here | ${REALTOR_PROFILE.name}` },
       {
         name: "description",
         content:
-          "Choose the right next step. Whether you're buying, selling, or just have a question, Alexandra Carter is here to help.",
+          `Choose the right next step. Whether you're buying, selling, or just have a question, ${REALTOR_PROFILE.name} is here to help.`,
       },
-      { property: "og:title", content: "Start Here | Alexandra Carter" },
+      { property: "og:title", content: `Start Here | ${REALTOR_PROFILE.name}` },
       {
         property: "og:description",
         content:
-          "A simple way to take the right next step. Buying, selling, or just have a question?",
+          `A simple way to take the right next step. Buying, selling, or just have a question? ${REALTOR_PROFILE.name} is here to help.`,
       },
     ],
   }),
@@ -105,54 +106,54 @@ function FocusedHeader() {
 
   const mobileMenu = mobileOpen
     ? createPortal(
-        <div className="fixed inset-0 z-[100] bg-[#0c0a08] text-stone-200 flex flex-col overflow-y-auto">
-          <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
-            <Link
-              to="/"
-              onClick={() => setMobileOpen(false)}
-              className="font-serif text-2xl leading-none text-white hover:text-white/80 transition-colors"
-            >
-              Alexandra Carter
-            </Link>
-            <button
-              type="button"
-              onClick={() => setMobileOpen(false)}
-              aria-label="Close menu"
-              className="inline-flex h-12 w-12 items-center justify-center -mr-3 text-white"
-            >
-              <X className="h-6 w-6" strokeWidth={1.5} />
-            </button>
-          </div>
+      <div className="fixed inset-0 z-[100] bg-[#0c0a08] text-stone-200 flex flex-col overflow-y-auto">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+          <Link
+            to="/"
+            onClick={() => setMobileOpen(false)}
+            className="font-serif text-2xl leading-none text-white hover:text-white/80 transition-colors"
+          >
+            {REALTOR_PROFILE.name}
+          </Link>
+          <button
+            type="button"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu"
+            className="inline-flex h-12 w-12 items-center justify-center -mr-3 text-white"
+          >
+            <X className="h-6 w-6" strokeWidth={1.5} />
+          </button>
+        </div>
 
-          <nav className="flex-1 px-7 py-8">
-            <div className="divide-y divide-white/10 border-y border-white/10">
-              {MENU_ITEMS.map((item) =>
-                item.href ? (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-300 transition-colors hover:text-white"
-                  >
-                    <span>{item.label}</span>
-                  </a>
-                ) : (
-                  <Link
-                    key={item.label}
-                    to={item.to}
-                    hash={item.hash}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-300 transition-colors hover:text-white"
-                  >
-                    <span>{item.label}</span>
-                  </Link>
-                ),
-              )}
-            </div>
-          </nav>
-        </div>,
-        document.body,
-      )
+        <nav className="flex-1 px-7 py-8">
+          <div className="divide-y divide-white/10 border-y border-white/10">
+            {MENU_ITEMS.map((item) =>
+              item.href ? (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-300 transition-colors hover:text-white"
+                >
+                  <span>{item.label}</span>
+                </a>
+              ) : (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  hash={item.hash}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-300 transition-colors hover:text-white"
+                >
+                  <span>{item.label}</span>
+                </Link>
+              ),
+            )}
+          </div>
+        </nav>
+      </div>,
+      document.body,
+    )
     : null;
 
   return (
@@ -163,7 +164,7 @@ function FocusedHeader() {
             to="/"
             className="font-serif text-xl lg:text-2xl leading-none text-white hover:text-white/80 transition-colors"
           >
-            Alexandra Carter
+            {REALTOR_PROFILE.name}
           </Link>
 
           <div className="relative">

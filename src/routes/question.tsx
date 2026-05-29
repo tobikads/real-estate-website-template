@@ -10,16 +10,19 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { REALTOR_PROFILE } from "@/data/realtor-profile";
 import questionHero from "@/assets/Alexandra/question-hero.jpg";
+
+const REALTOR_FIRST_NAME = REALTOR_PROFILE.name.split(" ")[0];
 
 export const Route = createFileRoute("/question")({
   head: () => ({
     meta: [
-      { title: "I Have a Question | Alexandra Carter" },
+      { title: `I Have a Question | ${REALTOR_PROFILE.name}` },
       {
         name: "description",
         content:
-          "Not ready to buy or sell? Ask Alexandra Carter your real estate question and get a clear, honest answer.",
+          `Not ready to buy or sell? Ask ${REALTOR_PROFILE.name} your real estate question and get a clear, honest answer.`,
       },
     ],
   }),
@@ -86,7 +89,7 @@ function QuestionHero() {
       <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/20 to-[#faf7f2]/85" />
       <div className="relative z-10 flex h-full flex-col items-center justify-end pb-16 sm:pb-24 text-center px-6">
         <p className="text-[11px] tracking-[0.4em] uppercase text-stone-700 mb-5">
-          Ask Alexandra
+          Ask {REALTOR_FIRST_NAME}
         </p>
         <h1 className="font-serif text-stone-900 text-4xl sm:text-5xl lg:text-6xl leading-[1.05] font-light max-w-3xl">
           Have a question before you make a move?
@@ -98,7 +101,7 @@ function QuestionHero() {
           href="#question-form"
           className="mt-10 inline-flex items-center gap-3 min-h-12 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-8 py-4 hover:bg-stone-800 transition-colors"
         >
-          Ask Alexandra
+          Ask {REALTOR_FIRST_NAME}
         </a>
       </div>
     </section>
@@ -323,7 +326,7 @@ function QuestionForm() {
               href="tel:+14045550123"
               className="text-stone-900 underline underline-offset-4 hover:text-stone-700"
             >
-              call Alexandra directly
+              call {REALTOR_FIRST_NAME} directly
             </a>
             .
           </p>
@@ -346,11 +349,11 @@ function QuestionReassurance() {
           A simple question can be the first step.
         </h2>
         <p className="mt-6 text-stone-600 font-light leading-relaxed max-w-xl mx-auto">
-          Alexandra helps buyers and sellers get clear before they make a move.
+          {REALTOR_FIRST_NAME} helps buyers and sellers get clear before they make a move.
         </p>
 
         <blockquote className="mt-14 font-serif italic text-xl sm:text-2xl text-stone-700 leading-relaxed max-w-2xl mx-auto">
-          &ldquo;I wasn&apos;t sure where to start, and Alexandra answered my questions without any pressure to commit.&rdquo;
+          &ldquo;I wasn&apos;t sure where to start, and {REALTOR_FIRST_NAME} answered my questions without any pressure to commit.&rdquo;
         </blockquote>
         <p className="mt-4 text-sm text-stone-500 font-light">
           — Client in Buckhead
@@ -386,10 +389,9 @@ function Chip({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center justify-center px-4 py-2.5 text-sm font-light border transition-all min-h-11
-        ${
-          active
-            ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
-            : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
+        ${active
+          ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
+          : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
         }`}
     >
       {children}
@@ -405,15 +407,15 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
           <div>
-            <p className="font-serif text-2xl text-white">Alexandra Carter</p>
+            <p className="font-serif text-2xl text-white">{REALTOR_PROFILE.name}</p>
             <p className="mt-2 text-xs tracking-[0.25em] uppercase text-stone-400">
-              Real Estate Agent · Atlanta, Georgia
+              {REALTOR_PROFILE.title} in {REALTOR_PROFILE.location}
             </p>
             <div className="mt-6 flex items-center gap-4">
-              <a href="#" aria-label="LinkedIn" className="text-stone-400 hover:text-white transition-colors">
+              <a href={REALTOR_PROFILE.socialLinks.linkedin} aria-label="LinkedIn" className="text-stone-400 hover:text-white transition-colors">
                 <Linkedin className="h-4 w-4" strokeWidth={1.5} />
               </a>
-              <a href="#" aria-label="Instagram" className="text-stone-400 hover:text-white transition-colors">
+              <a href={REALTOR_PROFILE.socialLinks.instagram} aria-label="Instagram" className="text-stone-400 hover:text-white transition-colors">
                 <Instagram className="h-4 w-4" strokeWidth={1.5} />
               </a>
             </div>
@@ -421,11 +423,11 @@ function Footer() {
 
           <div className="text-sm font-light space-y-2">
             <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">Contact</p>
-            <a href="tel:+14045550123" className="flex items-center gap-2 hover:text-white transition-colors">
-              <Phone className="h-3.5 w-3.5" strokeWidth={1.5} /> (404) 555-0123
+            <a href={`tel:${REALTOR_PROFILE.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 hover:text-white transition-colors">
+              <Phone className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.phone}
             </a>
-            <a href="mailto:hello@alexandracarter.com" className="flex items-center gap-2 hover:text-white transition-colors">
-              <Mail className="h-3.5 w-3.5" strokeWidth={1.5} /> hello@alexandracarter.com
+            <a href={`mailto:${REALTOR_PROFILE.email}`} className="flex items-center gap-2 hover:text-white transition-colors">
+              <Mail className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.email}
             </a>
           </div>
 
@@ -440,8 +442,8 @@ function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-[11px] text-stone-500 font-light">
-          <p>Brokerage: Carter & Co. Realty · GA License #000000 · Equal Housing Opportunity</p>
-          <p>© {new Date().getFullYear()} Alexandra Carter. All rights reserved.</p>
+          <p>Brokerage: {REALTOR_PROFILE.company} · GA License {REALTOR_PROFILE.licenseNumber} · Equal Housing Opportunity</p>
+          <p>© {new Date().getFullYear()} {REALTOR_PROFILE.name}. All rights reserved.</p>
         </div>
       </div>
     </footer>
