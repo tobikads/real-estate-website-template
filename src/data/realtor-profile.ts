@@ -2,7 +2,7 @@
  * RealtorProfile type definition
  * Defines the structure for switchable realtor template data used throughout the site
  */
-import portraitImage from "@/assets/Johunna/J Headshot 1.jpg";
+import portraitImage from "@/assets/Johunna/J-Headshot-1.jpg";
 
 export type RealtorProfile = {
     name: string;
