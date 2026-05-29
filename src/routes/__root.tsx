@@ -90,8 +90,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: `${REALTOR_PROFILE.name}: ${REALTOR_PROFILE.location} is a premium realtor website showcasing ${REALTOR_PROFILE.location} properties and services.` },
       { property: "og:description", content: `${REALTOR_PROFILE.name}: ${REALTOR_PROFILE.location} is a premium realtor website showcasing ${REALTOR_PROFILE.location} properties and services.` },
       { name: "twitter:description", content: `${REALTOR_PROFILE.name}: ${REALTOR_PROFILE.location} is a premium realtor website showcasing ${REALTOR_PROFILE.location} properties and services.` },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cd1cd01f-d072-4563-b7b2-2c7a86f5c72a/id-preview-7fcdea19--e9c07f8a-fc2e-42ec-8bb6-108a182596e5.lovable.app-1779763298595.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cd1cd01f-d072-4563-b7b2-2c7a86f5c72a/id-preview-7fcdea19--e9c07f8a-fc2e-42ec-8bb6-108a182596e5.lovable.app-1779763298595.png" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
