@@ -45,15 +45,12 @@ const choices = [
 
 const MENU_ITEMS = [
   { label: "Home", to: "/" },
-  { label: "Buyer", to: "/buyer" },
-  { label: "Seller", to: "/seller" },
-  { label: "Question", to: "/question" },
-  { label: "Listings", to: "/" },
-  { label: "About", to: "/", hash: "meet" as const },
-  { label: "Areas Served", href: "#" },
-  { label: "Testimonials", to: "/", hash: "testimonials" as const },
-  { label: "Let's Connect", to: "/", hash: "work" as const },
-  { label: "FAQ", href: "#" },
+  { label: "Listings", to: "/listings" },
+  { label: "About", to: "/about" },
+  { label: "Areas Served", to: "/areas-served" },
+  { label: "Testimonials", to: "/testimonials" },
+  { label: "Let's Connect", to: "/lets-connect" },
+  { label: "FAQ", to: "/faq" },
 ];
 
 function FocusedHeader() {
@@ -78,28 +75,16 @@ function FocusedHeader() {
         aria-hidden
       />
       <div className="absolute right-0 top-full mt-4 w-64 bg-[#0c0a08] border border-white/10 shadow-2xl z-50 py-2">
-        {MENU_ITEMS.map((item) =>
-          item.to ? (
-            <Link
-              key={item.label}
-              to={item.to}
-              hash={item.hash}
-              onClick={() => setMenuOpen(false)}
-              className="block px-6 py-3 text-[12px] tracking-[0.2em] uppercase text-stone-300 hover:text-white hover:bg-white/5 transition-colors"
-            >
-              {item.label}
-            </Link>
-          ) : (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={() => setMenuOpen(false)}
-              className="block px-6 py-3 text-[12px] tracking-[0.2em] uppercase text-stone-300 hover:text-white hover:bg-white/5 transition-colors"
-            >
-              {item.label}
-            </a>
-          ),
-        )}
+        {MENU_ITEMS.map((item) => (
+          <Link
+            key={item.label}
+            to={item.to}
+            onClick={() => setMenuOpen(false)}
+            className="block px-6 py-3 text-[12px] tracking-[0.2em] uppercase text-stone-300 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            {item.label}
+          </Link>
+        ))}
       </div>
     </>
   ) : null;
@@ -127,28 +112,16 @@ function FocusedHeader() {
 
         <nav className="flex-1 px-7 py-8">
           <div className="divide-y divide-white/10 border-y border-white/10">
-            {MENU_ITEMS.map((item) =>
-              item.href ? (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-300 transition-colors hover:text-white"
-                >
-                  <span>{item.label}</span>
-                </a>
-              ) : (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  hash={item.hash}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-300 transition-colors hover:text-white"
-                >
-                  <span>{item.label}</span>
-                </Link>
-              ),
-            )}
+            {MENU_ITEMS.map((item) => (
+              <Link
+                key={item.label}
+                to={item.to}
+                onClick={() => setMobileOpen(false)}
+                className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-300 transition-colors hover:text-white"
+              >
+                <span>{item.label}</span>
+              </Link>
+            ))}
           </div>
         </nav>
       </div>,

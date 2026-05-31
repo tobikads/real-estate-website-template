@@ -33,6 +33,7 @@ const MOBILE_ITEMS = [
   { label: "Areas Served", to: "/areas-served" },
   { label: "Testimonials", to: "/testimonials" },
   { label: "Let's Connect", to: "/lets-connect" },
+  { label: "FAQ", to: "/faq" },
 ];
 
 
@@ -43,6 +44,18 @@ export function Header() {
   const location = useLocation();
 
   const isStartHerePage = location.pathname === "/start-here";
+  const isListingsPage = location.pathname === "/listings";
+  const shouldShowHomeInMenu = ["/buyer", "/seller", "/question", "/listings"].includes(location.pathname);
+  const dropdownItems = shouldShowHomeInMenu
+    ? [{ label: "Home", to: "/" }, ...DROPDOWN_ITEMS]
+    : DROPDOWN_ITEMS;
+  const mobileItems = shouldShowHomeInMenu
+    ? [
+      MOBILE_ITEMS[0],
+      { label: "Home", to: "/" },
+      ...MOBILE_ITEMS.slice(1).filter((item) => item.label !== "Home"),
+    ]
+    : MOBILE_ITEMS;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -63,12 +76,12 @@ export function Header() {
 
   const linkColor = isStartHerePage
     ? "text-white"
-    : scrolled
+    : scrolled || isListingsPage
       ? "text-stone-800"
       : "text-white";
   const linkHover = isStartHerePage
     ? "hover:text-white/70"
-    : scrolled
+    : scrolled || isListingsPage
       ? "hover:text-stone-500"
       : "hover:text-white/70";
 
@@ -80,7 +93,7 @@ export function Header() {
 
   const startHereClass = isStartHerePage
     ? "bg-white text-stone-900 border border-white"
-    : scrolled
+    : scrolled || isListingsPage
       ? "border border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-[#faf7f2]"
       : "border border-white/80 text-white bg-white/10 hover:bg-white/20";
 
@@ -110,7 +123,7 @@ export function Header() {
         </div>
 
         <nav className="flex-1 px-7 py-8">
-          {MOBILE_ITEMS.filter((i) => i.isPrimary).map((item) => (
+          {mobileItems.filter((i) => i.isPrimary).map((item) => (
             <Link
               key={item.label}
               to={item.to}
@@ -122,7 +135,7 @@ export function Header() {
           ))}
 
           <div className="divide-y divide-stone-200/80 border-y border-stone-200/80">
-            {MOBILE_ITEMS.filter((i) => !i.isPrimary).map((item) => (
+            {mobileItems.filter((i) => !i.isPrimary).map((item) => (
               <Link
                 key={item.label}
                 to={item.to}
@@ -222,7 +235,7 @@ export function Header() {
                   aria-hidden
                 />
                 <div className="absolute right-0 top-full mt-4 w-64 bg-[#faf7f2] border border-stone-200/70 shadow-xl z-50 py-2">
-                  {DROPDOWN_ITEMS.map((item) => (
+                  {dropdownItems.map((item) => (
                     <Link
                       key={item.label}
                       to={item.to}
