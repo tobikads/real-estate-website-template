@@ -134,8 +134,8 @@ function QuestionForm() {
       setNotice("Please share your name so I can follow up.");
       return;
     }
-    if (!state.phone.trim() && !state.email.trim()) {
-      setNotice("Please share a phone or email so I can reach you.");
+    if (!state.phone.trim()) {
+      setNotice(`Please share your phone number so ${REALTOR_FIRST_NAME} can follow up.`);
       return;
     }
 
@@ -272,7 +272,7 @@ function QuestionForm() {
                   </div>
 
                   <p className="text-xs text-stone-400 font-light italic -mt-3">
-                    Share a phone or email — whichever you prefer.
+                    Phone is required so I can follow up. Email is optional.
                   </p>
 
                   <div>

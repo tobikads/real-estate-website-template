@@ -1267,7 +1267,7 @@ function ListingLeadForm({
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return setNotice("Please share your name.");
-    if (!contact.trim()) return setNotice("Please share a phone or email.");
+    if (!contact.trim()) return setNotice("Please share a phone number");
     if (mode === "showing" && !day.trim()) return setNotice("Please suggest a day or time.");
     setNotice("");
 
@@ -1335,7 +1335,7 @@ function ListingLeadForm({
       </div>
       <div>
         <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-          Phone or Email
+          Phone.
         </label>
         <input
           value={contact}

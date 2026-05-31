@@ -371,8 +371,8 @@ function BuyerWizard() {
       setNotice("Please share your name to continue.");
       return;
     }
-    if (!state.phone.trim() && !state.email.trim()) {
-      setNotice(`Please share a phone or email so ${REALTOR_FIRST_NAME} can follow up.`);
+    if (!state.phone.trim()) {
+      setNotice(`Please share your phone number so ${REALTOR_FIRST_NAME} can follow up.`);
       return;
     }
     setNotice(null);
@@ -815,7 +815,7 @@ function Step5({
           </div>
         </div>
         <p className="mt-3 text-xs text-stone-400 font-light italic">
-          Share a phone or email — whichever you prefer.
+          Phone is required so I can follow up. Email is optional.
         </p>
 
         <div className="mt-6">
