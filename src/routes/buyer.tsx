@@ -321,6 +321,7 @@ function BuyerWizard() {
   const [step, setStep] = useState(1);
   const [state, setState] = useState<BuyerState>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
+  const [match, setMatch] = useState<MatchResult | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const wizardRef = useRef<HTMLDivElement | null>(null);
 
