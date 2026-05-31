@@ -21,10 +21,7 @@ import {
 
 import { Header } from "@/components/Header";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
-import listing1 from "@/assets/Alexandra/listing-1.jpg";
-import listing2 from "@/assets/Alexandra/listing-2.jpg";
-import listing3 from "@/assets/Alexandra/listing-3.jpg";
-import listing4 from "@/assets/Alexandra/listing-4.jpg";
+import { ALL_LISTINGS, type Category, type Status, type Listing } from "@/data/demo-listings";
 import { COUNTY_SHAPES, MAP_W, MAP_H, type CountyShape } from "@/data/atlanta-counties";
 
 const REALTOR_FIRST_NAME = REALTOR_PROFILE.name.split(" ")[0];
