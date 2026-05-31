@@ -16,6 +16,7 @@ import {
 
 import { Header } from "@/components/Header";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
+import { findBestMatch, type MatchResult } from "@/data/demo-listings";
 import buyerHero from "@/assets/Alexandra/buyer-hero.jpg";
 import listing1 from "@/assets/Alexandra/listing-1.jpg";
 import listing2 from "@/assets/Alexandra/listing-2.jpg";
