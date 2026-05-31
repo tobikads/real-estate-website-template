@@ -376,6 +376,16 @@ function BuyerWizard() {
       return;
     }
     setNotice(null);
+    setMatch(
+      findBestMatch({
+        areas: state.areas,
+        budget: state.budget,
+        beds: state.beds,
+        baths: state.baths,
+        homeTypes: state.homeTypes,
+        mustHaves: state.mustHaves,
+      }),
+    );
     setSubmitted(true);
   };
 
