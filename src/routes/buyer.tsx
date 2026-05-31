@@ -933,6 +933,103 @@ function ReviewRow({
   );
 }
 
+/* ---------- Match result ---------- */
+
+function BuyerMatchResult({ match }: { match: MatchResult | null }) {
+  if (!match) {
+    return (
+      <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
+        <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+          <Check className="h-4 w-4" strokeWidth={2} />
+        </div>
+        <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">Thank you</h3>
+        <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
+          I'll review what you shared and follow up with homes or next steps that fit your search.
+        </p>
+      </div>
+    );
+  }
+
+  const { listing, strong, reason } = match;
+  const eyebrow = strong
+    ? "A strong fit based on what you shared"
+    : "A close starting point based on what you shared";
+
+  return (
+    <div className="bg-white border border-stone-200 shadow-sm">
+      {/* Confirmation header */}
+      <div className="px-6 sm:px-10 pt-10 pb-6 text-center border-b border-stone-100">
+        <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+          <Check className="h-4 w-4" strokeWidth={2} />
+        </div>
+        <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-5">Thank you</h3>
+        <p className="mt-3 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
+          I'll review what you shared and follow up with homes or next steps that fit your search.
+        </p>
+      </div>
+
+      {/* Match card */}
+      <div className="px-5 sm:px-10 py-8 sm:py-10">
+        <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 text-center">
+          {eyebrow}
+        </p>
+
+        <article className="mt-6 grid md:grid-cols-2 gap-0 border border-stone-200 overflow-hidden">
+          <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[320px] bg-stone-100">
+            <img
+              src={listing.image}
+              alt={`${listing.neighborhood} home`}
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+          <div className="p-6 sm:p-8 flex flex-col">
+            <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
+              {listing.neighborhood} · {listing.county} County
+            </p>
+            <p className="font-serif text-2xl sm:text-3xl text-stone-900 mt-2">{listing.price}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-stone-600 text-xs font-light">
+              <span className="flex items-center gap-1.5">
+                <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.beds} bd
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.baths} ba
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.sqft.toLocaleString()} sqft
+              </span>
+            </div>
+            <p className="mt-5 text-sm text-stone-700 font-light leading-relaxed">
+              {reason}
+            </p>
+
+            {!strong && (
+              <p className="mt-3 text-sm text-stone-500 font-light italic leading-relaxed">
+                I'll also follow up with homes that fit your search more closely.
+              </p>
+            )}
+
+            <div className="mt-7 flex flex-wrap items-center gap-4">
+              <Link
+                to="/listings"
+                className="inline-flex items-center gap-2 min-h-11 text-[11px] tracking-[0.3em] uppercase text-[#faf7f2] bg-stone-900 px-6 py-3 hover:bg-stone-800 transition-colors"
+              >
+                View Listing <ArrowUpRight className="h-3 w-3" strokeWidth={1.5} />
+              </Link>
+              <Link
+                to="/listings"
+                className="text-[11px] tracking-[0.3em] uppercase text-stone-900 border-b border-stone-900 pb-1 hover:text-stone-700 hover:border-stone-700 transition-colors"
+              >
+                Browse More Homes
+              </Link>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- Reassurance ---------- */
 
 function BuyerReassurance() {
