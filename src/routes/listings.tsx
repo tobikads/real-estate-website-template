@@ -21,10 +21,7 @@ import {
 
 import { Header } from "@/components/Header";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
-import listing1 from "@/assets/Alexandra/listing-1.jpg";
-import listing2 from "@/assets/Alexandra/listing-2.jpg";
-import listing3 from "@/assets/Alexandra/listing-3.jpg";
-import listing4 from "@/assets/Alexandra/listing-4.jpg";
+import { ALL_LISTINGS, type Category, type Status, type Listing } from "@/data/demo-listings";
 import { COUNTY_SHAPES, MAP_W, MAP_H, type CountyShape } from "@/data/atlanta-counties";
 
 const REALTOR_FIRST_NAME = REALTOR_PROFILE.name.split(" ")[0];
@@ -44,30 +41,8 @@ export const Route = createFileRoute("/listings")({
 });
 
 /* ---------- Types & data ---------- */
-
-type Category = "featured" | "new" | "open" | "sold";
-type Status = "Featured" | "New" | "Open House" | "Sold";
-
-interface Listing {
-  id: string;
-  image: string;
-  gallery: string[];
-  price: string;
-  priceValue: number;
-  address: string;
-  neighborhood: string;
-  county: string;
-  beds: number;
-  baths: number;
-  sqft: number;
-  type: "Single Family" | "Townhome" | "Condo" | "Estate";
-  status: Status;
-  categories: Category[];
-  description: string;
-  features: string[];
-}
-
-const IMG = [listing1, listing2, listing3, listing4];
+// Listing type and ALL_LISTINGS now live in `src/data/demo-listings.ts`
+// so the Buyer page can reuse the same demo inventory for match results.
 
 const NEIGHBORHOODS_BY_COUNTY: Record<string, string[]> = {
   Fulton: ["Atlanta", "Buckhead", "Midtown", "Sandy Springs", "Alpharetta", "Roswell"],
@@ -87,14 +62,12 @@ const NEIGHBORHOODS_BY_COUNTY: Record<string, string[]> = {
 
 const PRIMARY_COUNTIES = new Set(["Fulton", "DeKalb", "Cobb", "Gwinnett", "Cherokee", "Forsyth"]);
 
-// Manual label tweaks where the geographic centroid falls in an awkward
-// spot. Coordinates are in the d3-geo projected viewBox (0..1000).
+// Manual label tweaks where the geographic centroid falls in an awkward spot.
 const LABEL_OVERRIDES: Record<string, { x?: number; y?: number; size?: number; tracking?: number }> = {
   Fulton: { x: 395, y: 760, size: 30, tracking: 4 },
   DeKalb: { x: 540, y: 695, size: 24, tracking: 2.6 },
   Gwinnett: { x: 632, y: 560, size: 30, tracking: 3.6 },
   Cobb: { x: 345, y: 600, size: 28, tracking: 3.2 },
-  Fulton2: { x: 0, y: 0 },
   Cherokee: { x: 398, y: 385, size: 28, tracking: 3.2 },
   Forsyth: { x: 580, y: 395, size: 26, tracking: 3 },
   Hall: { x: 760, y: 320, size: 26, tracking: 3 },
@@ -110,10 +83,8 @@ const LABEL_OVERRIDES: Record<string, { x?: number; y?: number; size?: number; t
   Gilmer: { x: 410, y: 104, size: 20, tracking: 2 },
 };
 
-// Per-county neighborhood pin placements on the map (in viewBox coords).
-// Only the names listed here will render as pins; the side panel still
-// shows the full list. Hand-placed to match reference screenshots.
-const MAP_PIN_COORDS: Record<string, Array<{ name: string; x: number; y: number; labelDx?: number; labelDy?: number; anchor?: "start" | "middle" | "end" }>> = {
+type MapPin = { name: string; x: number; y: number; labelDx?: number; labelDy?: number; anchor?: "start" | "middle" | "end" };
+const MAP_PIN_COORDS: Record<string, MapPin[]> = {
   Fulton: [
     { name: "Alpharetta", x: 478, y: 535, labelDx: 10, anchor: "start" },
     { name: "Sandy Springs", x: 448, y: 640, labelDx: 10, anchor: "start" },
@@ -148,176 +119,26 @@ const MAP_PIN_COORDS: Record<string, Array<{ name: string; x: number; y: number;
   ],
   Fayette: [
     { name: "Fayetteville", x: 410, y: 880, labelDx: 10, anchor: "start" },
-    { name: "Peachtree City", x: 380, y: 915, labelDx: 10, anchor: "start" },
-  ],
-  Rockdale: [
-    { name: "Conyers", x: 632, y: 758, labelDx: 10, anchor: "start" },
-  ],
-  Douglas: [
-    { name: "Douglasville", x: 248, y: 720, labelDx: 10, anchor: "start" },
   ],
   Cherokee: [
-    { name: "Canton", x: 398, y: 360, labelDx: 10, anchor: "start" },
-    { name: "Woodstock", x: 420, y: 410, labelDx: 10, anchor: "start" },
+    { name: "Woodstock", x: 380, y: 430, labelDx: 10, anchor: "start" },
+    { name: "Canton", x: 360, y: 360, labelDx: 10, anchor: "start" },
   ],
   Forsyth: [
-    { name: "Cumming", x: 580, y: 395, labelDx: 10, anchor: "start" },
+    { name: "Cumming", x: 565, y: 415, labelDx: 10, anchor: "start" },
   ],
-  Hall: [
-    { name: "Gainesville", x: 740, y: 320, labelDx: 10, anchor: "start" },
-    { name: "Flowery Branch", x: 720, y: 380, labelDx: 10, anchor: "start" },
+  Douglas: [
+    { name: "Douglasville", x: 240, y: 740, labelDx: 10, anchor: "start" },
   ],
-  Paulding: [
-    { name: "Dallas", x: 197, y: 580, labelDx: 10, anchor: "start" },
-    { name: "Hiram", x: 200, y: 615, labelDx: 10, anchor: "start" },
+  Rockdale: [
+    { name: "Conyers", x: 630, y: 780, labelDx: 10, anchor: "start" },
   ],
-  Walton: [
-    { name: "Monroe", x: 780, y: 660, labelDx: 10, anchor: "start" },
-    { name: "Loganville", x: 770, y: 700, labelDx: 10, anchor: "start" },
-  ],
-  Bartow: [
-    { name: "Cartersville", x: 210, y: 360, labelDx: 10, anchor: "start" },
-  ],
-  Pickens: [
-    { name: "Jasper", x: 402, y: 246, labelDx: 10, anchor: "start" },
-  ],
-  Gilmer: [
-    { name: "Ellijay", x: 410, y: 104, labelDx: 10, anchor: "start" },
+  Coweta: [
+    { name: "Newnan", x: 280, y: 920, labelDx: 10, anchor: "start" },
   ],
 };
 
 
-
-
-
-
-
-function makeListings(): Listing[] {
-  const list: Listing[] = [];
-  let id = 1;
-  const samples: Array<{
-    n: string;
-    c: string;
-    base: number;
-    type: Listing["type"];
-  }> = [
-      { n: "Buckhead", c: "Fulton", base: 2400000, type: "Estate" },
-      { n: "Midtown", c: "Fulton", base: 950000, type: "Condo" },
-      { n: "Sandy Springs", c: "Fulton", base: 1450000, type: "Single Family" },
-      { n: "Alpharetta", c: "Fulton", base: 1180000, type: "Single Family" },
-      { n: "Roswell", c: "Fulton", base: 875000, type: "Single Family" },
-      { n: "Atlanta", c: "Fulton", base: 720000, type: "Townhome" },
-      { n: "Brookhaven", c: "DeKalb", base: 1690000, type: "Single Family" },
-      { n: "Decatur", c: "DeKalb", base: 845000, type: "Single Family" },
-      { n: "Dunwoody", c: "DeKalb", base: 1120000, type: "Single Family" },
-      { n: "Chamblee", c: "DeKalb", base: 695000, type: "Townhome" },
-      { n: "Marietta", c: "Cobb", base: 765000, type: "Single Family" },
-      { n: "Smyrna", c: "Cobb", base: 615000, type: "Townhome" },
-      { n: "Kennesaw", c: "Cobb", base: 545000, type: "Single Family" },
-      { n: "Duluth", c: "Gwinnett", base: 680000, type: "Single Family" },
-      { n: "Suwanee", c: "Gwinnett", base: 925000, type: "Single Family" },
-      { n: "Peachtree Corners", c: "Gwinnett", base: 815000, type: "Single Family" },
-      { n: "Woodstock", c: "Cherokee", base: 720000, type: "Single Family" },
-      { n: "Canton", c: "Cherokee", base: 595000, type: "Single Family" },
-      { n: "Cumming", c: "Forsyth", base: 825000, type: "Single Family" },
-      { n: "Peachtree City", c: "Fayette", base: 705000, type: "Single Family" },
-      { n: "McDonough", c: "Henry", base: 465000, type: "Single Family" },
-      { n: "Newnan", c: "Coweta", base: 525000, type: "Single Family" },
-      { n: "Douglasville", c: "Douglas", base: 415000, type: "Single Family" },
-      { n: "Conyers", c: "Rockdale", base: 385000, type: "Single Family" },
-      { n: "College Park", c: "Clayton", base: 345000, type: "Townhome" },
-      { n: "Lawrenceville", c: "Gwinnett", base: 525000, type: "Single Family" },
-      { n: "Tucker", c: "DeKalb", base: 575000, type: "Single Family" },
-      { n: "Acworth", c: "Cobb", base: 495000, type: "Single Family" },
-    ];
-
-  const streets = [
-    "Magnolia Lane",
-    "Peachtree Hollow",
-    "Ivy Ridge Court",
-    "Camellia Way",
-    "Dogwood Crossing",
-    "Oakhaven Drive",
-    "Stonebrook Path",
-    "Willow Bend",
-    "Westover Place",
-    "Briarcliff Trail",
-  ];
-
-  const featuresPool = [
-    "Chef's kitchen",
-    "Primary on main",
-    "Heated saltwater pool",
-    "Three-car garage",
-    "Wine cellar",
-    "Screened porch",
-    "Walk-out terrace",
-    "Smart-home wiring",
-    "Designer lighting",
-    "Custom millwork",
-    "Spa-style primary bath",
-    "Walkable to village",
-  ];
-
-  samples.forEach((s, i) => {
-    for (let k = 0; k < 2; k++) {
-      const cats: Category[] = [];
-      const r = (i + k * 3) % 7;
-      if (r === 0) cats.push("sold");
-      else if (r === 1) cats.push("new", "open");
-      else if (r === 2) cats.push("open");
-      else if (r === 3) cats.push("new");
-      else if (r === 4) cats.push("featured");
-      else if (r === 5) cats.push("featured", "new");
-      else cats.push("featured");
-
-      // Make sure each main category has plenty
-      if (i % 2 === 0 && !cats.includes("featured")) cats.push("featured");
-
-      const status: Status = cats.includes("sold")
-        ? "Sold"
-        : cats.includes("open")
-          ? "Open House"
-          : cats.includes("new")
-            ? "New"
-            : "Featured";
-
-      const priceValue = Math.round((s.base + k * 60000 + (i % 4) * 25000) / 1000) * 1000;
-      const beds = s.type === "Condo" ? 2 + (i % 2) : 3 + ((i + k) % 4);
-      const baths = Math.max(2, beds - 1 + (k % 2));
-      const sqft = (s.type === "Condo" ? 1400 : 2400) + ((i + k * 2) % 6) * 350;
-
-      list.push({
-        id: `L-${id++}`,
-        image: IMG[(i + k) % IMG.length],
-        gallery: [IMG[(i + k) % IMG.length], IMG[(i + k + 1) % IMG.length], IMG[(i + k + 2) % IMG.length]],
-        price: `$${priceValue.toLocaleString()}`,
-        priceValue,
-        address: `${1000 + i * 13 + k * 7} ${streets[(i + k) % streets.length]}`,
-        neighborhood: s.n,
-        county: s.c,
-        beds,
-        baths,
-        sqft,
-        type: s.type,
-        status,
-        categories: cats,
-        description:
-          "A composed, light-filled home with refined finishes throughout — designed for easy entertaining and quiet, everyday luxury.",
-        features: [
-          featuresPool[(i + k) % featuresPool.length],
-          featuresPool[(i + k + 3) % featuresPool.length],
-          featuresPool[(i + k + 6) % featuresPool.length],
-          featuresPool[(i + k + 9) % featuresPool.length],
-        ],
-      });
-    }
-  });
-
-  return list;
-}
-
-const ALL_LISTINGS = makeListings();
 
 const CATEGORY_META: Record<Category, { label: string; viewMore: string }> = {
   featured: { label: "Featured", viewMore: "View More Featured Homes" },
