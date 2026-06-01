@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { AgentPreview, type AgentPreviewItem } from "@/components/AgentPreview";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
 import sellerHero from "@/assets/Alexandra/seller-hero.jpg";
 
@@ -574,7 +575,7 @@ function SellerWizard() {
 
         <div ref={wizardRef} className="min-h-[780px]">
           {submitted && result ? (
-            <ResultCard result={result} onEdit={handleEdit} />
+            <ResultCard result={result} state={state} onEdit={handleEdit} />
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
@@ -678,9 +679,11 @@ function formatPrice(n: number): string {
   return `$${Math.round(n / 1000)}k`;
 }
 
-function ResultCard({ result, onEdit }: { result: ResultData; onEdit: () => void }) {
+function ResultCard({ result, state, onEdit }: { result: ResultData; state: SellerState; onEdit: () => void }) {
+  const agentPreview = buildSellerAgentPreview(state, result);
   if (result.type === "personal") {
     return (
+      <>
       <div className="bg-white border border-stone-200 p-8 sm:p-12 shadow-sm">
         <div className="text-center">
           <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
@@ -716,10 +719,13 @@ function ResultCard({ result, onEdit }: { result: ResultData; onEdit: () => void
           </button>
         </div>
       </div>
+      <AgentPreview {...agentPreview} />
+      </>
     );
   }
 
   return (
+    <>
     <div className="bg-white border border-stone-200 p-8 sm:p-12 shadow-sm">
       <div className="text-center">
         <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">
@@ -786,7 +792,77 @@ function ResultCard({ result, onEdit }: { result: ResultData; onEdit: () => void
         </button>
       </div>
     </div>
+    <AgentPreview {...agentPreview} />
+    </>
   );
+}
+
+/* ---------- Seller agent-preview builder ---------- */
+
+function buildSellerAgentPreview(state: SellerState, result: ResultData) {
+  const nameDisplay = state.name.trim() || "Homeowner";
+  const firstName = nameDisplay.split(" ")[0];
+
+  const nowOrSoon = new Set(["ASAP", "1–3 months"]);
+  const later = new Set(["3–6 months", "6+ months", "Just curious"]);
+
+  const rangeText =
+    result.type === "range" && result.low != null && result.high != null
+      ? `${formatPrice(result.low)} – ${formatPrice(result.high)}`
+      : "Personal review needed";
+
+  const helpfulText = result.helpfulSignals.length ? result.helpfulSignals.join(", ") : "";
+  const worthText = result.worthReviewing.length ? result.worthReviewing.join(", ") : "";
+
+  const summary: AgentPreviewItem[] = [
+    { label: "Name", value: nameDisplay },
+    { label: "Timeline", value: state.timeline },
+    { label: "Property type", value: state.propertyType },
+    { label: "Area", value: state.area },
+    { label: "Preliminary range", value: rangeText },
+    { label: "Helpful signals", value: helpfulText },
+    { label: "Worth reviewing", value: worthText },
+  ];
+
+  const hasReviewItems = result.worthReviewing.length > 0 || result.type === "personal";
+
+  let nextAction: string;
+  if (hasReviewItems) {
+    nextAction = "Ask a few follow-up questions before giving a stronger estimate.";
+  } else if (nowOrSoon.has(state.timeline)) {
+    nextAction = "Call or text today to schedule a value review.";
+  } else if (later.has(state.timeline)) {
+    nextAction = "Start seller nurture follow-up and offer a prep checklist.";
+  } else {
+    nextAction = "Reach out today to learn more about their timing and goals.";
+  }
+
+  const followUp = [
+    "Today: Send value review invite.",
+    "Tomorrow: Check in if no response.",
+    "Day 3: Share seller prep checklist.",
+    "Stop if they reply.",
+  ];
+
+  const timelineForText = state.timeline
+    ? `is considering selling ${state.timeline.toLowerCase() === "asap" ? "ASAP" : `in ${state.timeline.toLowerCase()}`}`
+    : "is exploring a sale";
+  const suggested = hasReviewItems
+    ? "ask a few follow-up questions before estimating"
+    : nowOrSoon.has(state.timeline)
+      ? "call or text today to schedule a value review"
+      : "offer a value review";
+
+  const textAlert = `New seller lead from your website: ${firstName} ${timelineForText}. Preliminary range: ${rangeText}. Suggested next step: ${suggested}.`;
+
+  return {
+    subtitle: `What ${REALTOR_FIRST_NAME} would receive from this seller inquiry`,
+    summaryTitle: "Seller Lead Summary",
+    summary,
+    nextAction,
+    followUp,
+    textAlert,
+  };
 }
 
 /* ---------- Step pieces ---------- */

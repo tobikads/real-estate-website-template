@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { AgentPreview, type AgentPreviewItem } from "@/components/AgentPreview";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
 import { findBestMatch, type MatchResult } from "@/data/demo-listings";
 import buyerHero from "@/assets/Alexandra/buyer-hero.jpg";
@@ -411,7 +412,7 @@ function BuyerWizard() {
         {/* Fixed-min-height shell keeps page from jumping on submit */}
         <div ref={wizardRef} className="min-h-[760px]">
           {submitted ? (
-            <BuyerMatchResult match={match} />
+            <BuyerMatchResult match={match} state={state} />
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
@@ -935,18 +936,23 @@ function ReviewRow({
 
 /* ---------- Match result ---------- */
 
-function BuyerMatchResult({ match }: { match: MatchResult | null }) {
+function BuyerMatchResult({ match, state }: { match: MatchResult | null; state: BuyerState }) {
+  const agentPreview = buildBuyerAgentPreview(state, match);
+
   if (!match) {
     return (
-      <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
-        <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
-          <Check className="h-4 w-4" strokeWidth={2} />
+      <>
+        <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
+          <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+            <Check className="h-4 w-4" strokeWidth={2} />
+          </div>
+          <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">Thank you</h3>
+          <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
+            I'll review what you shared and follow up with homes or next steps that fit your search.
+          </p>
         </div>
-        <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">Thank you</h3>
-        <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
-          I'll review what you shared and follow up with homes or next steps that fit your search.
-        </p>
-      </div>
+        <AgentPreview {...agentPreview} />
+      </>
     );
   }
 
@@ -956,6 +962,7 @@ function BuyerMatchResult({ match }: { match: MatchResult | null }) {
     : "A close starting point based on what you shared";
 
   return (
+    <>
     <div className="bg-white border border-stone-200 shadow-sm">
       {/* Confirmation header */}
       <div className="px-6 sm:px-10 pt-10 pb-6 text-center border-b border-stone-100">
@@ -1027,7 +1034,99 @@ function BuyerMatchResult({ match }: { match: MatchResult | null }) {
         </article>
       </div>
     </div>
+    <AgentPreview {...agentPreview} />
+    </>
   );
+}
+
+/* ---------- Buyer agent-preview builder ---------- */
+
+function buildBuyerAgentPreview(
+  state: BuyerState,
+  match: MatchResult | null,
+) {
+  const represented = state.workingWithAgent === "Yes";
+  const urgentTimelines = new Set(["ASAP", "1–3 months"]);
+  const laterTimelines = new Set(["3–6 months", "6+ months", "Just browsing"]);
+
+  const nameDisplay = state.name.trim() || "Buyer";
+  const firstName = nameDisplay.split(" ")[0];
+
+  const areasText = state.areas.length ? state.areas.join(", ") : "";
+  const homeTypesText = state.homeTypes.join(", ");
+  const mustHavesText = state.mustHaves.join(", ");
+  const needs = [
+    state.beds && `${state.beds} beds`,
+    state.baths && `${state.baths} baths`,
+    homeTypesText,
+    mustHavesText && `must-haves: ${mustHavesText}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  const summary: AgentPreviewItem[] = [
+    { label: "Name", value: nameDisplay },
+    { label: "Timeline", value: state.timeline },
+    { label: "Budget", value: state.budget },
+    { label: "Preferred area", value: areasText },
+    { label: "Home needs", value: needs },
+    {
+      label: "Agent status",
+      value: represented
+        ? "Already working with another agent"
+        : state.workingWithAgent === "Not sure"
+          ? "Not sure"
+          : "Not currently represented",
+    },
+  ];
+
+  let nextAction: string;
+  if (represented) {
+    nextAction =
+      "Do not solicit. Buyer says they are already working with another agent. Offer general information only.";
+  } else if (urgentTimelines.has(state.timeline)) {
+    nextAction = "Text within 5 minutes. This is an active buyer lead.";
+  } else if (laterTimelines.has(state.timeline)) {
+    nextAction = "Start nurture follow-up. Buyer is interested but not urgent.";
+  } else {
+    nextAction = "Reach out today to learn more about their timeline and goals.";
+  }
+
+  const followUp = represented
+    ? [
+        "Automation paused.",
+        "Do not send property recommendations.",
+        "Keep interaction respectful and informational only.",
+      ]
+    : [
+        "Today: Send intro text.",
+        "Tomorrow: Check in if no response.",
+        "Day 3: Send helpful listing follow-up.",
+        "Stop if they reply.",
+      ];
+
+  // Text alert
+  const areaForText = state.areas[0] || "the Atlanta area";
+  const budgetForText = state.budget || "an unspecified budget";
+  const timelineForText = state.timeline ? `timeline ${state.timeline.toLowerCase()}` : "timeline not provided";
+  const suggested = represented
+    ? "do not solicit — buyer is represented"
+    : urgentTimelines.has(state.timeline)
+      ? "text within 5 minutes"
+      : "start nurture follow-up";
+
+  const matchHint = match && !represented ? ` Closest match: ${match.listing.address}, ${match.listing.neighborhood}.` : "";
+
+  const textAlert = `New buyer lead from your website: ${firstName} is looking in ${areaForText}, budget ${budgetForText}, ${timelineForText}. Suggested next step: ${suggested}.${matchHint}`;
+
+  return {
+    subtitle: `What ${REALTOR_FIRST_NAME} would receive from this buyer inquiry`,
+    summaryTitle: "Lead Summary",
+    summary,
+    nextAction,
+    followUp,
+    textAlert,
+  };
 }
 
 /* ---------- Reassurance ---------- */
