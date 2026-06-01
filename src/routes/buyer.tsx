@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { AgentPreview, type AgentPreviewItem } from "@/components/AgentPreview";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
 import { findBestMatch, type MatchResult } from "@/data/demo-listings";
 import buyerHero from "@/assets/Alexandra/buyer-hero.jpg";
@@ -411,7 +412,7 @@ function BuyerWizard() {
         {/* Fixed-min-height shell keeps page from jumping on submit */}
         <div ref={wizardRef} className="min-h-[760px]">
           {submitted ? (
-            <BuyerMatchResult match={match} />
+            <BuyerMatchResult match={match} state={state} />
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
