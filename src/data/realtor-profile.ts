@@ -32,7 +32,7 @@ export const REALTOR_PROFILE: RealtorProfile = {
     name: "Johunna Redmond",
     title: "Real Estate Agent",
     location: "Atlanta, GA",
-    company: "14th & Luxe Realty",
+    company: "The Redmond Realty",
     phone: "404-516-1175",
     email: "johunnasells@gmail.com",
     bio: "I am a licensed Real Estate Agent helping families gain knowledge, grow wealth and have new conversations about financial literacy through homeownership. I work with investors, first-time home buyers, luxury buyers and sellers. I have been a licensed real estate agent for over 17 years. I began my real estate career in Tennessee as an investor before relocating to Atlanta. My mother was the driving force behind me becoming a real estate agent. She regularly watches HGTV and other home improvement channels and thought with my natural ability as a salesperson that I would be successful in real estate.",
