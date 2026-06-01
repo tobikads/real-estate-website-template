@@ -1044,7 +1044,7 @@ function BuyerMatchResult({ match, state }: { match: MatchResult | null; state: 
 function buildBuyerAgentPreview(
   state: BuyerState,
   match: MatchResult | null,
-): React.ComponentProps<typeof AgentPreview> {
+) {
   const represented = state.workingWithAgent === "Yes";
   const urgentTimelines = new Set(["ASAP", "1–3 months"]);
   const laterTimelines = new Set(["3–6 months", "6+ months", "Just browsing"]);
