@@ -936,18 +936,23 @@ function ReviewRow({
 
 /* ---------- Match result ---------- */
 
-function BuyerMatchResult({ match }: { match: MatchResult | null }) {
+function BuyerMatchResult({ match, state }: { match: MatchResult | null; state: BuyerState }) {
+  const agentPreview = buildBuyerAgentPreview(state, match);
+
   if (!match) {
     return (
-      <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
-        <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
-          <Check className="h-4 w-4" strokeWidth={2} />
+      <>
+        <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
+          <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+            <Check className="h-4 w-4" strokeWidth={2} />
+          </div>
+          <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">Thank you</h3>
+          <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
+            I'll review what you shared and follow up with homes or next steps that fit your search.
+          </p>
         </div>
-        <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">Thank you</h3>
-        <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
-          I'll review what you shared and follow up with homes or next steps that fit your search.
-        </p>
-      </div>
+        <AgentPreview {...agentPreview} />
+      </>
     );
   }
 
