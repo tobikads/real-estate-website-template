@@ -5,6 +5,8 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
 
 const DROPDOWN_ITEMS = [
+  { label: "Lead Recovery", to: "/agent-preview" },
+  { label: "Lead Nurture", to: "/lead-nurture" },
   { label: "FAQ", to: "/faq" },
   { label: "About", to: "/about" },
   { label: "Areas Served", to: "/areas-served" },
@@ -28,6 +30,8 @@ const MOBILE_ITEMS = [
   { label: "Seller", to: "/seller" },
   { label: "Question", to: "/question" },
   { label: "Listings", to: "/listings" },
+  { label: "Lead Recovery", to: "/agent-preview" },
+  { label: "Lead Nurture", to: "/lead-nurture" },
   { label: "Home", to: "/" },
   { label: "About", to: "/about" },
   { label: "Areas Served", to: "/areas-served" },
@@ -36,7 +40,6 @@ const MOBILE_ITEMS = [
   { label: "FAQ", to: "/faq" },
 ];
 
-
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -44,17 +47,26 @@ export function Header() {
   const location = useLocation();
 
   const isStartHerePage = location.pathname === "/start-here";
-  const isListingsPage = location.pathname === "/listings";
-  const shouldShowHomeInMenu = ["/buyer", "/seller", "/question", "/listings"].includes(location.pathname);
+  const isLightHeaderPage = ["/listings", "/agent-preview", "/lead-nurture"].includes(
+    location.pathname,
+  );
+  const shouldShowHomeInMenu = [
+    "/buyer",
+    "/seller",
+    "/question",
+    "/listings",
+    "/agent-preview",
+    "/lead-nurture",
+  ].includes(location.pathname);
   const dropdownItems = shouldShowHomeInMenu
     ? [{ label: "Home", to: "/" }, ...DROPDOWN_ITEMS]
     : DROPDOWN_ITEMS;
   const mobileItems = shouldShowHomeInMenu
     ? [
-      MOBILE_ITEMS[0],
-      { label: "Home", to: "/" },
-      ...MOBILE_ITEMS.slice(1).filter((item) => item.label !== "Home"),
-    ]
+        MOBILE_ITEMS[0],
+        { label: "Home", to: "/" },
+        ...MOBILE_ITEMS.slice(1).filter((item) => item.label !== "Home"),
+      ]
     : MOBILE_ITEMS;
 
   useEffect(() => {
@@ -76,12 +88,12 @@ export function Header() {
 
   const linkColor = isStartHerePage
     ? "text-white"
-    : scrolled || isListingsPage
+    : scrolled || isLightHeaderPage
       ? "text-stone-800"
       : "text-white";
   const linkHover = isStartHerePage
     ? "hover:text-white/70"
-    : scrolled || isListingsPage
+    : scrolled || isLightHeaderPage
       ? "hover:text-stone-500"
       : "hover:text-white/70";
 
@@ -93,79 +105,88 @@ export function Header() {
 
   const startHereClass = isStartHerePage
     ? "bg-white text-stone-900 border border-white"
-    : scrolled || isListingsPage
+    : scrolled || isLightHeaderPage
       ? "border border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-[#faf7f2]"
       : "border border-white/80 text-white bg-white/10 hover:bg-white/20";
 
   const mobileMenu = mobileOpen
     ? createPortal(
-      <div
-        data-mobile-menu
-        className="fixed inset-0 z-[100] bg-[#faf7f2] text-stone-900 flex flex-col overflow-y-auto"
-      >
-        <div className="flex items-center justify-between px-6 py-5 border-b border-stone-200/70">
-          <div>
-            <p className="font-serif text-2xl leading-none text-stone-900">
-              {REALTOR_PROFILE.name}
-            </p>
-            <p className="mt-2 text-[10px] tracking-[0.28em] uppercase text-stone-500">
-              {REALTOR_PROFILE.company}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setMobileOpen(false)}
-            aria-label="Close menu"
-            className="inline-flex h-12 w-12 items-center justify-center -mr-3 text-stone-800"
-          >
-            <X className="h-6 w-6" strokeWidth={1.5} />
-          </button>
-        </div>
-
-        <nav className="flex-1 px-7 py-8">
-          {mobileItems.filter((i) => i.isPrimary).map((item) => (
-            <Link
-              key={item.label}
-              to={item.to}
+        <div
+          data-mobile-menu
+          className="fixed inset-0 z-[100] bg-[#faf7f2] text-stone-900 flex flex-col overflow-y-auto"
+        >
+          <div className="flex items-center justify-between px-6 py-5 border-b border-stone-200/70">
+            <div>
+              <p className="font-serif text-2xl leading-none text-stone-900">
+                {REALTOR_PROFILE.name}
+              </p>
+              <p className="mt-2 text-[10px] tracking-[0.28em] uppercase text-stone-500">
+                {REALTOR_PROFILE.company}
+              </p>
+            </div>
+            <button
+              type="button"
               onClick={() => setMobileOpen(false)}
-              className="mb-7 flex min-h-[56px] items-center justify-center border border-stone-950 bg-stone-950 px-6 py-4 text-center text-[13px] font-semibold uppercase tracking-[0.32em] text-[#faf7f2] transition-colors hover:bg-stone-800"
+              aria-label="Close menu"
+              className="inline-flex h-12 w-12 items-center justify-center -mr-3 text-stone-800"
             >
-              {item.label}
-            </Link>
-          ))}
-
-          <div className="divide-y divide-stone-200/80 border-y border-stone-200/80">
-            {mobileItems.filter((i) => !i.isPrimary).map((item) => (
-              <Link
-                key={item.label}
-                to={item.to}
-                onClick={() => setMobileOpen(false)}
-                className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-800 transition-colors hover:text-stone-500"
-              >
-                <span>{item.label}</span>
-                <ArrowUpRight className="h-3.5 w-3.5 text-stone-400" strokeWidth={1.5} />
-              </Link>
-            ))}
+              <X className="h-6 w-6" strokeWidth={1.5} />
+            </button>
           </div>
 
-        </nav>
-      </div>,
-      document.body,
-    )
+          <nav className="flex-1 px-7 py-8">
+            {mobileItems
+              .filter((i) => i.isPrimary)
+              .map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={() => setMobileOpen(false)}
+                  className="mb-7 flex min-h-[56px] items-center justify-center border border-stone-950 bg-stone-950 px-6 py-4 text-center text-[13px] font-semibold uppercase tracking-[0.32em] text-[#faf7f2] transition-colors hover:bg-stone-800"
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+            <div className="divide-y divide-stone-200/80 border-y border-stone-200/80">
+              {mobileItems
+                .filter((i) => !i.isPrimary)
+                .map((item) => (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-800 transition-colors hover:text-stone-500"
+                  >
+                    <span>{item.label}</span>
+                    <ArrowUpRight className="h-3.5 w-3.5 text-stone-400" strokeWidth={1.5} />
+                  </Link>
+                ))}
+            </div>
+          </nav>
+        </div>,
+        document.body,
+      )
     : null;
 
   return (
     <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${bgClass}`}
-      >
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${bgClass}`}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-5 lg:py-6 flex items-center justify-between gap-6">
           {/* Left: socials */}
           <div className={`flex items-center gap-4 ${linkColor} transition-colors`}>
-            <a href={REALTOR_PROFILE.socialLinks.linkedin} aria-label="LinkedIn" className={`${linkHover} transition-colors`}>
+            <a
+              href={REALTOR_PROFILE.socialLinks.linkedin}
+              aria-label="LinkedIn"
+              className={`${linkHover} transition-colors`}
+            >
               <Linkedin className="h-5 w-5 lg:h-4 lg:w-4" strokeWidth={1.5} />
             </a>
-            <a href={REALTOR_PROFILE.socialLinks.instagram} aria-label="Instagram" className={`${linkHover} transition-colors`}>
+            <a
+              href={REALTOR_PROFILE.socialLinks.instagram}
+              aria-label="Instagram"
+              className={`${linkHover} transition-colors`}
+            >
               <Instagram className="h-5 w-5 lg:h-4 lg:w-4" strokeWidth={1.5} />
             </a>
           </div>
@@ -245,7 +266,6 @@ export function Header() {
                       {item.label}
                     </Link>
                   ))}
-
                 </div>
               </>
             )}
