@@ -679,7 +679,8 @@ function formatPrice(n: number): string {
   return `$${Math.round(n / 1000)}k`;
 }
 
-function ResultCard({ result, onEdit }: { result: ResultData; onEdit: () => void }) {
+function ResultCard({ result, state, onEdit }: { result: ResultData; state: SellerState; onEdit: () => void }) {
+  const agentPreview = buildSellerAgentPreview(state, result);
   if (result.type === "personal") {
     return (
       <div className="bg-white border border-stone-200 p-8 sm:p-12 shadow-sm">
