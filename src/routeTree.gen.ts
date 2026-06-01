@@ -15,9 +15,11 @@ import { Route as SellerRouteImport } from './routes/seller'
 import { Route as QuestionRouteImport } from './routes/question'
 import { Route as ListingsRouteImport } from './routes/listings'
 import { Route as LetsConnectRouteImport } from './routes/lets-connect'
+import { Route as LeadNurtureRouteImport } from './routes/lead-nurture'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as BuyerRouteImport } from './routes/buyer'
 import { Route as AreasServedRouteImport } from './routes/areas-served'
+import { Route as AgentPreviewRouteImport } from './routes/agent-preview'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -51,6 +53,11 @@ const LetsConnectRoute = LetsConnectRouteImport.update({
   path: '/lets-connect',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeadNurtureRoute = LeadNurtureRouteImport.update({
+  id: '/lead-nurture',
+  path: '/lead-nurture',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
@@ -64,6 +71,11 @@ const BuyerRoute = BuyerRouteImport.update({
 const AreasServedRoute = AreasServedRouteImport.update({
   id: '/areas-served',
   path: '/areas-served',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentPreviewRoute = AgentPreviewRouteImport.update({
+  id: '/agent-preview',
+  path: '/agent-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -80,9 +92,11 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/agent-preview': typeof AgentPreviewRoute
   '/areas-served': typeof AreasServedRoute
   '/buyer': typeof BuyerRoute
   '/faq': typeof FaqRoute
+  '/lead-nurture': typeof LeadNurtureRoute
   '/lets-connect': typeof LetsConnectRoute
   '/listings': typeof ListingsRoute
   '/question': typeof QuestionRoute
@@ -93,9 +107,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/agent-preview': typeof AgentPreviewRoute
   '/areas-served': typeof AreasServedRoute
   '/buyer': typeof BuyerRoute
   '/faq': typeof FaqRoute
+  '/lead-nurture': typeof LeadNurtureRoute
   '/lets-connect': typeof LetsConnectRoute
   '/listings': typeof ListingsRoute
   '/question': typeof QuestionRoute
@@ -107,9 +123,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/agent-preview': typeof AgentPreviewRoute
   '/areas-served': typeof AreasServedRoute
   '/buyer': typeof BuyerRoute
   '/faq': typeof FaqRoute
+  '/lead-nurture': typeof LeadNurtureRoute
   '/lets-connect': typeof LetsConnectRoute
   '/listings': typeof ListingsRoute
   '/question': typeof QuestionRoute
@@ -122,9 +140,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/agent-preview'
     | '/areas-served'
     | '/buyer'
     | '/faq'
+    | '/lead-nurture'
     | '/lets-connect'
     | '/listings'
     | '/question'
@@ -135,9 +155,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/agent-preview'
     | '/areas-served'
     | '/buyer'
     | '/faq'
+    | '/lead-nurture'
     | '/lets-connect'
     | '/listings'
     | '/question'
@@ -148,9 +170,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/agent-preview'
     | '/areas-served'
     | '/buyer'
     | '/faq'
+    | '/lead-nurture'
     | '/lets-connect'
     | '/listings'
     | '/question'
@@ -162,9 +186,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AgentPreviewRoute: typeof AgentPreviewRoute
   AreasServedRoute: typeof AreasServedRoute
   BuyerRoute: typeof BuyerRoute
   FaqRoute: typeof FaqRoute
+  LeadNurtureRoute: typeof LeadNurtureRoute
   LetsConnectRoute: typeof LetsConnectRoute
   ListingsRoute: typeof ListingsRoute
   QuestionRoute: typeof QuestionRoute
@@ -217,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LetsConnectRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lead-nurture': {
+      id: '/lead-nurture'
+      path: '/lead-nurture'
+      fullPath: '/lead-nurture'
+      preLoaderRoute: typeof LeadNurtureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
@@ -236,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/areas-served'
       fullPath: '/areas-served'
       preLoaderRoute: typeof AreasServedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent-preview': {
+      id: '/agent-preview'
+      path: '/agent-preview'
+      fullPath: '/agent-preview'
+      preLoaderRoute: typeof AgentPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -258,9 +298,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AgentPreviewRoute: AgentPreviewRoute,
   AreasServedRoute: AreasServedRoute,
   BuyerRoute: BuyerRoute,
   FaqRoute: FaqRoute,
+  LeadNurtureRoute: LeadNurtureRoute,
   LetsConnectRoute: LetsConnectRoute,
   ListingsRoute: ListingsRoute,
   QuestionRoute: QuestionRoute,
@@ -271,3 +313,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

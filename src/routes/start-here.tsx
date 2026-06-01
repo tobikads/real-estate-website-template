@@ -11,14 +11,12 @@ export const Route = createFileRoute("/start-here")({
       { title: `Start Here | ${REALTOR_PROFILE.name}` },
       {
         name: "description",
-        content:
-          `Choose the right next step. Whether you're buying, selling, or just have a question, ${REALTOR_PROFILE.name} is here to help.`,
+        content: `Choose the right next step. Whether you're buying, selling, or just have a question, ${REALTOR_PROFILE.name} is here to help.`,
       },
       { property: "og:title", content: `Start Here | ${REALTOR_PROFILE.name}` },
       {
         property: "og:description",
-        content:
-          `A simple way to take the right next step. Buying, selling, or just have a question? ${REALTOR_PROFILE.name} is here to help.`,
+        content: `A simple way to take the right next step. Buying, selling, or just have a question? ${REALTOR_PROFILE.name} is here to help.`,
       },
     ],
   }),
@@ -45,6 +43,8 @@ const choices = [
 
 const MENU_ITEMS = [
   { label: "Home", to: "/" },
+  { label: "Lead Recovery", to: "/agent-preview" },
+  { label: "Lead Nurture", to: "/lead-nurture" },
   { label: "Listings", to: "/listings" },
   { label: "About", to: "/about" },
   { label: "Areas Served", to: "/areas-served" },
@@ -69,11 +69,7 @@ function FocusedHeader() {
 
   const desktopMenu = menuOpen ? (
     <>
-      <div
-        className="fixed inset-0 z-40"
-        onClick={() => setMenuOpen(false)}
-        aria-hidden
-      />
+      <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} aria-hidden />
       <div className="absolute right-0 top-full mt-4 w-64 bg-[#0c0a08] border border-white/10 shadow-2xl z-50 py-2">
         {MENU_ITEMS.map((item) => (
           <Link
@@ -91,42 +87,42 @@ function FocusedHeader() {
 
   const mobileMenu = mobileOpen
     ? createPortal(
-      <div className="fixed inset-0 z-[100] bg-[#0c0a08] text-stone-200 flex flex-col overflow-y-auto">
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
-          <Link
-            to="/"
-            onClick={() => setMobileOpen(false)}
-            className="font-serif text-2xl leading-none text-white hover:text-white/80 transition-colors"
-          >
-            {REALTOR_PROFILE.name}
-          </Link>
-          <button
-            type="button"
-            onClick={() => setMobileOpen(false)}
-            aria-label="Close menu"
-            className="inline-flex h-12 w-12 items-center justify-center -mr-3 text-white"
-          >
-            <X className="h-6 w-6" strokeWidth={1.5} />
-          </button>
-        </div>
-
-        <nav className="flex-1 px-7 py-8">
-          <div className="divide-y divide-white/10 border-y border-white/10">
-            {MENU_ITEMS.map((item) => (
-              <Link
-                key={item.label}
-                to={item.to}
-                onClick={() => setMobileOpen(false)}
-                className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-300 transition-colors hover:text-white"
-              >
-                <span>{item.label}</span>
-              </Link>
-            ))}
+        <div className="fixed inset-0 z-[100] bg-[#0c0a08] text-stone-200 flex flex-col overflow-y-auto">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+            <Link
+              to="/"
+              onClick={() => setMobileOpen(false)}
+              className="font-serif text-2xl leading-none text-white hover:text-white/80 transition-colors"
+            >
+              {REALTOR_PROFILE.name}
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close menu"
+              className="inline-flex h-12 w-12 items-center justify-center -mr-3 text-white"
+            >
+              <X className="h-6 w-6" strokeWidth={1.5} />
+            </button>
           </div>
-        </nav>
-      </div>,
-      document.body,
-    )
+
+          <nav className="flex-1 px-7 py-8">
+            <div className="divide-y divide-white/10 border-y border-white/10">
+              {MENU_ITEMS.map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex min-h-[52px] items-center justify-between text-[13px] uppercase tracking-[0.24em] text-stone-300 transition-colors hover:text-white"
+                >
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </div>
+          </nav>
+        </div>,
+        document.body,
+      )
     : null;
 
   return (
@@ -161,9 +157,7 @@ function FocusedHeader() {
               aria-expanded={mobileOpen}
               className="lg:hidden inline-flex h-11 items-center justify-center gap-2 -mr-2 px-2 text-white hover:text-white/70 transition-colors"
             >
-              <span className="text-[10px] tracking-[0.28em] uppercase">
-                Menu
-              </span>
+              <span className="text-[10px] tracking-[0.28em] uppercase">Menu</span>
               <Menu className="h-6 w-6" strokeWidth={1.5} />
             </button>
 
@@ -181,12 +175,7 @@ function StartHerePage() {
     <div className="relative min-h-screen flex flex-col">
       {/* Background */}
       <div className="absolute inset-0">
-        <img
-          src={startHereBg}
-          alt=""
-          className="h-full w-full object-cover"
-          loading="eager"
-        />
+        <img src={startHereBg} alt="" className="h-full w-full object-cover" loading="eager" />
         <div className="absolute inset-0 bg-[#0c0a08]/78" />
       </div>
 
@@ -235,8 +224,7 @@ function StartHerePage() {
 
         {/* Bottom microcopy */}
         <p className="mt-14 lg:mt-20 text-stone-400/50 text-[11px] tracking-[0.2em] uppercase max-w-md text-center">
-          Choose a path, answer a few quick questions, and I'll follow up with
-          the right next step.
+          Choose a path, answer a few quick questions, and I'll follow up with the right next step.
         </p>
       </div>
     </div>

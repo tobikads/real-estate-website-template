@@ -30,8 +30,7 @@ export const Route = createFileRoute("/buyer")({
       { title: `Buying a Home | ${REALTOR_PROFILE.name}` },
       {
         name: "description",
-        content:
-          `Share what you're looking for in an Atlanta home. ${REALTOR_FIRST_NAME} follows up with homes and next steps that fit your search.`,
+        content: `Share what you're looking for in an Atlanta home. ${REALTOR_FIRST_NAME} follows up with homes and next steps that fit your search.`,
       },
     ],
   }),
@@ -88,13 +87,7 @@ const AREA_GROUPS: { label: string; options: string[] }[] = [
   },
 ];
 
-const BUDGET_OPTIONS = [
-  "Under $250k",
-  "$250k–$350k",
-  "$350k–$500k",
-  "$500k–$750k",
-  "$750k+",
-];
+const BUDGET_OPTIONS = ["Under $250k", "$250k–$350k", "$350k–$500k", "$500k–$750k", "$750k+"];
 
 const FINANCING_OPTIONS = [
   "Already pre-approved",
@@ -202,15 +195,13 @@ function BuyerHero() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/25 to-[#faf7f2]/85" />
       <div className="relative z-10 flex h-full flex-col items-center justify-end pb-20 sm:pb-28 text-center px-6">
-        <p className="text-[11px] tracking-[0.4em] uppercase text-stone-700 mb-6">
-          For Buyers
-        </p>
+        <p className="text-[11px] tracking-[0.4em] uppercase text-stone-700 mb-6">For Buyers</p>
         <h1 className="font-serif text-stone-900 text-4xl sm:text-5xl lg:text-6xl xl:text-[4.25rem] leading-[1.05] font-light max-w-3xl">
           Find the right home with a clearer path.
         </h1>
         <p className="mt-8 max-w-xl text-stone-700 font-light text-base sm:text-lg leading-relaxed">
-          Share what you're looking for, and I'll help you understand the homes,
-          areas, and next steps that fit where you are.
+          Share what you're looking for, and I'll help you understand the homes, areas, and next
+          steps that fit where you are.
         </p>
       </div>
     </section>
@@ -229,8 +220,8 @@ function TeaserListings() {
             A First Look at What's Available
           </h2>
           <p className="mt-6 text-stone-600 font-light leading-relaxed">
-            A few homes can start the conversation. Your preferences help me
-            narrow in on what actually fits.
+            A few homes can start the conversation. Your preferences help me narrow in on what
+            actually fits.
           </p>
         </div>
 
@@ -312,7 +303,6 @@ function TeaserCard({ listing }: { listing: (typeof TEASER_LISTINGS)[number] }) 
   );
 }
 
-
 /* ---------- Wizard ---------- */
 
 const TOTAL_STEPS = 5;
@@ -343,8 +333,7 @@ function BuyerWizard() {
 
   const validateStep = (): string | null => {
     if (step === 1 && !state.timeline) return "Choose one option to continue.";
-    if (step === 2 && state.areas.length === 0)
-      return "Choose at least one area to continue.";
+    if (step === 2 && state.areas.length === 0) return "Choose at least one area to continue.";
     if (step === 3) {
       if (!state.budget) return "Choose a budget range to continue.";
       if (!state.financing) return "Choose a financing option to continue.";
@@ -399,25 +388,28 @@ function BuyerWizard() {
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-[1.1]">
             Tell me what you're looking for
           </h2>
-          <p className="mt-5 text-stone-500 text-sm font-light">
-            Takes about 2 minutes.
-          </p>
+          <p className="mt-5 text-stone-500 text-sm font-light">Takes about 2 minutes.</p>
           <p className="mt-3 text-stone-400 text-xs font-light italic max-w-md mx-auto">
-            Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more
-            relevant homes.
+            Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more relevant
+            homes.
           </p>
         </div>
 
         {/* Fixed-min-height shell keeps page from jumping on submit */}
         <div ref={wizardRef} className="min-h-[760px]">
           {submitted ? (
-            <BuyerMatchResult match={match} />
+            <div className="space-y-8">
+              <BuyerMatchResult match={match} />
+              <BuyerAgentPreview state={state} match={match} />
+            </div>
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
               <div className="px-6 sm:px-10 pt-8">
                 <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500">
-                  <span>Step {step} of {TOTAL_STEPS}</span>
+                  <span>
+                    Step {step} of {TOTAL_STEPS}
+                  </span>
                   <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
                 </div>
                 <div className="mt-3 h-px bg-stone-200 relative overflow-hidden">
@@ -430,13 +422,9 @@ function BuyerWizard() {
 
               <div className="px-6 sm:px-10 py-10 sm:py-12">
                 {step === 1 && <Step1 state={state} update={update} />}
-                {step === 2 && (
-                  <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />
-                )}
+                {step === 2 && <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />}
                 {step === 3 && <Step3 state={state} update={update} />}
-                {step === 4 && (
-                  <Step4 state={state} update={update} toggle={toggleArr} />
-                )}
+                {step === 4 && <Step4 state={state} update={update} toggle={toggleArr} />}
                 {step === 5 && <Step5 state={state} update={update} />}
               </div>
 
@@ -489,7 +477,6 @@ function BuyerWizard() {
           )}
         </div>
 
-
         {/* Secondary phone option */}
         <p className="mt-10 text-center text-sm text-stone-500 font-light leading-relaxed max-w-lg mx-auto">
           Prefer to talk it through? You can{" "}
@@ -509,19 +496,13 @@ function BuyerWizard() {
 /* ---------- Step components ---------- */
 
 function FieldLabel({ children }: { children: ReactNode }) {
-  return (
-    <p className="text-[11px] tracking-[0.3em] uppercase text-stone-500 mb-4">
-      {children}
-    </p>
-  );
+  return <p className="text-[11px] tracking-[0.3em] uppercase text-stone-500 mb-4">{children}</p>;
 }
 
 function StepHeading({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-8">
-      <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 leading-[1.15]">
-        {title}
-      </h3>
+      <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 leading-[1.15]">{title}</h3>
       {sub && <p className="mt-3 text-stone-500 text-sm font-light">{sub}</p>}
     </div>
   );
@@ -541,9 +522,10 @@ function Chip({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center justify-center px-4 py-2.5 text-sm font-light border transition-all min-h-11
-        ${active
-          ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
-          : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
+        ${
+          active
+            ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
+            : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
         }`}
     >
       {children}
@@ -563,11 +545,7 @@ function Step1({
       <StepHeading title="When are you hoping to buy?" />
       <div className="flex flex-wrap gap-3">
         {TIMELINE_OPTIONS.map((opt) => (
-          <Chip
-            key={opt}
-            active={state.timeline === opt}
-            onClick={() => update("timeline", opt)}
-          >
+          <Chip key={opt} active={state.timeline === opt} onClick={() => update("timeline", opt)}>
             {opt}
           </Chip>
         ))}
@@ -576,30 +554,17 @@ function Step1({
   );
 }
 
-function Step2({
-  state,
-  toggle,
-}: {
-  state: BuyerState;
-  toggle: (v: string) => void;
-}) {
+function Step2({ state, toggle }: { state: BuyerState; toggle: (v: string) => void }) {
   return (
     <div>
-      <StepHeading
-        title="Where are you open to looking?"
-        sub="Select any that interest you."
-      />
+      <StepHeading title="Where are you open to looking?" sub="Select any that interest you." />
       <div className="space-y-7">
         {AREA_GROUPS.map((group) => (
           <div key={group.label}>
             <FieldLabel>{group.label}</FieldLabel>
             <div className="flex flex-wrap gap-2.5">
               {group.options.map((opt) => (
-                <Chip
-                  key={opt}
-                  active={state.areas.includes(opt)}
-                  onClick={() => toggle(opt)}
-                >
+                <Chip key={opt} active={state.areas.includes(opt)} onClick={() => toggle(opt)}>
                   {opt}
                 </Chip>
               ))}
@@ -632,11 +597,7 @@ function Step3({
         <StepHeading title="What budget range feels right?" />
         <div className="flex flex-wrap gap-3">
           {BUDGET_OPTIONS.map((opt) => (
-            <Chip
-              key={opt}
-              active={state.budget === opt}
-              onClick={() => update("budget", opt)}
-            >
+            <Chip key={opt} active={state.budget === opt} onClick={() => update("budget", opt)}>
               {opt}
             </Chip>
           ))}
@@ -677,11 +638,7 @@ function Step4({
           <FieldLabel>Bedrooms</FieldLabel>
           <div className="flex flex-wrap gap-2">
             {BED_OPTIONS.map((opt) => (
-              <Chip
-                key={opt}
-                active={state.beds === opt}
-                onClick={() => update("beds", opt)}
-              >
+              <Chip key={opt} active={state.beds === opt} onClick={() => update("beds", opt)}>
                 {opt}
               </Chip>
             ))}
@@ -691,11 +648,7 @@ function Step4({
           <FieldLabel>Bathrooms</FieldLabel>
           <div className="flex flex-wrap gap-2">
             {BATH_OPTIONS.map((opt) => (
-              <Chip
-                key={opt}
-                active={state.baths === opt}
-                onClick={() => update("baths", opt)}
-              >
+              <Chip key={opt} active={state.baths === opt} onClick={() => update("baths", opt)}>
                 {opt}
               </Chip>
             ))}
@@ -732,7 +685,10 @@ function Step4({
           ))}
         </div>
         <div className="mt-5">
-          <FieldLabel>Anything else that matters? <span className="text-stone-400 normal-case tracking-normal italic">— optional</span></FieldLabel>
+          <FieldLabel>
+            Anything else that matters?{" "}
+            <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+          </FieldLabel>
           <input
             type="text"
             value={state.otherMatters}
@@ -745,7 +701,10 @@ function Step4({
       </div>
 
       <div>
-        <FieldLabel>Deal-breakers <span className="text-stone-400 normal-case tracking-normal italic">— optional</span></FieldLabel>
+        <FieldLabel>
+          Deal-breakers{" "}
+          <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+        </FieldLabel>
         <input
           type="text"
           value={state.dealBreakers}
@@ -755,7 +714,6 @@ function Step4({
           className="w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors"
         />
       </div>
-
     </div>
   );
 }
@@ -767,7 +725,6 @@ function Step5({
   state: BuyerState;
   update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
 }) {
-
   const inputCls =
     "w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors";
 
@@ -803,7 +760,8 @@ function Step5({
           </div>
           <div className="sm:col-span-2">
             <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-              Email <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
+              Email{" "}
+              <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
             </label>
             <input
               type="email"
@@ -895,36 +853,21 @@ function Step5({
           <ReviewRow
             label="Beds / Baths"
             value={
-              state.beds || state.baths
-                ? `${state.beds || "—"} bd · ${state.baths || "—"} ba`
-                : ""
+              state.beds || state.baths ? `${state.beds || "—"} bd · ${state.baths || "—"} ba` : ""
             }
           />
           <ReviewRow label="Areas" value={state.areas.join(", ")} full />
           <ReviewRow label="Home types" value={state.homeTypes.join(", ")} full />
           <ReviewRow label="Must-haves" value={state.mustHaves.join(", ")} full />
-          {state.otherMatters && (
-            <ReviewRow label="Also matters" value={state.otherMatters} full />
-          )}
-          {state.dealBreakers && (
-            <ReviewRow label="Avoid" value={state.dealBreakers} full />
-          )}
+          {state.otherMatters && <ReviewRow label="Also matters" value={state.otherMatters} full />}
+          {state.dealBreakers && <ReviewRow label="Avoid" value={state.dealBreakers} full />}
         </dl>
       </div>
-
     </div>
   );
 }
 
-function ReviewRow({
-  label,
-  value,
-  full,
-}: {
-  label: string;
-  value: string;
-  full?: boolean;
-}) {
+function ReviewRow({ label, value, full }: { label: string; value: string; full?: boolean }) {
   return (
     <div className={full ? "sm:col-span-2" : ""}>
       <dt className="text-[10px] tracking-[0.28em] uppercase text-stone-400">{label}</dt>
@@ -934,6 +877,152 @@ function ReviewRow({
 }
 
 /* ---------- Match result ---------- */
+
+const EMPTY_PREVIEW_VALUE = "Not provided yet";
+
+function previewValue(value: string): string {
+  return value.trim() || EMPTY_PREVIEW_VALUE;
+}
+
+function previewList(values: string[]): string {
+  return values.length > 0 ? values.join(", ") : EMPTY_PREVIEW_VALUE;
+}
+
+function isSoonBuyerTimeline(timeline: string): boolean {
+  const normalized = timeline.toLowerCase();
+  return normalized.includes("asap") || (normalized.includes("1") && normalized.includes("3"));
+}
+
+function buyerAgentStatusLabel(status: string): string {
+  if (status === "Yes") return "Currently represented";
+  if (status === "No") return "Not currently represented";
+  if (status === "Not sure") return "Not sure yet";
+  return EMPTY_PREVIEW_VALUE;
+}
+
+function BuyerAgentPreview({ state, match }: { state: BuyerState; match: MatchResult | null }) {
+  const isRepresented = state.workingWithAgent === "Yes";
+  const isSoon = isSoonBuyerTimeline(state.timeline);
+  const leadStatus = isRepresented ? "Ethics pause" : isSoon ? "Hot buyer" : "Nurture buyer";
+  const suggestedAction = isRepresented
+    ? "Do not solicit. Buyer says they are already working with another agent. Offer general information only."
+    : isSoon
+      ? "Text within 5 minutes. This is an active buyer lead."
+      : "Start nurture follow-up. Buyer is interested but not urgent.";
+  const followUpItems = isRepresented
+    ? [
+        "Automation paused",
+        "Do not send property recommendations",
+        "Keep interaction respectful and informational only",
+      ]
+    : [
+        "Today: Send intro text",
+        "Tomorrow: Check in if no response",
+        "Day 3: Send helpful listing follow-up",
+        "Stop if they reply",
+      ];
+  const buyerName = state.name.trim() || "New buyer";
+  const preferredArea = previewList(state.areas);
+  const homeNeeds =
+    [
+      state.beds ? `${state.beds} beds` : "",
+      state.baths ? `${state.baths} baths` : "",
+      previewList(state.homeTypes) !== EMPTY_PREVIEW_VALUE ? previewList(state.homeTypes) : "",
+      previewList(state.mustHaves) !== EMPTY_PREVIEW_VALUE ? previewList(state.mustHaves) : "",
+      state.otherMatters.trim(),
+    ]
+      .filter(Boolean)
+      .join("; ") || EMPTY_PREVIEW_VALUE;
+  const textAlert = isRepresented
+    ? `New buyer inquiry from ${buyerName}: buyer says they are already working with another agent. Suggested next step: do not solicit; offer general information only.`
+    : `New buyer lead from your website: ${buyerName} is looking in ${preferredArea}, budget ${previewValue(
+        state.budget,
+      )}, timeline ${previewValue(state.timeline)}. Suggested next step: ${
+        isSoon ? "text within 5 minutes" : "start nurture follow-up"
+      }.${match ? ` Closest match: ${match.listing.address}, ${match.listing.neighborhood}.` : ""}`;
+
+  return (
+    <aside className="border border-dashed border-stone-300 bg-white px-5 py-7 sm:p-8 shadow-sm">
+      <div className="inline-flex border border-stone-200 bg-stone-50 px-3 py-1.5 text-[10px] tracking-[0.28em] uppercase text-stone-500">
+        Demo Agent View
+      </div>
+
+      <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h3 className="font-serif text-2xl text-stone-900">Agent Preview</h3>
+          <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-stone-500">
+            Hidden from visitors in the live version. Shown here so the agent can see what they
+            would receive.
+          </p>
+        </div>
+        <div className="w-fit border border-stone-300 px-3 py-2 text-[10px] tracking-[0.24em] uppercase text-stone-700">
+          {leadStatus}
+        </div>
+      </div>
+
+      <div className="mt-8 border-t border-stone-100 pt-7">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">Lead Summary</p>
+        <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          <AgentPreviewField label="Lead source" value="Website buyer form" />
+          <AgentPreviewField label="Lead status" value={leadStatus} />
+          <AgentPreviewField label="Name" value={previewValue(state.name)} />
+          <AgentPreviewField label="Timeline" value={previewValue(state.timeline)} />
+          <AgentPreviewField label="Budget" value={previewValue(state.budget)} />
+          <AgentPreviewField label="Preferred area" value={preferredArea} />
+          <AgentPreviewField
+            label="Agent status"
+            value={buyerAgentStatusLabel(state.workingWithAgent)}
+          />
+          <AgentPreviewField label="Home needs" value={homeNeeds} />
+        </dl>
+      </div>
+
+      <div className="mt-8 border border-stone-300 bg-stone-50 p-5">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">
+          Suggested Next Action
+        </p>
+        <p className="mt-4 border-l-2 border-stone-900 pl-4 text-sm font-light leading-relaxed text-stone-800">
+          {suggestedAction}
+        </p>
+      </div>
+
+      <div className="mt-8">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">Follow-Up Preview</p>
+        <ul className="mt-4 space-y-2 text-sm font-light text-stone-700">
+          {followUpItems.map((item) => (
+            <li key={item} className="flex gap-3">
+              <span className="mt-2 h-px w-5 shrink-0 bg-stone-300" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-8">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">Text Alert Preview</p>
+        <div className="mt-4 max-w-xl rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm font-light leading-relaxed text-stone-700 shadow-sm">
+          <p className="mb-2 text-[10px] tracking-[0.25em] uppercase text-stone-400">
+            Text - just now
+          </p>
+          {textAlert}
+        </div>
+      </div>
+
+      <p className="mt-8 border-t border-stone-100 pt-4 text-xs font-light italic text-stone-400">
+        Demo preview only. In the live version, this would be sent privately to the agent.
+      </p>
+    </aside>
+  );
+}
+
+function AgentPreviewField({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-[10px] tracking-[0.28em] uppercase text-stone-400">{label}</dt>
+      <dd className="mt-1 text-sm font-light leading-relaxed text-stone-800">{value}</dd>
+    </div>
+  );
+}
 
 function BuyerMatchResult({ match }: { match: MatchResult | null }) {
   if (!match) {
@@ -996,12 +1085,11 @@ function BuyerMatchResult({ match }: { match: MatchResult | null }) {
                 <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.baths} ba
               </span>
               <span className="flex items-center gap-1.5">
-                <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.sqft.toLocaleString()} sqft
+                <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} />{" "}
+                {listing.sqft.toLocaleString()} sqft
               </span>
             </div>
-            <p className="mt-5 text-sm text-stone-700 font-light leading-relaxed">
-              {reason}
-            </p>
+            <p className="mt-5 text-sm text-stone-700 font-light leading-relaxed">{reason}</p>
 
             {!strong && (
               <p className="mt-3 text-sm text-stone-500 font-light italic leading-relaxed">
@@ -1036,9 +1124,7 @@ function BuyerReassurance() {
   return (
     <section className="bg-[#faf7f2] py-24 lg:py-32">
       <div className="mx-auto max-w-3xl px-6 lg:px-10 text-center">
-        <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-6">
-          From buyers
-        </p>
+        <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-6">From buyers</p>
         <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 leading-[1.15] max-w-2xl mx-auto">
           {REALTOR_FIRST_NAME} has helped buyers like you move from unsure to clear.
         </h2>
@@ -1054,7 +1140,6 @@ function BuyerReassurance() {
             <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} />
           </Link>
         </div>
-
       </div>
     </section>
   );
@@ -1073,10 +1158,18 @@ function Footer() {
               {REALTOR_PROFILE.title} in {REALTOR_PROFILE.location}
             </p>
             <div className="mt-6 flex items-center gap-4">
-              <a href={REALTOR_PROFILE.socialLinks.linkedin} aria-label="LinkedIn" className="text-stone-400 hover:text-white transition-colors">
+              <a
+                href={REALTOR_PROFILE.socialLinks.linkedin}
+                aria-label="LinkedIn"
+                className="text-stone-400 hover:text-white transition-colors"
+              >
                 <Linkedin className="h-4 w-4" strokeWidth={1.5} />
               </a>
-              <a href={REALTOR_PROFILE.socialLinks.instagram} aria-label="Instagram" className="text-stone-400 hover:text-white transition-colors">
+              <a
+                href={REALTOR_PROFILE.socialLinks.instagram}
+                aria-label="Instagram"
+                className="text-stone-400 hover:text-white transition-colors"
+              >
                 <Instagram className="h-4 w-4" strokeWidth={1.5} />
               </a>
             </div>
@@ -1084,27 +1177,52 @@ function Footer() {
 
           <div className="text-sm font-light space-y-2">
             <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">Contact</p>
-            <a href={`tel:${REALTOR_PROFILE.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 hover:text-white transition-colors">
+            <a
+              href={`tel:${REALTOR_PROFILE.phone.replace(/[^+\d]/g, "")}`}
+              className="flex items-center gap-2 hover:text-white transition-colors"
+            >
               <Phone className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.phone}
             </a>
-            <a href={`mailto:${REALTOR_PROFILE.email}`} className="flex items-center gap-2 hover:text-white transition-colors">
+            <a
+              href={`mailto:${REALTOR_PROFILE.email}`}
+              className="flex items-center gap-2 hover:text-white transition-colors"
+            >
               <Mail className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.email}
             </a>
           </div>
 
           <div>
-            <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">Quick Links</p>
+            <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">
+              Quick Links
+            </p>
             <ul className="space-y-2 text-sm font-light">
-              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/start-here" className="hover:text-white transition-colors">Start Here</Link></li>
-              <li><Link to="/testimonials" className="hover:text-white transition-colors">Testimonials</Link></li>
+              <li>
+                <Link to="/" className="hover:text-white transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/start-here" className="hover:text-white transition-colors">
+                  Start Here
+                </Link>
+              </li>
+              <li>
+                <Link to="/testimonials" className="hover:text-white transition-colors">
+                  Testimonials
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-[11px] text-stone-500 font-light">
-          <p>Brokerage: {REALTOR_PROFILE.company} · GA License {REALTOR_PROFILE.licenseNumber}· Equal Housing Opportunity</p>
-          <p>© {new Date().getFullYear()} {REALTOR_PROFILE.name}. All rights reserved.</p>
+          <p>
+            Brokerage: {REALTOR_PROFILE.company} · GA License {REALTOR_PROFILE.licenseNumber}· Equal
+            Housing Opportunity
+          </p>
+          <p>
+            © {new Date().getFullYear()} {REALTOR_PROFILE.name}. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

@@ -26,8 +26,7 @@ export const Route = createFileRoute("/seller")({
       { title: `Selling a Home | ${REALTOR_PROFILE.name}` },
       {
         name: "description",
-        content:
-          `Share a few details about your Atlanta home and get a preliminary selling range. ${REALTOR_FIRST_NAME} follows up with a personalized value review.`,
+        content: `Share a few details about your Atlanta home and get a preliminary selling range. ${REALTOR_FIRST_NAME} follows up with a personalized value review.`,
       },
     ],
   }),
@@ -70,14 +69,7 @@ const AREA_GROUPS: AreaGroup[] = [
   },
   {
     label: "South Metro",
-    options: [
-      "Riverdale",
-      "Jonesboro",
-      "Union City",
-      "Fairburn",
-      "McDonough",
-      "Stockbridge",
-    ],
+    options: ["Riverdale", "Jonesboro", "Union City", "Fairburn", "McDonough", "Stockbridge"],
   },
   {
     label: "Outer Metro Atlanta",
@@ -324,15 +316,12 @@ function SellerHero() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/20 to-[#faf7f2]/90" />
       <div className="relative z-10 flex h-full flex-col items-center justify-end pb-20 sm:pb-28 text-center px-6">
-        <p className="text-[11px] tracking-[0.4em] uppercase text-stone-700 mb-6">
-          For Sellers
-        </p>
+        <p className="text-[11px] tracking-[0.4em] uppercase text-stone-700 mb-6">For Sellers</p>
         <h1 className="font-serif text-stone-900 text-4xl sm:text-5xl lg:text-6xl xl:text-[4.25rem] leading-[1.05] font-light max-w-3xl">
           Get a clearer first look at your home's selling range.
         </h1>
         <p className="mt-8 max-w-xl text-stone-700 font-light text-base sm:text-lg leading-relaxed">
-          Share a few details about your home, and I'll follow up with a
-          personalized value review.
+          Share a few details about your home, and I'll follow up with a personalized value review.
         </p>
         <button
           type="button"
@@ -351,9 +340,21 @@ function SellerHero() {
 
 function WhatHappensNext() {
   const steps = [
-    { n: "01", title: "Share a few details", body: "About your home, timeline, and what's on your mind." },
-    { n: "02", title: "Get a preliminary range", body: "Or a note that the home deserves a closer personal review." },
-    { n: "03", title: `${REALTOR_FIRST_NAME} follows up`, body: "With clear next steps and a more accurate review." },
+    {
+      n: "01",
+      title: "Share a few details",
+      body: "About your home, timeline, and what's on your mind.",
+    },
+    {
+      n: "02",
+      title: "Get a preliminary range",
+      body: "Or a note that the home deserves a closer personal review.",
+    },
+    {
+      n: "03",
+      title: `${REALTOR_FIRST_NAME} follows up`,
+      body: "With clear next steps and a more accurate review.",
+    },
   ];
   return (
     <section className="bg-[#faf7f2] py-16 lg:py-20 border-b border-stone-200/60">
@@ -567,20 +568,23 @@ function SellerWizard() {
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-[1.1]">
             Tell me about your home
           </h2>
-          <p className="mt-5 text-stone-500 text-sm font-light">
-            Takes about 3 minutes.
-          </p>
+          <p className="mt-5 text-stone-500 text-sm font-light">Takes about 3 minutes.</p>
         </div>
 
         <div ref={wizardRef} className="min-h-[780px]">
           {submitted && result ? (
-            <ResultCard result={result} onEdit={handleEdit} />
+            <div className="space-y-8">
+              <ResultCard result={result} onEdit={handleEdit} />
+              <SellerAgentPreview state={state} result={result} />
+            </div>
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
               <div className="px-6 sm:px-10 pt-8">
                 <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500">
-                  <span>Step {step} of {TOTAL_STEPS}</span>
+                  <span>
+                    Step {step} of {TOTAL_STEPS}
+                  </span>
                   <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
                 </div>
                 <div className="mt-3 h-px bg-stone-200 relative overflow-hidden">
@@ -594,12 +598,8 @@ function SellerWizard() {
               <div className="px-6 sm:px-10 py-10 sm:py-12">
                 {step === 1 && <Step1Location state={state} update={update} />}
                 {step === 2 && <Step2Basics state={state} update={update} />}
-                {step === 3 && (
-                  <Step3Condition state={state} update={update} toggle={toggleArr} />
-                )}
-                {step === 4 && (
-                  <Step4Timeline state={state} update={update} toggle={toggleArr} />
-                )}
+                {step === 3 && <Step3Condition state={state} update={update} toggle={toggleArr} />}
+                {step === 4 && <Step4Timeline state={state} update={update} toggle={toggleArr} />}
                 {step === 5 && <Step5Contact state={state} update={update} />}
               </div>
 
@@ -686,9 +686,7 @@ function ResultCard({ result, onEdit }: { result: ResultData; onEdit: () => void
           <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
             <Sparkles className="h-4 w-4" strokeWidth={1.5} />
           </div>
-          <p className="mt-5 text-[10px] tracking-[0.35em] uppercase text-stone-500">
-            Your home
-          </p>
+          <p className="mt-5 text-[10px] tracking-[0.35em] uppercase text-stone-500">Your home</p>
           <h3 className="mt-3 font-serif text-3xl sm:text-4xl text-stone-900 leading-[1.1]">
             Personal Review Needed
           </h3>
@@ -696,8 +694,7 @@ function ResultCard({ result, onEdit }: { result: ResultData; onEdit: () => void
             This home deserves a closer look before I estimate a range.
           </p>
           <p className="mt-3 max-w-lg mx-auto text-stone-500 font-light text-sm leading-relaxed">
-            I'll review the details you shared and follow up with a more accurate
-            next step.
+            I'll review the details you shared and follow up with a more accurate next step.
           </p>
         </div>
         <div className="mt-10 flex flex-col items-center gap-4">
@@ -789,22 +786,175 @@ function ResultCard({ result, onEdit }: { result: ResultData; onEdit: () => void
   );
 }
 
+const EMPTY_SELLER_PREVIEW_VALUE = "Not provided yet";
+
+function sellerPreviewValue(value: string): string {
+  return value.trim() || EMPTY_SELLER_PREVIEW_VALUE;
+}
+
+function sellerPreviewList(values: string[]): string {
+  return values.length > 0 ? values.join(", ") : EMPTY_SELLER_PREVIEW_VALUE;
+}
+
+function isSoonSellerTimeline(timeline: string): boolean {
+  const normalized = timeline.toLowerCase();
+  return normalized.includes("now") || (normalized.includes("1") && normalized.includes("3"));
+}
+
+function sellerAgentStatusLabel(status: string): string {
+  if (status === "Yes") return "Currently represented";
+  if (status === "No") return "Not currently represented";
+  if (status === "Not sure") return "Not sure yet";
+  return EMPTY_SELLER_PREVIEW_VALUE;
+}
+
+function sellerRangeLabel(result: ResultData): string {
+  if (result.type === "personal") return "Personal review needed";
+  return `${formatPrice(result.low!)} - ${formatPrice(result.high!)}`;
+}
+
+function SellerAgentPreview({ state, result }: { state: SellerState; result: ResultData }) {
+  const isRepresented = state.workingWithAgent === "Yes";
+  const isSoon = isSoonSellerTimeline(state.timeline);
+  const hasReviewItems = result.type === "personal" || result.worthReviewing.length > 0;
+  const leadStatus = isRepresented
+    ? "Agency check"
+    : hasReviewItems
+      ? "Needs review"
+      : isSoon
+        ? "Hot seller"
+        : "Seller nurture";
+  const suggestedAction = isRepresented
+    ? "Confirm representation before giving listing guidance. Keep follow-up informational until status is clear."
+    : hasReviewItems
+      ? "Ask a few follow-up questions before giving a stronger estimate."
+      : isSoon
+        ? "Call or text today to schedule a value review."
+        : "Start seller nurture follow-up and offer a prep checklist.";
+  const followUpItems = isRepresented
+    ? [
+        "Automation paused until agency status is clear",
+        "Do not pressure the seller for listing guidance",
+        "Keep interaction respectful and informational only",
+      ]
+    : [
+        "Today: Send value review invite",
+        "Tomorrow: Check in if no response",
+        "Day 3: Share seller prep checklist",
+        "Stop if they reply",
+      ];
+  const sellerName = state.name.trim() || "Homeowner";
+  const rangeLabel = sellerRangeLabel(result);
+  const textAlert = `New seller lead from your website: ${sellerName} is considering selling in ${sellerPreviewValue(
+    state.timeline,
+  )}. Preliminary range: ${rangeLabel}. Suggested next step: ${suggestedAction}`;
+
+  return (
+    <aside className="border border-dashed border-stone-300 bg-white px-5 py-7 sm:p-8 shadow-sm">
+      <div className="inline-flex border border-stone-200 bg-stone-50 px-3 py-1.5 text-[10px] tracking-[0.28em] uppercase text-stone-500">
+        Demo Agent View
+      </div>
+
+      <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h3 className="font-serif text-2xl text-stone-900">Agent Preview</h3>
+          <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-stone-500">
+            Hidden from visitors in the live version. Shown here so the agent can see what they
+            would receive.
+          </p>
+        </div>
+        <div className="w-fit border border-stone-300 px-3 py-2 text-[10px] tracking-[0.24em] uppercase text-stone-700">
+          {leadStatus}
+        </div>
+      </div>
+
+      <div className="mt-8 border-t border-stone-100 pt-7">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">
+          Seller Lead Summary
+        </p>
+        <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          <SellerPreviewField label="Lead source" value="Website seller form" />
+          <SellerPreviewField label="Lead status" value={leadStatus} />
+          <SellerPreviewField label="Name" value={sellerPreviewValue(state.name)} />
+          <SellerPreviewField label="Timeline" value={sellerPreviewValue(state.timeline)} />
+          <SellerPreviewField
+            label="Property type"
+            value={sellerPreviewValue(state.propertyType)}
+          />
+          <SellerPreviewField label="Area" value={sellerPreviewValue(state.area)} />
+          <SellerPreviewField
+            label="Agent status"
+            value={sellerAgentStatusLabel(state.workingWithAgent)}
+          />
+          <SellerPreviewField label="Preliminary range" value={rangeLabel} />
+          <SellerPreviewField
+            label="Helpful signals"
+            value={sellerPreviewList(result.helpfulSignals)}
+          />
+          <SellerPreviewField
+            label="Worth reviewing"
+            value={sellerPreviewList(result.worthReviewing)}
+          />
+        </dl>
+      </div>
+
+      <div className="mt-8 border border-stone-300 bg-stone-50 p-5">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">
+          Suggested Next Action
+        </p>
+        <p className="mt-4 border-l-2 border-stone-900 pl-4 text-sm font-light leading-relaxed text-stone-800">
+          {suggestedAction}
+        </p>
+      </div>
+
+      <div className="mt-8">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">Follow-Up Preview</p>
+        <ul className="mt-4 space-y-2 text-sm font-light text-stone-700">
+          {followUpItems.map((item) => (
+            <li key={item} className="flex gap-3">
+              <span className="mt-2 h-px w-5 shrink-0 bg-stone-300" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-8">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">Text Alert Preview</p>
+        <div className="mt-4 max-w-xl rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm font-light leading-relaxed text-stone-700 shadow-sm">
+          <p className="mb-2 text-[10px] tracking-[0.25em] uppercase text-stone-400">
+            Text - just now
+          </p>
+          {textAlert}
+        </div>
+      </div>
+
+      <p className="mt-8 border-t border-stone-100 pt-4 text-xs font-light italic text-stone-400">
+        Demo preview only. In the live version, this would be sent privately to the agent.
+      </p>
+    </aside>
+  );
+}
+
+function SellerPreviewField({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-[10px] tracking-[0.28em] uppercase text-stone-400">{label}</dt>
+      <dd className="mt-1 text-sm font-light leading-relaxed text-stone-800">{value}</dd>
+    </div>
+  );
+}
+
 /* ---------- Step pieces ---------- */
 
 function FieldLabel({ children }: { children: ReactNode }) {
-  return (
-    <p className="text-[11px] tracking-[0.3em] uppercase text-stone-500 mb-4">
-      {children}
-    </p>
-  );
+  return <p className="text-[11px] tracking-[0.3em] uppercase text-stone-500 mb-4">{children}</p>;
 }
 
 function StepHeading({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-8">
-      <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 leading-[1.15]">
-        {title}
-      </h3>
+      <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 leading-[1.15]">{title}</h3>
       {sub && <p className="mt-3 text-stone-500 text-sm font-light">{sub}</p>}
     </div>
   );
@@ -824,9 +974,10 @@ function Chip({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center justify-center px-4 py-2.5 text-sm font-light border transition-all min-h-11
-        ${active
-          ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
-          : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
+        ${
+          active
+            ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
+            : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
         }`}
     >
       {children}
@@ -849,10 +1000,7 @@ function Step1Location({
   const [query, setQuery] = useState("");
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
-  const allOptions = useMemo(
-    () => AREA_GROUPS.flatMap((g) => g.options),
-    [],
-  );
+  const allOptions = useMemo(() => AREA_GROUPS.flatMap((g) => g.options), []);
 
   const matches = useMemo(() => {
     if (!query.trim()) return [];
@@ -862,13 +1010,13 @@ function Step1Location({
 
   return (
     <div>
-      <StepHeading
-        title="Where is the home located?"
-        sub="Search or browse by area."
-      />
+      <StepHeading title="Where is the home located?" sub="Search or browse by area." />
 
       <div className="relative">
-        <Search className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" strokeWidth={1.5} />
+        <Search
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400"
+          strokeWidth={1.5}
+        />
         <input
           type="text"
           value={query}
@@ -951,7 +1099,8 @@ function Step1Location({
 
       <div className="mt-10">
         <FieldLabel>
-          Street address <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+          Street address{" "}
+          <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
         </FieldLabel>
         <input
           type="text"
@@ -1066,14 +1215,13 @@ function Step3Condition({
       </div>
 
       <div>
-        <FieldLabel>Recent updates <span className="text-stone-400 normal-case tracking-normal italic">— optional</span></FieldLabel>
+        <FieldLabel>
+          Recent updates{" "}
+          <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+        </FieldLabel>
         <div className="flex flex-wrap gap-2.5">
           {UPDATE_OPTIONS.map((u) => (
-            <Chip
-              key={u}
-              active={state.updates.includes(u)}
-              onClick={() => toggle("updates", u)}
-            >
+            <Chip key={u} active={state.updates.includes(u)} onClick={() => toggle("updates", u)}>
               {u}
             </Chip>
           ))}
@@ -1082,22 +1230,20 @@ function Step3Condition({
 
       <div>
         <FieldLabel>
-          Anything {REALTOR_FIRST_NAME} should know before reviewing the value? <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+          Anything {REALTOR_FIRST_NAME} should know before reviewing the value?{" "}
+          <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
         </FieldLabel>
         <div className="flex flex-wrap gap-2.5">
           {ISSUE_OPTIONS.map((i) => (
-            <Chip
-              key={i}
-              active={state.issues.includes(i)}
-              onClick={() => toggle("issues", i)}
-            >
+            <Chip key={i} active={state.issues.includes(i)} onClick={() => toggle("issues", i)}>
               {i}
             </Chip>
           ))}
         </div>
         <div className="mt-6">
           <FieldLabel>
-            Anything else? <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+            Anything else?{" "}
+            <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
           </FieldLabel>
           <input
             type="text"
@@ -1140,15 +1286,12 @@ function Step4Timeline({
 
       <div>
         <FieldLabel>
-          Reason for selling <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+          Reason for selling{" "}
+          <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
         </FieldLabel>
         <div className="flex flex-wrap gap-2.5">
           {REASON_OPTIONS.map((r) => (
-            <Chip
-              key={r}
-              active={state.reasons.includes(r)}
-              onClick={() => toggle("reasons", r)}
-            >
+            <Chip key={r} active={state.reasons.includes(r)} onClick={() => toggle("reasons", r)}>
               {r}
             </Chip>
           ))}
@@ -1157,15 +1300,12 @@ function Step4Timeline({
 
       <div>
         <FieldLabel>
-          Occupancy <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+          Occupancy{" "}
+          <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
         </FieldLabel>
         <div className="flex flex-wrap gap-2.5">
           {OCCUPANCY_OPTIONS.map((o) => (
-            <Chip
-              key={o}
-              active={state.occupancy === o}
-              onClick={() => update("occupancy", o)}
-            >
+            <Chip key={o} active={state.occupancy === o} onClick={() => update("occupancy", o)}>
               {o}
             </Chip>
           ))}
@@ -1215,7 +1355,8 @@ function Step5Contact({
           </div>
           <div className="sm:col-span-2">
             <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-              Email <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
+              Email{" "}
+              <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
             </label>
             <input
               type="email"
@@ -1263,7 +1404,8 @@ function Step5Contact({
 
       <div>
         <FieldLabel>
-          Is there a price you're hoping for? <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+          Is there a price you're hoping for?{" "}
+          <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
         </FieldLabel>
         <input
           type="text"
@@ -1281,7 +1423,8 @@ function Step5Contact({
 
       <div>
         <FieldLabel>
-          Add photos, if you'd like <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
+          Add photos, if you'd like{" "}
+          <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
         </FieldLabel>
         <label className="block border border-dashed border-stone-300 px-5 py-6 text-sm font-light text-stone-600 cursor-pointer hover:border-stone-500 transition-colors text-center">
           <input
@@ -1311,9 +1454,7 @@ function Step5Contact({
           <ReviewRow
             label="Beds / Baths"
             value={
-              state.beds || state.baths
-                ? `${state.beds || "—"} bd · ${state.baths || "—"} ba`
-                : ""
+              state.beds || state.baths ? `${state.beds || "—"} bd · ${state.baths || "—"} ba` : ""
             }
           />
           <ReviewRow label="Sq ft" value={state.sqft} />
@@ -1332,21 +1473,11 @@ function Step5Contact({
   );
 }
 
-function ReviewRow({
-  label,
-  value,
-  full,
-}: {
-  label: string;
-  value: string;
-  full?: boolean;
-}) {
+function ReviewRow({ label, value, full }: { label: string; value: string; full?: boolean }) {
   return (
     <div className={full ? "sm:col-span-2" : ""}>
       <dt className="text-[10px] tracking-[0.28em] uppercase text-stone-400">{label}</dt>
-      <dd className="mt-1 text-stone-800">
-        {value || <span className="text-stone-400">—</span>}
-      </dd>
+      <dd className="mt-1 text-stone-800">{value || <span className="text-stone-400">—</span>}</dd>
     </div>
   );
 }
@@ -1357,15 +1488,13 @@ function SellerReassurance() {
   return (
     <section className="bg-[#faf7f2] py-24 lg:py-32">
       <div className="mx-auto max-w-3xl px-6 lg:px-10 text-center">
-        <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-6">
-          From sellers
-        </p>
+        <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-6">From sellers</p>
         <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 leading-[1.15] max-w-2xl mx-auto">
           {REALTOR_FIRST_NAME} has helped sellers move from unsure to prepared.
         </h2>
         <blockquote className="mt-12 font-serif italic text-xl sm:text-2xl text-stone-700 leading-relaxed">
-          &ldquo;She walked us through every option before we listed. By the time
-          we went to market, we felt completely ready.&rdquo;
+          &ldquo;She walked us through every option before we listed. By the time we went to market,
+          we felt completely ready.&rdquo;
         </blockquote>
         <p className="mt-6 text-[11px] tracking-[0.3em] uppercase text-stone-500">
           — Recent Seller, Brookhaven
@@ -1397,10 +1526,18 @@ function Footer() {
               {REALTOR_PROFILE.title} in {REALTOR_PROFILE.location}
             </p>
             <div className="mt-6 flex items-center gap-4">
-              <a href={REALTOR_PROFILE.socialLinks.linkedin} aria-label="LinkedIn" className="text-stone-400 hover:text-white transition-colors">
+              <a
+                href={REALTOR_PROFILE.socialLinks.linkedin}
+                aria-label="LinkedIn"
+                className="text-stone-400 hover:text-white transition-colors"
+              >
                 <Linkedin className="h-4 w-4" strokeWidth={1.5} />
               </a>
-              <a href={REALTOR_PROFILE.socialLinks.instagram} aria-label="Instagram" className="text-stone-400 hover:text-white transition-colors">
+              <a
+                href={REALTOR_PROFILE.socialLinks.instagram}
+                aria-label="Instagram"
+                className="text-stone-400 hover:text-white transition-colors"
+              >
                 <Instagram className="h-4 w-4" strokeWidth={1.5} />
               </a>
             </div>
@@ -1408,27 +1545,52 @@ function Footer() {
 
           <div className="text-sm font-light space-y-2">
             <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">Contact</p>
-            <a href={`tel:${REALTOR_PROFILE.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 hover:text-white transition-colors">
+            <a
+              href={`tel:${REALTOR_PROFILE.phone.replace(/[^+\d]/g, "")}`}
+              className="flex items-center gap-2 hover:text-white transition-colors"
+            >
               <Phone className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.phone}
             </a>
-            <a href={`mailto:${REALTOR_PROFILE.email}`} className="flex items-center gap-2 hover:text-white transition-colors">
+            <a
+              href={`mailto:${REALTOR_PROFILE.email}`}
+              className="flex items-center gap-2 hover:text-white transition-colors"
+            >
               <Mail className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.email}
             </a>
           </div>
 
           <div>
-            <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">Quick Links</p>
+            <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">
+              Quick Links
+            </p>
             <ul className="space-y-2 text-sm font-light">
-              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/start-here" className="hover:text-white transition-colors">Start Here</Link></li>
-              <li><Link to="/testimonials" className="hover:text-white transition-colors">Testimonials</Link></li>
+              <li>
+                <Link to="/" className="hover:text-white transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/start-here" className="hover:text-white transition-colors">
+                  Start Here
+                </Link>
+              </li>
+              <li>
+                <Link to="/testimonials" className="hover:text-white transition-colors">
+                  Testimonials
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-[11px] text-stone-500 font-light">
-          <p>Brokerage: {REALTOR_PROFILE.company} · GA License {REALTOR_PROFILE.licenseNumber} · Equal Housing Opportunity</p>
-          <p>© {new Date().getFullYear()} {REALTOR_PROFILE.name}. All rights reserved.</p>
+          <p>
+            Brokerage: {REALTOR_PROFILE.company} · GA License {REALTOR_PROFILE.licenseNumber} ·
+            Equal Housing Opportunity
+          </p>
+          <p>
+            © {new Date().getFullYear()} {REALTOR_PROFILE.name}. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
