@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { AgentPreview, type AgentPreviewItem } from "@/components/AgentPreview";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
 import sellerHero from "@/assets/Alexandra/seller-hero.jpg";
 
@@ -574,7 +575,7 @@ function SellerWizard() {
 
         <div ref={wizardRef} className="min-h-[780px]">
           {submitted && result ? (
-            <ResultCard result={result} onEdit={handleEdit} />
+            <ResultCard result={result} state={state} onEdit={handleEdit} />
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
