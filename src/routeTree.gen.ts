@@ -13,6 +13,7 @@ import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as StartHereRouteImport } from './routes/start-here'
 import { Route as SellerRouteImport } from './routes/seller'
 import { Route as QuestionRouteImport } from './routes/question'
+import { Route as LrnInboxRouteImport } from './routes/lrn-inbox'
 import { Route as ListingsRouteImport } from './routes/listings'
 import { Route as LetsConnectRouteImport } from './routes/lets-connect'
 import { Route as LeadNurtureRouteImport } from './routes/lead-nurture'
@@ -41,6 +42,11 @@ const SellerRoute = SellerRouteImport.update({
 const QuestionRoute = QuestionRouteImport.update({
   id: '/question',
   path: '/question',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LrnInboxRoute = LrnInboxRouteImport.update({
+  id: '/lrn-inbox',
+  path: '/lrn-inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ListingsRoute = ListingsRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/lead-nurture': typeof LeadNurtureRoute
   '/lets-connect': typeof LetsConnectRoute
   '/listings': typeof ListingsRoute
+  '/lrn-inbox': typeof LrnInboxRoute
   '/question': typeof QuestionRoute
   '/seller': typeof SellerRoute
   '/start-here': typeof StartHereRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/lead-nurture': typeof LeadNurtureRoute
   '/lets-connect': typeof LetsConnectRoute
   '/listings': typeof ListingsRoute
+  '/lrn-inbox': typeof LrnInboxRoute
   '/question': typeof QuestionRoute
   '/seller': typeof SellerRoute
   '/start-here': typeof StartHereRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/lead-nurture': typeof LeadNurtureRoute
   '/lets-connect': typeof LetsConnectRoute
   '/listings': typeof ListingsRoute
+  '/lrn-inbox': typeof LrnInboxRoute
   '/question': typeof QuestionRoute
   '/seller': typeof SellerRoute
   '/start-here': typeof StartHereRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/lead-nurture'
     | '/lets-connect'
     | '/listings'
+    | '/lrn-inbox'
     | '/question'
     | '/seller'
     | '/start-here'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/lead-nurture'
     | '/lets-connect'
     | '/listings'
+    | '/lrn-inbox'
     | '/question'
     | '/seller'
     | '/start-here'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/lead-nurture'
     | '/lets-connect'
     | '/listings'
+    | '/lrn-inbox'
     | '/question'
     | '/seller'
     | '/start-here'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   LeadNurtureRoute: typeof LeadNurtureRoute
   LetsConnectRoute: typeof LetsConnectRoute
   ListingsRoute: typeof ListingsRoute
+  LrnInboxRoute: typeof LrnInboxRoute
   QuestionRoute: typeof QuestionRoute
   SellerRoute: typeof SellerRoute
   StartHereRoute: typeof StartHereRoute
@@ -227,6 +240,13 @@ declare module '@tanstack/react-router' {
       path: '/question'
       fullPath: '/question'
       preLoaderRoute: typeof QuestionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lrn-inbox': {
+      id: '/lrn-inbox'
+      path: '/lrn-inbox'
+      fullPath: '/lrn-inbox'
+      preLoaderRoute: typeof LrnInboxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/listings': {
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeadNurtureRoute: LeadNurtureRoute,
   LetsConnectRoute: LetsConnectRoute,
   ListingsRoute: ListingsRoute,
+  LrnInboxRoute: LrnInboxRoute,
   QuestionRoute: QuestionRoute,
   SellerRoute: SellerRoute,
   StartHereRoute: StartHereRoute,

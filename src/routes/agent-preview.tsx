@@ -237,6 +237,13 @@ function AlertPreview({ hasMissedCall }: { hasMissedCall: boolean }) {
           View Nurture Preview
           <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} />
         </Link>
+        <Link
+          to="/lrn-inbox"
+          className="mt-4 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.28em] text-stone-900 underline underline-offset-8 transition-colors hover:text-stone-600"
+        >
+          Open LRN Inbox
+          <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} />
+        </Link>
       </div>
     </article>
   );

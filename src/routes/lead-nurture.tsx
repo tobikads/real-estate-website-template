@@ -471,8 +471,15 @@ function DemoPath() {
 
       <div className="mt-7 flex flex-col gap-3 sm:flex-row">
         <Link
-          to="/agent-preview"
+          to="/lrn-inbox"
           className="inline-flex min-h-12 items-center justify-center gap-2 bg-stone-900 px-5 py-3 text-center text-[11px] uppercase tracking-[0.24em] text-[#faf7f2] transition-colors hover:bg-stone-800"
+        >
+          LRN Inbox
+          <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} />
+        </Link>
+        <Link
+          to="/agent-preview"
+          className="inline-flex min-h-12 items-center justify-center gap-2 border border-stone-300 px-5 py-3 text-center text-[11px] uppercase tracking-[0.24em] text-stone-800 transition-colors hover:bg-stone-50"
         >
           Lead Recovery
           <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} />

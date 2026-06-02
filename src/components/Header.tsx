@@ -47,7 +47,7 @@ export function Header() {
   const location = useLocation();
 
   const isStartHerePage = location.pathname === "/start-here";
-  const isLightHeaderPage = ["/listings", "/agent-preview", "/lead-nurture"].includes(
+  const isLightHeaderPage = ["/listings", "/agent-preview", "/lead-nurture", "/lrn-inbox"].includes(
     location.pathname,
   );
   const shouldShowHomeInMenu = [
@@ -57,6 +57,7 @@ export function Header() {
     "/listings",
     "/agent-preview",
     "/lead-nurture",
+    "/lrn-inbox",
   ].includes(location.pathname);
   const dropdownItems = shouldShowHomeInMenu
     ? [{ label: "Home", to: "/" }, ...DROPDOWN_ITEMS]
