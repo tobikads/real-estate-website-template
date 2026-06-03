@@ -35,17 +35,17 @@ export type Testimonial = {
 export const HOMEPAGE_TESTIMONIALS: Testimonial[] = [
     {
         quote:
-            "Johunna is dedicated to her clients. She is knowledgeable, resourceful, and resilient. I have already recommended her to friends. I had an issue last year that delayed my ability to sell my home.",
-        name: "Iris D.",
+            "Isla is wonderful to work with. Professional and dedicated to finding your perfect home. She helps you narrow down your vision and provides listing you will enjoy to see. Overall she is wonderful person and provide great experience for her clients.",
+        name: "Mandy C.",
     },
     {
         quote:
-            "We interviewed three agents. Johunna was the only one who treated our questions like they mattered. She is patient, deeply informed about the city, and incredibly easy to trust with something this big.",
-        name: "Priya & Daniel R.",
+            "Isla is a dream come true, she was more like part of the family during our house selling and buying process. She took all of wants and needs into consideration and not only sold our home quickly but helped us find out forever home in a great school district with all we needed and more.",
+        name: "Erin G.",
     },
     {
         quote:
-            "Selling the house I raised my children in was emotional. Johunna handled every detail with such grace that I never once felt rushed. She is a rare professional and an even better person.",
-        name: "Eleanor W.",
+            "Isla is amazing! She is very professional and knowledgeable. She made our house buying experience fun and easy. I will definitely recommend her to anyone looking to buy or sell.",
+        name: "Brandi B.",
     },
 ];

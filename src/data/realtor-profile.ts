@@ -2,7 +2,7 @@
  * RealtorProfile type definition
  * Defines the structure for switchable realtor template data used throughout the site
  */
-import portraitImage from "@/assets/Johunna/J-Headshot-1.jpg";
+import portraitImage from "@/assets/Isla/headshot.jpg";
 
 export type RealtorProfile = {
     name: string;
@@ -29,16 +29,16 @@ export type RealtorProfile = {
  * for different realtor information to reuse the entire site template
  */
 export const REALTOR_PROFILE: RealtorProfile = {
-    name: "Johunna Redmond",
+    name: "Isla Mills",
     title: "Real Estate Agent",
     location: "Atlanta, GA",
-    company: "The Redmond Realty",
-    phone: "404-516-1175",
-    email: "johunnasells@gmail.com",
-    bio: "I am a licensed Real Estate Agent helping families gain knowledge, grow wealth and have new conversations about financial literacy through homeownership. I work with investors, first-time home buyers, luxury buyers and sellers. I have been a licensed real estate agent for over 17 years. I began my real estate career in Tennessee as an investor before relocating to Atlanta. My mother was the driving force behind me becoming a real estate agent. She regularly watches HGTV and other home improvement channels and thought with my natural ability as a salesperson that I would be successful in real estate.",
-    approach: "I am dedicated to educating individuals on how much shifting your thoughts will affect the other areas in your life. My prayer is that I can create a platform in which I can engage with people around the globe regarding mental stability, best business practices and an overall healthy lifestyle.",
+    company: " Re/Max Tru, Inc.",
+    phone: "470-513-4507",
+    email: "islatheagent@gmail.com",
+    bio: "With over 9 years of real estate experience, I am dedicated to delivering exceptional service and results for every client. My approach is built on trust, transparency, and strong communication. Whether you're buying your first home, upgrading to your dream property, or preparing to sell, I provide expert guidance and a tailored strategy to help you navigate every step of the journey with confidence and ease.",
+    approach: " Whether you are a first-time buyer, a seller ready for your next chapter, or an investor building your portfolio, I approach every transaction with clarity, compassion, and confidence. Passionate about people and driven by results, I’m here to help you achieve your real estate goals—and to make the journey as rewarding as the destination.",
     portraitImage,
-    licenseNumber: "000000",
+    licenseNumber: "377339",
     socialLinks: {
         facebook: "https://facebook.com/alexandracarter",
         twitter: "https://twitter.com/alexandracarter",

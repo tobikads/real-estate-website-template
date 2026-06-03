@@ -6,9 +6,9 @@
  */
 
 import listing1 from "@/assets/Alexandra/listing-1.jpg";
-import listing2 from "@/assets/Johunna/3157-woodrow-way.png";
-import listing3 from "@/assets/Johunna/2742-alpine-road.png";
-import listing4 from "@/assets/Johunna/1958-saxon-valley.png";
+import listing2 from "@/assets/Isla/1710-Winter-Jasmine-Drive.jpg";
+import listing3 from "@/assets/Isla/2220-Davis-Oaks-Court.jpg";
+import listing4 from "@/assets/Isla/775-Martin-Field-Drive.jpg";
 
 export type FeaturedListing = {
     image: string;
@@ -37,29 +37,29 @@ export const FEATURED_LISTINGS: FeaturedListing[] = [
     },
     {
         image: listing2,
-        price: "$4,800,000",
-        neighborhood: "Brookhaven, Atlanta",
+        price: "$799,500",
+        neighborhood: "Hamilton Mill, Dacula",
         beds: 6,
-        baths: 9,
-        sqft: "8,900",
-        blurb: "Custom luxury estate with a resort-style pool and chef’s kitchen.",
+        baths: 5,
+        sqft: "4,600",
+        blurb: "Large Hamilton Mill traditional on a corner lot with a finished terrace level and resort-style neighborhood amenities.",
     },
     {
         image: listing3,
-        price: "$635,000",
-        neighborhood: "Brookhaven, Atlanta",
-        beds: 4,
+        price: "$519,000",
+        neighborhood: "St. Martin, Lawrenceville",
+        beds: 5,
         baths: 4,
-        sqft: "3,079",
-        blurb: "Gated Brookhaven townhome with four finished levels.",
+        sqft: "3,491",
+        blurb: "St. Martin home with a flexible multi-generational layout, refreshed kitchen, sunroom, and new deck.",
     },
     {
         image: listing4,
-        price: "$975,000",
-        neighborhood: "Garden Hills",
+        price: "$319,000",
+        neighborhood: "Davis Oaks, Stone Mountain",
         beds: 3,
         baths: 2,
-        sqft: "1,200",
-        blurb: "Rare Garden Hills lot with redevelopment potential in Buckhead.",
+        sqft: "2,270",
+        blurb: "Move-in-ready split-level with bright living spaces, updated kitchen, sunroom, and Gwinnett County school positioning.",
     },
 ];
