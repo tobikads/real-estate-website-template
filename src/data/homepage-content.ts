@@ -35,17 +35,17 @@ export type Testimonial = {
 export const HOMEPAGE_TESTIMONIALS: Testimonial[] = [
     {
         quote:
-            "Isla is wonderful to work with. Professional and dedicated to finding your perfect home. She helps you narrow down your vision and provides listing you will enjoy to see. Overall she is wonderful person and provide great experience for her clients.",
-        name: "Mandy C.",
+            "Savannah was amazing to work with. She listened to all our needed and directed us accordingly. She gave us advice that turned out to be the reason we got our home! We will always use Savannah and would highly recommend her.",
+        name: "Jon G.",
     },
     {
         quote:
-            "Isla is a dream come true, she was more like part of the family during our house selling and buying process. She took all of wants and needs into consideration and not only sold our home quickly but helped us find out forever home in a great school district with all we needed and more.",
-        name: "Erin G.",
+            "Savannah Lavender has been very detailed in every aspect of her profession with me and finding a home. I would use her in the future for any real estate deals and I would recommend her to anyone looking for a home.",
+        name: "Patty D.",
     },
     {
         quote:
-            "Isla is amazing! She is very professional and knowledgeable. She made our house buying experience fun and easy. I will definitely recommend her to anyone looking to buy or sell.",
-        name: "Brandi B.",
+            "Savannah is the best and so great to work with! She is super knowledgeable and is definitely a go getter. We loved working with her and she made our first buying experience great.",
+        name: "Kimberly S.",
     },
 ];
