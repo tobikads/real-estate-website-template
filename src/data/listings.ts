@@ -8,6 +8,7 @@
 import listing1 from "@/assets/Savannah/426-Jim Hood Road-Gainesville.png";
 import listing2 from "@/assets/Savannah/855-Peachtree St NE-3503.png";
 import listing3 from "@/assets/Savannah/1046-Mayson Turner Rd NW-30314.png";
+import listing4 from "@/assets/Alexandra/listing-1.jpg";
 
 export type FeaturedListing = {
     image: string;
@@ -51,5 +52,14 @@ export const FEATURED_LISTINGS: FeaturedListing[] = [
         baths: 3,
         sqft: "3,984",
         blurb: "Beautifully renovated home with flexible living space, private entrance, and a prime location near Atlanta's top attractions.",
+    },
+    {
+        image: listing4,
+        price: "$2,450,000",
+        neighborhood: "Buckhead, Atlanta",
+        beds: 5,
+        baths: 6,
+        sqft: "6,400",
+        blurb: "Modern stone-and-glass estate on a quiet tree-lined street.",
     },
 ];
