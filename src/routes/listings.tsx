@@ -1335,7 +1335,7 @@ function ListingLeadForm({
       </div>
       <div>
         <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-          Phone.
+          Phone Number
         </label>
         <input
           value={contact}

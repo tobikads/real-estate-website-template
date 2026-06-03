@@ -247,7 +247,7 @@ function QuestionForm() {
                   <div className="grid sm:grid-cols-2 gap-8">
                     <div>
                       <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-                        Phone <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
+                        Phone <span className="normal-case tracking-normal italic text-stone-400">*</span>
                       </label>
                       <input
                         type="tel"
