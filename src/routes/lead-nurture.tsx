@@ -15,6 +15,8 @@ import {
 import { Header } from "@/components/Header";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
 
+const realtorFirstName = REALTOR_PROFILE.name.split(" ")[0] || REALTOR_PROFILE.name;
+
 export const Route = createFileRoute("/lead-nurture")({
   head: () => ({
     meta: [
@@ -70,14 +72,13 @@ const nurturePlans: Record<TimelineKey, NurturePlan> = {
     suggestedAction: "Text within 5 minutes and offer a quick call or showing plan.",
     agentAlert:
       "Tobi is looking ASAP in Midtown with a $350k-$500k budget. Suggested next step: text within 5 minutes.",
-    firstText:
-      "Hi Tobi, this is Johunna. I saw you are looking ASAP in Midtown. I can help narrow the best options today. Want me to send a few that fit?",
+    firstText: `Hi Tobi, this is ${realtorFirstName}. I saw you are looking ASAP in Midtown. I can help narrow the best options today. Want me to send a few that fit?`,
     steps: [
       {
         when: "Now",
         title: "Send intro text",
         body: "The lead gets a fast, personal response while intent is still high.",
-        text: "Hi Tobi, this is Johunna. I saw you are looking ASAP in Midtown. I can help narrow the best options today.",
+        text: `Hi Tobi, this is ${realtorFirstName}. I saw you are looking ASAP in Midtown. I can help narrow the best options today.`,
       },
       {
         when: "5 minutes",
@@ -112,14 +113,13 @@ const nurturePlans: Record<TimelineKey, NurturePlan> = {
     suggestedAction: "Send intro today, then keep them warm with useful listing updates.",
     agentAlert:
       "Jasmine is looking in Marietta within 1-3 months. Suggested next step: send intro text today.",
-    firstText:
-      "Hi Jasmine, this is Johunna. I saw you are planning for Marietta in the next 1-3 months. I can send a few homes that match your range and must-haves.",
+    firstText: `Hi Jasmine, this is ${realtorFirstName}. I saw you are planning for Marietta in the next 1-3 months. I can send a few homes that match your range and must-haves.`,
     steps: [
       {
         when: "Today",
         title: "Send intro text",
         body: "The first message confirms the timeline and offers help without pressure.",
-        text: "Hi Jasmine, this is Johunna. I saw you are planning for Marietta in the next 1-3 months.",
+        text: `Hi Jasmine, this is ${realtorFirstName}. I saw you are planning for Marietta in the next 1-3 months.`,
       },
       {
         when: "Tomorrow",
@@ -154,14 +154,13 @@ const nurturePlans: Record<TimelineKey, NurturePlan> = {
     suggestedAction: "Send value-review invite, then monthly check-ins until timing gets closer.",
     agentAlert:
       "Marcus may sell in 3-6 months. Suggested next step: offer a value review and let nurture handle light check-ins.",
-    firstText:
-      "Hi Marcus, this is Johunna. I saw you are thinking about selling in the next 3-6 months. I can help you understand what to watch before you list.",
+    firstText: `Hi Marcus, this is ${realtorFirstName}. I saw you are thinking about selling in the next 3-6 months. I can help you understand what to watch before you list.`,
     steps: [
       {
         when: "Today",
         title: "Send soft intro",
         body: "The message matches the longer timeline and avoids sounding pushy.",
-        text: "Hi Marcus, this is Johunna. I saw you are thinking about selling in the next 3-6 months.",
+        text: `Hi Marcus, this is ${realtorFirstName}. I saw you are thinking about selling in the next 3-6 months.`,
       },
       {
         when: "7 days",

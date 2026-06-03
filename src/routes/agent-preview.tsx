@@ -14,6 +14,8 @@ import {
 import { Header } from "@/components/Header";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
 
+const realtorFirstName = REALTOR_PROFILE.name.split(" ")[0] || REALTOR_PROFILE.name;
+
 export const Route = createFileRoute("/agent-preview")({
   head: () => ({
     meta: [
@@ -33,8 +35,7 @@ const missedCallLead = {
   source: "Website phone button",
   time: "Just now",
   status: "Recovery text sent",
-  textToCaller:
-    "Hi, this is Johunna. Sorry I missed your call. You can start here and tell me if you're buying, selling, or have a question: johunnasells.com/start-here",
+  textToCaller: `Hi, this is ${realtorFirstName}. Sorry I missed your call. You can start here and tell me if you're buying, selling, or have a question: /start-here`,
 };
 
 const sampleLeads = [
