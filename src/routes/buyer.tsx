@@ -361,7 +361,7 @@ function TeaserCard({ listing }: { listing: (typeof TEASER_LISTINGS)[number] }) 
 
 const TOTAL_STEPS = 5;
 
-function BuyerWizard() {
+function BuyerWizard({ propertyAware = false }: { propertyAware?: boolean }) {
   const [step, setStep] = useState(1);
   const [state, setState] = useState<BuyerState>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
