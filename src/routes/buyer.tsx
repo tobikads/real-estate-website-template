@@ -1173,6 +1173,12 @@ function buildBuyerAgentPreview(
 
   const summary: AgentPreviewItem[] = [
     { label: "Name", value: nameDisplay },
+    ...(propertyAware
+      ? [
+          { label: "Source", value: "Zillow inquiry" },
+          { label: "Property of interest", value: `${ZILLOW_PROPERTY.address} · ${ZILLOW_PROPERTY.area}` },
+        ]
+      : []),
     { label: "Timeline", value: state.timeline },
     { label: "Budget", value: state.budget },
     { label: "Preferred area", value: areasText },
@@ -1186,6 +1192,7 @@ function buildBuyerAgentPreview(
           : "Not currently represented",
     },
   ];
+
 
   let nextAction: string;
   if (represented) {
