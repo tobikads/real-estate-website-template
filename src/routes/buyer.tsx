@@ -438,19 +438,26 @@ function BuyerWizard({ propertyAware = false }: { propertyAware?: boolean }) {
       <div className="mx-auto max-w-3xl px-6 lg:px-10">
         <div className="text-center mb-10 lg:mb-14">
           <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-5">
-            Buyer Intake
+            {propertyAware ? "Property-aware follow-up" : "Buyer Intake"}
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-[1.1]">
-            Tell me what you're looking for
+            {propertyAware
+              ? "A few quick questions about this home"
+              : "Tell me what you're looking for"}
           </h2>
-          <p className="mt-5 text-stone-500 text-sm font-light">
-            Takes about 2 minutes.
+          <p className="mt-5 text-stone-500 text-sm font-light max-w-xl mx-auto leading-relaxed">
+            {propertyAware
+              ? `${REALTOR_FIRST_NAME} already knows the home you asked about. Answer a few quick questions so she can confirm availability, schedule the right next step, or send similar homes if this one is not the right fit.`
+              : "Takes about 2 minutes."}
           </p>
-          <p className="mt-3 text-stone-400 text-xs font-light italic max-w-md mx-auto">
-            Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more
-            relevant homes.
-          </p>
+          {!propertyAware && (
+            <p className="mt-3 text-stone-400 text-xs font-light italic max-w-md mx-auto">
+              Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more
+              relevant homes.
+            </p>
+          )}
         </div>
+
 
         {/* Fixed-min-height shell keeps page from jumping on submit */}
         <div ref={wizardRef} className="min-h-[760px]">
