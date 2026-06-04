@@ -1093,6 +1093,58 @@ function BuyerMatchResult({ match, state }: { match: MatchResult | null; state: 
   );
 }
 
+/* ---------- Property-aware confirmation (Zillow inquiry) ---------- */
+
+function PropertyAwareConfirmation({ state }: { state: BuyerState }) {
+  const agentPreview = buildBuyerAgentPreview(state, null, true);
+  return (
+    <>
+      <div className="bg-white border border-stone-200 shadow-sm">
+        <div className="px-6 sm:px-10 pt-10 pb-8 text-center border-b border-stone-100">
+          <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+            <Check className="h-4 w-4" strokeWidth={2} />
+          </div>
+          <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-5">Thank you</h3>
+          <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-lg mx-auto">
+            {REALTOR_FIRST_NAME} will review your request for{" "}
+            <span className="text-stone-900">{ZILLOW_PROPERTY.address}</span> and follow up with
+            availability, showing options, or similar homes that fit what you shared.
+          </p>
+          <p className="mt-4 text-stone-500 font-light italic text-sm leading-relaxed max-w-md mx-auto">
+            If this home is no longer available, she'll use your answers to send close
+            alternatives.
+          </p>
+        </div>
+
+        <div className="px-6 sm:px-10 py-8">
+          <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500 mb-4">
+            Property attached
+          </p>
+          <div className="border border-stone-200 p-5 sm:p-6">
+            <p className="font-serif text-xl text-stone-900">{ZILLOW_PROPERTY.address}</p>
+            <p className="mt-1 text-sm font-light text-stone-600">{ZILLOW_PROPERTY.area}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-stone-700 text-sm font-light">
+              <span className="font-serif text-base text-stone-900">{ZILLOW_PROPERTY.price}</span>
+              <span className="flex items-center gap-1.5">
+                <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.beds} beds
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.baths} baths
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.sqft} sf
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <AgentPreview {...agentPreview} />
+    </>
+  );
+}
+
+
+
 /* ---------- Buyer agent-preview builder ---------- */
 
 function buildBuyerAgentPreview(
