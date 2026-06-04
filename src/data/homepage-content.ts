@@ -36,16 +36,16 @@ export const HOMEPAGE_TESTIMONIALS: Testimonial[] = [
     {
         quote:
             "Daryl was very respectful of our needs and paid close attention to the location and price point that mattered to us. He was always prompt, patient, polite, and honest when answering our questions. We highly recommend him.",
-        name: "Buyer Client",
+        name: "Calie M.",
     },
     {
         quote:
             "Daryl made the process feel organized from start to finish. He helped us compare options clearly, stayed focused on what we needed, and made sure we understood each step before moving forward.",
-        name: "Demo Client",
+        name: "Marcus T.",
     },
     {
         quote:
             "We appreciated Daryl's calm communication and attention to detail. He listened first, answered questions honestly, and helped us feel confident about the home we chose.",
-        name: "Demo Client",
+        name: "Angela R.",
     },
 ];
