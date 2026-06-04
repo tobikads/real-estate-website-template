@@ -26,6 +26,9 @@ import listing3 from "@/assets/Alexandra/listing-3.jpg";
 const REALTOR_FIRST_NAME = REALTOR_PROFILE.name.split(" ")[0];
 
 export const Route = createFileRoute("/buyer")({
+  validateSearch: (search: Record<string, unknown>): { ref?: string } => ({
+    ref: typeof search.ref === "string" ? search.ref : undefined,
+  }),
   head: () => ({
     meta: [
       { title: `Buying a Home | ${REALTOR_PROFILE.name}` },
@@ -38,6 +41,15 @@ export const Route = createFileRoute("/buyer")({
   }),
   component: BuyerPage,
 });
+
+const ZILLOW_PROPERTY = {
+  address: "1020 Ivy Ridge Court",
+  area: "Buckhead, Fulton County",
+  price: "$1,035,000",
+  beds: 3,
+  baths: 3,
+  sqft: "2,450",
+};
 
 const TEASER_LISTINGS = [
   {
