@@ -26,6 +26,10 @@ import listing3 from "@/assets/Alexandra/listing-3.jpg";
 const REALTOR_FIRST_NAME = REALTOR_PROFILE.name.split(" ")[0];
 
 export const Route = createFileRoute("/buyer")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    source: typeof search.source === "string" ? search.source : undefined,
+    property: typeof search.property === "string" ? search.property : undefined,
+  }),
   head: () => ({
     meta: [
       { title: `Buying a Home | ${REALTOR_PROFILE.name}` },
@@ -38,6 +42,33 @@ export const Route = createFileRoute("/buyer")({
   }),
   component: BuyerPage,
 });
+
+type BuyerSearch = {
+  source?: string;
+  property?: string;
+};
+
+type KnownProperty = {
+  source: string;
+  address: string;
+  neighborhood: string;
+  county: string;
+  price: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+};
+
+const ZILLOW_PROPERTY: KnownProperty = {
+  source: "Zillow Inquiry",
+  address: "1020 Ivy Ridge Court",
+  neighborhood: "Buckhead",
+  county: "Fulton",
+  price: "$1,035,000",
+  beds: 3,
+  baths: 3,
+  sqft: 2450,
+};
 
 const TEASER_LISTINGS = [
   {
@@ -135,6 +166,19 @@ const AGENT_OPTIONS = ["No", "Yes", "Not sure"];
 const SELL_OPTIONS = ["No", "Yes", "Not sure"];
 const SHOWING_OPTIONS = ["Yes", "Not yet", "Depends on the home"];
 const FOLLOWUP_OPTIONS = ["Call", "Text", "Email"];
+const PROPERTY_ACTION_OPTIONS = [
+  "Check availability",
+  "Schedule a showing",
+  "Ask a question",
+  "See similar homes",
+  "Not sure yet",
+];
+const SIMILAR_HOME_OPTIONS = [
+  "Yes, near Buckhead",
+  "Yes, nearby Atlanta areas",
+  "No, only this home",
+  "Not sure",
+];
 
 type BuyerState = {
   timeline: string;
@@ -154,6 +198,8 @@ type BuyerState = {
   workingWithAgent: string;
   needsToSell: string;
   showing: string;
+  propertyAction: string;
+  similarHomes: string;
 };
 
 const INITIAL: BuyerState = {
@@ -174,19 +220,65 @@ const INITIAL: BuyerState = {
   workingWithAgent: "",
   needsToSell: "",
   showing: "",
+  propertyAction: "",
+  similarHomes: "",
 };
 
 function BuyerPage() {
+  const search = Route.useSearch();
+  const knownProperty = getKnownProperty(search);
+
   return (
     <div className="min-h-screen bg-[#faf7f2]">
       <Header />
       <main>
-        <BuyerHero />
-        <TeaserListings />
-        <BuyerWizard />
+        {knownProperty ? <PropertyAwareHero property={knownProperty} /> : <BuyerHero />}
+        {!knownProperty && <TeaserListings />}
+        <BuyerWizard property={knownProperty} />
         <BuyerReassurance />
       </main>
       <Footer />
+    </div>
+  );
+}
+
+function getKnownProperty(search: BuyerSearch): KnownProperty | null {
+  if (search.source?.toLowerCase() !== "zillow") return null;
+  if (search.property && search.property !== "1020-ivy-ridge-court") return null;
+  return ZILLOW_PROPERTY;
+}
+
+function PropertyAwareHero({ property }: { property: KnownProperty }) {
+  return (
+    <section className="relative overflow-hidden border-b border-stone-200/70 bg-[#f6f0e8] px-6 pt-28 pb-14 lg:px-10 lg:pt-32 lg:pb-18">
+      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-white/70 to-transparent" />
+      <div className="relative mx-auto max-w-4xl">
+        <PropertyContextCard property={property} />
+      </div>
+    </section>
+  );
+}
+
+function PropertyContextCard({ property }: { property: KnownProperty }) {
+  return (
+    <div className="border border-stone-300 bg-white/90 p-6 shadow-sm sm:p-8">
+      <p className="text-[10px] uppercase tracking-[0.35em] text-stone-500">You asked about</p>
+      <h1 className="mt-3 font-serif text-2xl text-stone-950 sm:text-3xl">{property.address}</h1>
+      <p className="mt-2 text-sm font-light text-stone-600">
+        {property.neighborhood}, {property.county} County
+      </p>
+      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-stone-200 pt-4 text-xs font-light text-stone-600">
+        <span>{property.price}</span>
+        <span className="flex items-center gap-1.5">
+          <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {property.beds} beds
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {property.baths} baths
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {property.sqft.toLocaleString()} sf
+        </span>
+      </div>
     </div>
   );
 }
@@ -318,13 +410,15 @@ function TeaserCard({ listing }: { listing: (typeof TEASER_LISTINGS)[number] }) 
 
 const TOTAL_STEPS = 5;
 
-function BuyerWizard() {
+function BuyerWizard({ property }: { property: KnownProperty | null }) {
   const [step, setStep] = useState(1);
   const [state, setState] = useState<BuyerState>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
   const [match, setMatch] = useState<MatchResult | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const wizardRef = useRef<HTMLDivElement | null>(null);
+  const isPropertyAware = Boolean(property);
+  const totalSteps = isPropertyAware ? 5 : TOTAL_STEPS;
 
   const update = <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => {
     setState((s) => ({ ...s, [k]: v }));
@@ -343,6 +437,13 @@ function BuyerWizard() {
   };
 
   const validateStep = (): string | null => {
+    if (isPropertyAware) {
+      if (step === 1 && !state.propertyAction) return "Choose what you would like to do next.";
+      if (step === 2 && !state.timeline) return "Choose one timeline option to continue.";
+      if (step === 3 && !state.financing) return "Choose a financing option to continue.";
+      return null;
+    }
+
     if (step === 1 && !state.timeline) return "Choose one option to continue.";
     if (step === 2 && state.areas.length === 0)
       return "Choose at least one area to continue.";
@@ -377,6 +478,12 @@ function BuyerWizard() {
       return;
     }
     setNotice(null);
+    if (isPropertyAware) {
+      setMatch(null);
+      setSubmitted(true);
+      return;
+    }
+
     setMatch(
       findBestMatch({
         areas: state.areas,
@@ -395,13 +502,15 @@ function BuyerWizard() {
       <div className="mx-auto max-w-3xl px-6 lg:px-10">
         <div className="text-center mb-10 lg:mb-14">
           <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-5">
-            Buyer Intake
+            {isPropertyAware ? "Property-aware follow up" : "Buyer Intake"}
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-[1.1]">
-            Tell me what you're looking for
+            {isPropertyAware ? "A few quick questions about this home" : "Tell me what you're looking for"}
           </h2>
           <p className="mt-5 text-stone-500 text-sm font-light">
-            Takes about 2 minutes.
+            {isPropertyAware
+              ? `${REALTOR_FIRST_NAME} already knows the home you asked about. Answer a few quick questions so she can confirm availability, schedule the right next step, or send similar homes if this one is not the right fit.`
+              : "Takes about 2 minutes."}
           </p>
           <p className="mt-3 text-stone-400 text-xs font-light italic max-w-md mx-auto">
             Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more
@@ -412,33 +521,49 @@ function BuyerWizard() {
         {/* Fixed-min-height shell keeps page from jumping on submit */}
         <div ref={wizardRef} className="min-h-[760px]">
           {submitted ? (
-            <BuyerMatchResult match={match} state={state} />
+            isPropertyAware && property ? (
+              <PropertyInquiryResult property={property} state={state} />
+            ) : (
+              <BuyerMatchResult match={match} state={state} />
+            )
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
               <div className="px-6 sm:px-10 pt-8">
                 <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500">
-                  <span>Step {step} of {TOTAL_STEPS}</span>
-                  <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
+                  <span>Step {step} of {totalSteps}</span>
+                  <span>{Math.round((step / totalSteps) * 100)}%</span>
                 </div>
                 <div className="mt-3 h-px bg-stone-200 relative overflow-hidden">
                   <div
                     className="absolute inset-y-0 left-0 bg-stone-900 transition-all duration-500"
-                    style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
+                    style={{ width: `${(step / totalSteps) * 100}%` }}
                   />
                 </div>
               </div>
 
               <div className="px-6 sm:px-10 py-10 sm:py-12">
-                {step === 1 && <Step1 state={state} update={update} />}
-                {step === 2 && (
-                  <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />
+                {isPropertyAware && property ? (
+                  <>
+                    {step === 1 && <PropertyStep1 state={state} update={update} />}
+                    {step === 2 && <PropertyStep2 state={state} update={update} />}
+                    {step === 3 && <PropertyStep3 state={state} update={update} />}
+                    {step === 4 && <PropertyStep4 state={state} update={update} property={property} />}
+                    {step === 5 && <PropertyStep5 state={state} update={update} property={property} />}
+                  </>
+                ) : (
+                  <>
+                    {step === 1 && <Step1 state={state} update={update} />}
+                    {step === 2 && (
+                      <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />
+                    )}
+                    {step === 3 && <Step3 state={state} update={update} />}
+                    {step === 4 && (
+                      <Step4 state={state} update={update} toggle={toggleArr} />
+                    )}
+                    {step === 5 && <Step5 state={state} update={update} />}
+                  </>
                 )}
-                {step === 3 && <Step3 state={state} update={update} />}
-                {step === 4 && (
-                  <Step4 state={state} update={update} toggle={toggleArr} />
-                )}
-                {step === 5 && <Step5 state={state} update={update} />}
               </div>
 
               {/* Calm inline notice */}
@@ -468,7 +593,7 @@ function BuyerWizard() {
                   <span />
                 )}
 
-                {step < TOTAL_STEPS ? (
+                {step < totalSteps ? (
                   <button
                     type="button"
                     onClick={handleContinue}
@@ -549,6 +674,253 @@ function Chip({
     >
       {children}
     </button>
+  );
+}
+
+function PropertyStep1({
+  state,
+  update,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+}) {
+  return (
+    <div>
+      <StepHeading
+        title="What would you like to do with this home?"
+        sub="The listing details are already attached, so this is just about the next step."
+      />
+      <div className="flex flex-wrap gap-3">
+        {PROPERTY_ACTION_OPTIONS.map((opt) => (
+          <Chip
+            key={opt}
+            active={state.propertyAction === opt}
+            onClick={() => update("propertyAction", opt)}
+          >
+            {opt}
+          </Chip>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PropertyStep2({
+  state,
+  update,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+}) {
+  return (
+    <div>
+      <StepHeading title="When are you hoping to move?" />
+      <div className="flex flex-wrap gap-3">
+        {TIMELINE_OPTIONS.map((opt) => (
+          <Chip
+            key={opt}
+            active={state.timeline === opt}
+            onClick={() => update("timeline", opt)}
+          >
+            {opt}
+          </Chip>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PropertyStep3({
+  state,
+  update,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+}) {
+  return (
+    <div>
+      <StepHeading
+        title="Where are you with financing?"
+        sub="This helps decide whether the next step is a showing, a lender intro, or a softer follow-up."
+      />
+      <div className="flex flex-wrap gap-3">
+        {FINANCING_OPTIONS.map((opt) => (
+          <Chip
+            key={opt}
+            active={state.financing === opt}
+            onClick={() => update("financing", opt)}
+          >
+            {opt}
+          </Chip>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PropertyStep4({
+  state,
+  update,
+  property,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+  property: KnownProperty;
+}) {
+  const inputCls =
+    "w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors";
+
+  return (
+    <div className="space-y-8">
+      <StepHeading title="A few helpful details" />
+      <div>
+        <FieldLabel>Are you currently working with another real estate agent?</FieldLabel>
+        <div className="flex flex-wrap gap-2.5">
+          {AGENT_OPTIONS.map((opt) => (
+            <Chip
+              key={opt}
+              active={state.workingWithAgent === opt}
+              onClick={() => update("workingWithAgent", opt)}
+            >
+              {opt}
+            </Chip>
+          ))}
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Do you need to sell a home before buying?</FieldLabel>
+        <div className="flex flex-wrap gap-2.5">
+          {SELL_OPTIONS.map((opt) => (
+            <Chip
+              key={opt}
+              active={state.needsToSell === opt}
+              onClick={() => update("needsToSell", opt)}
+            >
+              {opt}
+            </Chip>
+          ))}
+        </div>
+      </div>
+      <div>
+        <FieldLabel>If {property.address} is not available, should I send similar homes?</FieldLabel>
+        <div className="flex flex-wrap gap-2.5">
+          {SIMILAR_HOME_OPTIONS.map((opt) => (
+            <Chip
+              key={opt}
+              active={state.similarHomes === opt}
+              onClick={() => update("similarHomes", opt)}
+            >
+              {opt}
+            </Chip>
+          ))}
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Anything specific about this home? <span className="text-stone-400 normal-case tracking-normal italic">- optional</span></FieldLabel>
+        <input
+          type="text"
+          value={state.otherMatters}
+          onChange={(e) => update("otherMatters", e.target.value)}
+          maxLength={200}
+          placeholder="Showing time, availability question, similar homes, or anything else..."
+          className={inputCls}
+        />
+      </div>
+    </div>
+  );
+}
+
+function PropertyStep5({
+  state,
+  update,
+  property,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+  property: KnownProperty;
+}) {
+  const inputCls =
+    "w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors";
+
+  return (
+    <div className="space-y-10">
+      <div>
+        <p className="font-serif text-xl text-stone-900 mb-6">How should {REALTOR_FIRST_NAME} follow up?</p>
+        <div className="grid sm:grid-cols-2 gap-x-8 gap-y-5">
+          <div>
+            <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
+              Name <span className="text-stone-900">*</span>
+            </label>
+            <input
+              type="text"
+              value={state.name}
+              onChange={(e) => update("name", e.target.value)}
+              maxLength={100}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
+              Phone <span className="text-stone-900">*</span>
+            </label>
+            <input
+              type="tel"
+              value={state.phone}
+              onChange={(e) => update("phone", e.target.value)}
+              maxLength={30}
+              className={inputCls}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
+              Email <span className="normal-case tracking-normal italic text-stone-400">- optional</span>
+            </label>
+            <input
+              type="email"
+              value={state.email}
+              onChange={(e) => update("email", e.target.value)}
+              maxLength={255}
+              className={inputCls}
+            />
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <FieldLabel>Preferred follow-up</FieldLabel>
+          <div className="flex flex-wrap gap-2.5">
+            {FOLLOWUP_OPTIONS.map((opt) => (
+              <Chip
+                key={opt}
+                active={state.followUp === opt}
+                onClick={() => update("followUp", opt)}
+              >
+                {opt}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-stone-50 border border-stone-200 p-6">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500 mb-4">
+          Request summary
+        </p>
+        <dl className="grid sm:grid-cols-2 gap-x-8 gap-y-3 text-sm font-light text-stone-700">
+          <ReviewRow label="Property" value={property.address} full />
+          <ReviewRow label="Next step" value={state.propertyAction} />
+          <ReviewRow label="Timeline" value={state.timeline} />
+          <ReviewRow label="Financing" value={state.financing} />
+          <ReviewRow label="Similar homes" value={state.similarHomes} />
+          <ReviewRow
+            label="Agent status"
+            value={state.workingWithAgent || "Not answered"}
+          />
+          {state.otherMatters && (
+            <ReviewRow label="Note" value={state.otherMatters} full />
+          )}
+        </dl>
+      </div>
+    </div>
   );
 }
 
@@ -936,6 +1308,34 @@ function ReviewRow({
 
 /* ---------- Match result ---------- */
 
+function PropertyInquiryResult({ property, state }: { property: KnownProperty; state: BuyerState }) {
+  const agentPreview = buildPropertyAgentPreview(state, property);
+
+  return (
+    <>
+      <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
+        <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+          <Check className="h-4 w-4" strokeWidth={2} />
+        </div>
+        <p className="mt-6 text-[10px] uppercase tracking-[0.35em] text-stone-500">
+          Request received
+        </p>
+        <h3 className="mt-4 font-serif text-2xl text-stone-900 sm:text-3xl">
+          Thank you
+        </h3>
+        <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-lg mx-auto">
+          {REALTOR_FIRST_NAME} will review your request for {property.address} and follow up with
+          availability, showing options, or similar homes that fit what you shared.
+        </p>
+        <p className="mt-4 text-sm text-stone-500 font-light italic leading-relaxed max-w-md mx-auto">
+          If this home is no longer available, she will use your answers to send close alternatives.
+        </p>
+      </div>
+      <AgentPreview {...agentPreview} />
+    </>
+  );
+}
+
 function BuyerMatchResult({ match, state }: { match: MatchResult | null; state: BuyerState }) {
   const agentPreview = buildBuyerAgentPreview(state, match);
 
@@ -1040,6 +1440,71 @@ function BuyerMatchResult({ match, state }: { match: MatchResult | null; state: 
 }
 
 /* ---------- Buyer agent-preview builder ---------- */
+
+function buildPropertyAgentPreview(state: BuyerState, property: KnownProperty) {
+  const represented = state.workingWithAgent === "Yes";
+  const urgentTimelines = new Set(["ASAP", "1-3 months", "1â€“3 months"]);
+  const nameDisplay = state.name.trim() || "Buyer";
+  const firstName = nameDisplay.split(" ")[0];
+
+  const summary: AgentPreviewItem[] = [
+    { label: "Name", value: nameDisplay },
+    { label: "Source", value: property.source },
+    { label: "Property", value: property.address },
+    { label: "Interested in", value: state.propertyAction },
+    { label: "Timeline", value: state.timeline },
+    { label: "Financing", value: state.financing },
+    { label: "Similar homes", value: state.similarHomes },
+    {
+      label: "Agent status",
+      value: represented
+        ? "Already working with another agent"
+        : state.workingWithAgent === "Not sure"
+          ? "Not sure"
+          : "Not currently represented",
+    },
+  ];
+
+  let nextAction: string;
+  if (represented) {
+    nextAction =
+      "Do not solicit. Buyer says they are already working with another agent. Offer general information only.";
+  } else if (urgentTimelines.has(state.timeline)) {
+    nextAction = `Text within 5 minutes about ${property.address}. This is an active Zillow inquiry.`;
+  } else {
+    nextAction = `Follow up with availability or similar homes for ${property.address}.`;
+  }
+
+  const followUp = represented
+    ? [
+        "Automation paused.",
+        "Do not send property recommendations.",
+        "Keep interaction respectful and informational only.",
+      ]
+    : [
+        "Now: Confirm availability or showing path.",
+        "If unavailable: send similar homes based on the buyer's answer.",
+        "Tomorrow: Check in if no response.",
+        "Stop if they reply.",
+      ];
+
+  const suggested = represented
+    ? "do not solicit - buyer is represented"
+    : urgentTimelines.has(state.timeline)
+      ? "text within 5 minutes"
+      : "send availability or similar homes";
+
+  const textAlert = `New Zillow inquiry: ${firstName} asked about ${property.address} in ${property.neighborhood}. They want to ${state.propertyAction || "follow up"}; timeline ${state.timeline || "not provided"}. Suggested next step: ${suggested}.`;
+
+  return {
+    subtitle: `What ${REALTOR_FIRST_NAME} would receive from this Zillow property inquiry`,
+    summaryTitle: "Property Inquiry Summary",
+    summary,
+    nextAction,
+    followUp,
+    textAlert,
+  };
+}
 
 function buildBuyerAgentPreview(
   state: BuyerState,
