@@ -2,7 +2,7 @@
  * RealtorProfile type definition
  * Defines the structure for switchable realtor template data used throughout the site
  */
-import portraitImage from "@/assets/Savannah/savannah-lavender-headshot.jpg";
+import portraitImage from "@/assets/Daryl/daryl-wheeler.png";
 
 export type RealtorProfile = {
     name: string;
@@ -29,20 +29,15 @@ export type RealtorProfile = {
  * for different realtor information to reuse the entire site template
  */
 export const REALTOR_PROFILE: RealtorProfile = {
-    name: "Savannah Lavender",
+    name: "Daryl Wheeler",
     title: "Real Estate Agent",
     location: "Atlanta, GA",
-    company: "Coldwell Banker Realty.",
-    phone: "770-688-0951",
-    email: "savannahlavrealtor@gmail.com",
-    bio: "As an Atlanta native, I know the city and surrounding areas well, especially North Atlanta. My passion for real estate started when I purchased my own home, and I now love helping others find the perfect place to call home.",
-    approach: "My goal is to help you meet your real estate objectives and exceed your expectations so that you feel comfortable and confident to refer me to your family and friends!  I go above and beyond for my clients and would love to help you find your home.",
+    company: "D.R. Horton Realty.",
+    phone: "770-722-5068",
+    email: "darylwsells@bellsouth.net",
+    bio: "I know how personal buying a home can feel, especially when you're trying to balance location, price, timing, and the details that matter most to your family. My goal is to make that process feel clear and manageable, whether you're comparing new-construction options, narrowing down communities, or deciding which home truly fits your next chapter.",
+    approach: "I take time to listen first, answer questions honestly, and move at a pace that respects your schedule. You should never feel rushed or left guessing, so I focus on steady communication, patient guidance, and helping you feel confident before every decision.",
     portraitImage,
-    licenseNumber: "363335",
-    socialLinks: {
-        facebook: "https://facebook.com/alexandracarter",
-        twitter: "https://twitter.com/alexandracarter",
-        linkedin: "https://linkedin.com/in/alexandracarter",
-        instagram: "https://instagram.com/alexandracarter",
-    },
+    licenseNumber: "273593",
+    socialLinks: {},
 };

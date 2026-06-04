@@ -35,17 +35,17 @@ export type Testimonial = {
 export const HOMEPAGE_TESTIMONIALS: Testimonial[] = [
     {
         quote:
-            "Savannah was amazing to work with. She listened to all our needed and directed us accordingly. She gave us advice that turned out to be the reason we got our home! We will always use Savannah and would highly recommend her.",
-        name: "Jon G.",
+            "Daryl was very respectful of our needs and paid close attention to the location and price point that mattered to us. He was always prompt, patient, polite, and honest when answering our questions. We highly recommend him.",
+        name: "Buyer Client",
     },
     {
         quote:
-            "Savannah Lavender has been very detailed in every aspect of her profession with me and finding a home. I would use her in the future for any real estate deals and I would recommend her to anyone looking for a home.",
-        name: "Patty D.",
+            "Daryl made the process feel organized from start to finish. He helped us compare options clearly, stayed focused on what we needed, and made sure we understood each step before moving forward.",
+        name: "Demo Client",
     },
     {
         quote:
-            "Savannah is the best and so great to work with! She is super knowledgeable and is definitely a go getter. We loved working with her and she made our first buying experience great.",
-        name: "Kimberly S.",
+            "We appreciated Daryl's calm communication and attention to detail. He listened first, answered questions honestly, and helped us feel confident about the home we chose.",
+        name: "Demo Client",
     },
 ];
