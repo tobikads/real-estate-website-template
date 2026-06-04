@@ -189,19 +189,50 @@ const INITIAL: BuyerState = {
 };
 
 function BuyerPage() {
+  const search = Route.useSearch();
+  const propertyAware = search.ref === "zillow";
   return (
     <div className="min-h-screen bg-[#faf7f2]">
       <Header />
       <main>
         <BuyerHero />
-        <TeaserListings />
-        <BuyerWizard />
+        {propertyAware ? <PropertyContextPanel /> : <TeaserListings />}
+        <BuyerWizard propertyAware={propertyAware} />
         <BuyerReassurance />
       </main>
       <Footer />
     </div>
   );
 }
+
+function PropertyContextPanel() {
+  return (
+    <section className="bg-[#faf7f2] pt-16 lg:pt-24 pb-4 lg:pb-6 border-b border-stone-200/60">
+      <div className="mx-auto max-w-3xl px-6 lg:px-10">
+        <div className="border border-stone-300 bg-white p-6 sm:p-8 shadow-sm">
+          <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">You asked about</p>
+          <h2 className="mt-3 font-serif text-2xl sm:text-3xl text-stone-900 leading-tight">
+            {ZILLOW_PROPERTY.address}
+          </h2>
+          <p className="mt-2 text-sm font-light text-stone-600">{ZILLOW_PROPERTY.area}</p>
+          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-stone-700 text-sm font-light border-t border-stone-100 pt-5">
+            <span className="font-serif text-lg text-stone-900">{ZILLOW_PROPERTY.price}</span>
+            <span className="flex items-center gap-1.5">
+              <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.beds} beds
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.baths} baths
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.sqft} sf
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 function BuyerHero() {
   return (
