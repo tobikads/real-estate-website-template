@@ -1234,10 +1234,14 @@ function buildBuyerAgentPreview(
 
   const matchHint = match && !represented ? ` Closest match: ${match.listing.address}, ${match.listing.neighborhood}.` : "";
 
-  const textAlert = `New buyer lead from your website: ${firstName} is looking in ${areaForText}, budget ${budgetForText}, ${timelineForText}. Suggested next step: ${suggested}.${matchHint}`;
+  const textAlert = propertyAware
+    ? `Zillow lead enriched: ${firstName} completed the property-aware flow for ${ZILLOW_PROPERTY.address}. Suggested next step: confirm availability and offer a showing window or close alternatives.`
+    : `New buyer lead from your website: ${firstName} is looking in ${areaForText}, budget ${budgetForText}, ${timelineForText}. Suggested next step: ${suggested}.${matchHint}`;
 
   return {
-    subtitle: `What ${REALTOR_FIRST_NAME} would receive from this buyer inquiry`,
+    subtitle: propertyAware
+      ? `What ${REALTOR_FIRST_NAME} would receive from this property-aware Zillow lead`
+      : `What ${REALTOR_FIRST_NAME} would receive from this buyer inquiry`,
     summaryTitle: "Lead Summary",
     summary,
     nextAction,
@@ -1245,6 +1249,7 @@ function buildBuyerAgentPreview(
     textAlert,
   };
 }
+
 
 /* ---------- Reassurance ---------- */
 
