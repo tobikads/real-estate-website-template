@@ -462,7 +462,11 @@ function BuyerWizard({ propertyAware = false }: { propertyAware?: boolean }) {
         {/* Fixed-min-height shell keeps page from jumping on submit */}
         <div ref={wizardRef} className="min-h-[760px]">
           {submitted ? (
-            <BuyerMatchResult match={match} state={state} />
+            propertyAware ? (
+              <PropertyAwareConfirmation state={state} />
+            ) : (
+              <BuyerMatchResult match={match} state={state} />
+            )
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
