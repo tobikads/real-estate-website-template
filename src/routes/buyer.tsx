@@ -26,6 +26,9 @@ import listing3 from "@/assets/Alexandra/listing-3.jpg";
 const REALTOR_FIRST_NAME = REALTOR_PROFILE.name.split(" ")[0];
 
 export const Route = createFileRoute("/buyer")({
+  validateSearch: (search: Record<string, unknown>): { ref?: string } => ({
+    ref: typeof search.ref === "string" ? search.ref : undefined,
+  }),
   head: () => ({
     meta: [
       { title: `Buying a Home | ${REALTOR_PROFILE.name}` },
@@ -38,6 +41,15 @@ export const Route = createFileRoute("/buyer")({
   }),
   component: BuyerPage,
 });
+
+const ZILLOW_PROPERTY = {
+  address: "1020 Ivy Ridge Court",
+  area: "Buckhead, Fulton County",
+  price: "$1,035,000",
+  beds: 3,
+  baths: 3,
+  sqft: "2,450",
+};
 
 const TEASER_LISTINGS = [
   {
@@ -177,19 +189,50 @@ const INITIAL: BuyerState = {
 };
 
 function BuyerPage() {
+  const search = Route.useSearch();
+  const propertyAware = search.ref === "zillow";
   return (
     <div className="min-h-screen bg-[#faf7f2]">
       <Header />
       <main>
         <BuyerHero />
-        <TeaserListings />
-        <BuyerWizard />
+        {propertyAware ? <PropertyContextPanel /> : <TeaserListings />}
+        <BuyerWizard propertyAware={propertyAware} />
         <BuyerReassurance />
       </main>
       <Footer />
     </div>
   );
 }
+
+function PropertyContextPanel() {
+  return (
+    <section className="bg-[#faf7f2] pt-16 lg:pt-24 pb-4 lg:pb-6 border-b border-stone-200/60">
+      <div className="mx-auto max-w-3xl px-6 lg:px-10">
+        <div className="border border-stone-300 bg-white p-6 sm:p-8 shadow-sm">
+          <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">You asked about</p>
+          <h2 className="mt-3 font-serif text-2xl sm:text-3xl text-stone-900 leading-tight">
+            {ZILLOW_PROPERTY.address}
+          </h2>
+          <p className="mt-2 text-sm font-light text-stone-600">{ZILLOW_PROPERTY.area}</p>
+          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-stone-700 text-sm font-light border-t border-stone-100 pt-5">
+            <span className="font-serif text-lg text-stone-900">{ZILLOW_PROPERTY.price}</span>
+            <span className="flex items-center gap-1.5">
+              <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.beds} beds
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.baths} baths
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.sqft} sf
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 function BuyerHero() {
   return (
@@ -318,7 +361,7 @@ function TeaserCard({ listing }: { listing: (typeof TEASER_LISTINGS)[number] }) 
 
 const TOTAL_STEPS = 5;
 
-function BuyerWizard() {
+function BuyerWizard({ propertyAware = false }: { propertyAware?: boolean }) {
   const [step, setStep] = useState(1);
   const [state, setState] = useState<BuyerState>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
@@ -395,24 +438,35 @@ function BuyerWizard() {
       <div className="mx-auto max-w-3xl px-6 lg:px-10">
         <div className="text-center mb-10 lg:mb-14">
           <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-5">
-            Buyer Intake
+            {propertyAware ? "Property-aware follow-up" : "Buyer Intake"}
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-[1.1]">
-            Tell me what you're looking for
+            {propertyAware
+              ? "A few quick questions about this home"
+              : "Tell me what you're looking for"}
           </h2>
-          <p className="mt-5 text-stone-500 text-sm font-light">
-            Takes about 2 minutes.
+          <p className="mt-5 text-stone-500 text-sm font-light max-w-xl mx-auto leading-relaxed">
+            {propertyAware
+              ? `${REALTOR_FIRST_NAME} already knows the home you asked about. Answer a few quick questions so she can confirm availability, schedule the right next step, or send similar homes if this one is not the right fit.`
+              : "Takes about 2 minutes."}
           </p>
-          <p className="mt-3 text-stone-400 text-xs font-light italic max-w-md mx-auto">
-            Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more
-            relevant homes.
-          </p>
+          {!propertyAware && (
+            <p className="mt-3 text-stone-400 text-xs font-light italic max-w-md mx-auto">
+              Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more
+              relevant homes.
+            </p>
+          )}
         </div>
+
 
         {/* Fixed-min-height shell keeps page from jumping on submit */}
         <div ref={wizardRef} className="min-h-[760px]">
           {submitted ? (
-            <BuyerMatchResult match={match} state={state} />
+            propertyAware ? (
+              <PropertyAwareConfirmation state={state} />
+            ) : (
+              <BuyerMatchResult match={match} state={state} />
+            )
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
@@ -1039,11 +1093,64 @@ function BuyerMatchResult({ match, state }: { match: MatchResult | null; state: 
   );
 }
 
+/* ---------- Property-aware confirmation (Zillow inquiry) ---------- */
+
+function PropertyAwareConfirmation({ state }: { state: BuyerState }) {
+  const agentPreview = buildBuyerAgentPreview(state, null, true);
+  return (
+    <>
+      <div className="bg-white border border-stone-200 shadow-sm">
+        <div className="px-6 sm:px-10 pt-10 pb-8 text-center border-b border-stone-100">
+          <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+            <Check className="h-4 w-4" strokeWidth={2} />
+          </div>
+          <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-5">Thank you</h3>
+          <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-lg mx-auto">
+            {REALTOR_FIRST_NAME} will review your request for{" "}
+            <span className="text-stone-900">{ZILLOW_PROPERTY.address}</span> and follow up with
+            availability, showing options, or similar homes that fit what you shared.
+          </p>
+          <p className="mt-4 text-stone-500 font-light italic text-sm leading-relaxed max-w-md mx-auto">
+            If this home is no longer available, she'll use your answers to send close
+            alternatives.
+          </p>
+        </div>
+
+        <div className="px-6 sm:px-10 py-8">
+          <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500 mb-4">
+            Property attached
+          </p>
+          <div className="border border-stone-200 p-5 sm:p-6">
+            <p className="font-serif text-xl text-stone-900">{ZILLOW_PROPERTY.address}</p>
+            <p className="mt-1 text-sm font-light text-stone-600">{ZILLOW_PROPERTY.area}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-stone-700 text-sm font-light">
+              <span className="font-serif text-base text-stone-900">{ZILLOW_PROPERTY.price}</span>
+              <span className="flex items-center gap-1.5">
+                <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.beds} beds
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.baths} baths
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {ZILLOW_PROPERTY.sqft} sf
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <AgentPreview {...agentPreview} />
+    </>
+  );
+}
+
+
+
 /* ---------- Buyer agent-preview builder ---------- */
 
 function buildBuyerAgentPreview(
   state: BuyerState,
   match: MatchResult | null,
+  propertyAware = false,
 ) {
   const represented = state.workingWithAgent === "Yes";
   const urgentTimelines = new Set(["ASAP", "1–3 months"]);
@@ -1066,6 +1173,12 @@ function buildBuyerAgentPreview(
 
   const summary: AgentPreviewItem[] = [
     { label: "Name", value: nameDisplay },
+    ...(propertyAware
+      ? [
+          { label: "Source", value: "Zillow inquiry" },
+          { label: "Property of interest", value: `${ZILLOW_PROPERTY.address} · ${ZILLOW_PROPERTY.area}` },
+        ]
+      : []),
     { label: "Timeline", value: state.timeline },
     { label: "Budget", value: state.budget },
     { label: "Preferred area", value: areasText },
@@ -1080,10 +1193,13 @@ function buildBuyerAgentPreview(
     },
   ];
 
+
   let nextAction: string;
   if (represented) {
     nextAction =
       "Do not solicit. Buyer says they are already working with another agent. Offer general information only.";
+  } else if (propertyAware) {
+    nextAction = `Confirm availability for ${ZILLOW_PROPERTY.address}. If unavailable, send close alternatives based on their answers.`;
   } else if (urgentTimelines.has(state.timeline)) {
     nextAction = "Text within 5 minutes. This is an active buyer lead.";
   } else if (laterTimelines.has(state.timeline)) {
@@ -1091,6 +1207,7 @@ function buildBuyerAgentPreview(
   } else {
     nextAction = "Reach out today to learn more about their timeline and goals.";
   }
+
 
   const followUp = represented
     ? [
@@ -1117,10 +1234,14 @@ function buildBuyerAgentPreview(
 
   const matchHint = match && !represented ? ` Closest match: ${match.listing.address}, ${match.listing.neighborhood}.` : "";
 
-  const textAlert = `New buyer lead from your website: ${firstName} is looking in ${areaForText}, budget ${budgetForText}, ${timelineForText}. Suggested next step: ${suggested}.${matchHint}`;
+  const textAlert = propertyAware
+    ? `Zillow lead enriched: ${firstName} completed the property-aware flow for ${ZILLOW_PROPERTY.address}. Suggested next step: confirm availability and offer a showing window or close alternatives.`
+    : `New buyer lead from your website: ${firstName} is looking in ${areaForText}, budget ${budgetForText}, ${timelineForText}. Suggested next step: ${suggested}.${matchHint}`;
 
   return {
-    subtitle: `What ${REALTOR_FIRST_NAME} would receive from this buyer inquiry`,
+    subtitle: propertyAware
+      ? `What ${REALTOR_FIRST_NAME} would receive from this property-aware Zillow lead`
+      : `What ${REALTOR_FIRST_NAME} would receive from this buyer inquiry`,
     summaryTitle: "Lead Summary",
     summary,
     nextAction,
@@ -1128,6 +1249,7 @@ function buildBuyerAgentPreview(
     textAlert,
   };
 }
+
 
 /* ---------- Reassurance ---------- */
 
