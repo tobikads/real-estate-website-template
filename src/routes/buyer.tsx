@@ -1198,6 +1198,8 @@ function buildBuyerAgentPreview(
   if (represented) {
     nextAction =
       "Do not solicit. Buyer says they are already working with another agent. Offer general information only.";
+  } else if (propertyAware) {
+    nextAction = `Confirm availability for ${ZILLOW_PROPERTY.address}. If unavailable, send close alternatives based on their answers.`;
   } else if (urgentTimelines.has(state.timeline)) {
     nextAction = "Text within 5 minutes. This is an active buyer lead.";
   } else if (laterTimelines.has(state.timeline)) {
@@ -1205,6 +1207,7 @@ function buildBuyerAgentPreview(
   } else {
     nextAction = "Reach out today to learn more about their timeline and goals.";
   }
+
 
   const followUp = represented
     ? [
