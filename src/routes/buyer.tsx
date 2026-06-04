@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { AgentPreview, type AgentPreviewItem } from "@/components/AgentPreview";
 import { REALTOR_PROFILE } from "@/data/realtor-profile";
 import { findBestMatch, type MatchResult } from "@/data/demo-listings";
 import buyerHero from "@/assets/Alexandra/buyer-hero.jpg";
@@ -25,17 +26,49 @@ import listing3 from "@/assets/Alexandra/listing-3.jpg";
 const REALTOR_FIRST_NAME = REALTOR_PROFILE.name.split(" ")[0];
 
 export const Route = createFileRoute("/buyer")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    source: typeof search.source === "string" ? search.source : undefined,
+    property: typeof search.property === "string" ? search.property : undefined,
+  }),
   head: () => ({
     meta: [
       { title: `Buying a Home | ${REALTOR_PROFILE.name}` },
       {
         name: "description",
-        content: `Share what you're looking for in an Atlanta home. ${REALTOR_FIRST_NAME} follows up with homes and next steps that fit your search.`,
+        content:
+          `Share what you're looking for in an Atlanta home. ${REALTOR_FIRST_NAME} follows up with homes and next steps that fit your search.`,
       },
     ],
   }),
   component: BuyerPage,
 });
+
+type BuyerSearch = {
+  source?: string;
+  property?: string;
+};
+
+type KnownProperty = {
+  source: string;
+  address: string;
+  neighborhood: string;
+  county: string;
+  price: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+};
+
+const ZILLOW_PROPERTY: KnownProperty = {
+  source: "Zillow Inquiry",
+  address: "1020 Ivy Ridge Court",
+  neighborhood: "Buckhead",
+  county: "Fulton",
+  price: "$1,035,000",
+  beds: 3,
+  baths: 3,
+  sqft: 2450,
+};
 
 const TEASER_LISTINGS = [
   {
@@ -87,7 +120,13 @@ const AREA_GROUPS: { label: string; options: string[] }[] = [
   },
 ];
 
-const BUDGET_OPTIONS = ["Under $250k", "$250k–$350k", "$350k–$500k", "$500k–$750k", "$750k+"];
+const BUDGET_OPTIONS = [
+  "Under $250k",
+  "$250k–$350k",
+  "$350k–$500k",
+  "$500k–$750k",
+  "$750k+",
+];
 
 const FINANCING_OPTIONS = [
   "Already pre-approved",
@@ -127,6 +166,19 @@ const AGENT_OPTIONS = ["No", "Yes", "Not sure"];
 const SELL_OPTIONS = ["No", "Yes", "Not sure"];
 const SHOWING_OPTIONS = ["Yes", "Not yet", "Depends on the home"];
 const FOLLOWUP_OPTIONS = ["Call", "Text", "Email"];
+const PROPERTY_ACTION_OPTIONS = [
+  "Check availability",
+  "Schedule a showing",
+  "Ask a question",
+  "See similar homes",
+  "Not sure yet",
+];
+const SIMILAR_HOME_OPTIONS = [
+  "Yes, near Buckhead",
+  "Yes, nearby Atlanta areas",
+  "No, only this home",
+  "Not sure",
+];
 
 type BuyerState = {
   timeline: string;
@@ -146,6 +198,8 @@ type BuyerState = {
   workingWithAgent: string;
   needsToSell: string;
   showing: string;
+  propertyAction: string;
+  similarHomes: string;
 };
 
 const INITIAL: BuyerState = {
@@ -166,19 +220,65 @@ const INITIAL: BuyerState = {
   workingWithAgent: "",
   needsToSell: "",
   showing: "",
+  propertyAction: "",
+  similarHomes: "",
 };
 
 function BuyerPage() {
+  const search = Route.useSearch();
+  const knownProperty = getKnownProperty(search);
+
   return (
     <div className="min-h-screen bg-[#faf7f2]">
       <Header />
       <main>
-        <BuyerHero />
-        <TeaserListings />
-        <BuyerWizard />
+        {knownProperty ? <PropertyAwareHero property={knownProperty} /> : <BuyerHero />}
+        {!knownProperty && <TeaserListings />}
+        <BuyerWizard property={knownProperty} />
         <BuyerReassurance />
       </main>
       <Footer />
+    </div>
+  );
+}
+
+function getKnownProperty(search: BuyerSearch): KnownProperty | null {
+  if (search.source?.toLowerCase() !== "zillow") return null;
+  if (search.property && search.property !== "1020-ivy-ridge-court") return null;
+  return ZILLOW_PROPERTY;
+}
+
+function PropertyAwareHero({ property }: { property: KnownProperty }) {
+  return (
+    <section className="relative overflow-hidden border-b border-stone-200/70 bg-[#f6f0e8] px-6 pt-28 pb-14 lg:px-10 lg:pt-32 lg:pb-18">
+      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-white/70 to-transparent" />
+      <div className="relative mx-auto max-w-4xl">
+        <PropertyContextCard property={property} />
+      </div>
+    </section>
+  );
+}
+
+function PropertyContextCard({ property }: { property: KnownProperty }) {
+  return (
+    <div className="border border-stone-300 bg-white/90 p-6 shadow-sm sm:p-8">
+      <p className="text-[10px] uppercase tracking-[0.35em] text-stone-500">You asked about</p>
+      <h1 className="mt-3 font-serif text-2xl text-stone-950 sm:text-3xl">{property.address}</h1>
+      <p className="mt-2 text-sm font-light text-stone-600">
+        {property.neighborhood}, {property.county} County
+      </p>
+      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-stone-200 pt-4 text-xs font-light text-stone-600">
+        <span>{property.price}</span>
+        <span className="flex items-center gap-1.5">
+          <BedDouble className="h-3.5 w-3.5" strokeWidth={1.5} /> {property.beds} beds
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {property.baths} baths
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {property.sqft.toLocaleString()} sf
+        </span>
+      </div>
     </div>
   );
 }
@@ -195,13 +295,15 @@ function BuyerHero() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/25 to-[#faf7f2]/85" />
       <div className="relative z-10 flex h-full flex-col items-center justify-end pb-20 sm:pb-28 text-center px-6">
-        <p className="text-[11px] tracking-[0.4em] uppercase text-stone-700 mb-6">For Buyers</p>
+        <p className="text-[11px] tracking-[0.4em] uppercase text-stone-700 mb-6">
+          For Buyers
+        </p>
         <h1 className="font-serif text-stone-900 text-4xl sm:text-5xl lg:text-6xl xl:text-[4.25rem] leading-[1.05] font-light max-w-3xl">
           Find the right home with a clearer path.
         </h1>
         <p className="mt-8 max-w-xl text-stone-700 font-light text-base sm:text-lg leading-relaxed">
-          Share what you're looking for, and I'll help you understand the homes, areas, and next
-          steps that fit where you are.
+          Share what you're looking for, and I'll help you understand the homes,
+          areas, and next steps that fit where you are.
         </p>
       </div>
     </section>
@@ -220,8 +322,8 @@ function TeaserListings() {
             A First Look at What's Available
           </h2>
           <p className="mt-6 text-stone-600 font-light leading-relaxed">
-            A few homes can start the conversation. Your preferences help me narrow in on what
-            actually fits.
+            A few homes can start the conversation. Your preferences help me
+            narrow in on what actually fits.
           </p>
         </div>
 
@@ -303,17 +405,20 @@ function TeaserCard({ listing }: { listing: (typeof TEASER_LISTINGS)[number] }) 
   );
 }
 
+
 /* ---------- Wizard ---------- */
 
 const TOTAL_STEPS = 5;
 
-function BuyerWizard() {
+function BuyerWizard({ property }: { property: KnownProperty | null }) {
   const [step, setStep] = useState(1);
   const [state, setState] = useState<BuyerState>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
   const [match, setMatch] = useState<MatchResult | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const wizardRef = useRef<HTMLDivElement | null>(null);
+  const isPropertyAware = Boolean(property);
+  const totalSteps = isPropertyAware ? 5 : TOTAL_STEPS;
 
   const update = <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => {
     setState((s) => ({ ...s, [k]: v }));
@@ -332,8 +437,16 @@ function BuyerWizard() {
   };
 
   const validateStep = (): string | null => {
+    if (isPropertyAware) {
+      if (step === 1 && !state.propertyAction) return "Choose what you would like to do next.";
+      if (step === 2 && !state.timeline) return "Choose one timeline option to continue.";
+      if (step === 3 && !state.financing) return "Choose a financing option to continue.";
+      return null;
+    }
+
     if (step === 1 && !state.timeline) return "Choose one option to continue.";
-    if (step === 2 && state.areas.length === 0) return "Choose at least one area to continue.";
+    if (step === 2 && state.areas.length === 0)
+      return "Choose at least one area to continue.";
     if (step === 3) {
       if (!state.budget) return "Choose a budget range to continue.";
       if (!state.financing) return "Choose a financing option to continue.";
@@ -365,6 +478,12 @@ function BuyerWizard() {
       return;
     }
     setNotice(null);
+    if (isPropertyAware) {
+      setMatch(null);
+      setSubmitted(true);
+      return;
+    }
+
     setMatch(
       findBestMatch({
         areas: state.areas,
@@ -383,49 +502,68 @@ function BuyerWizard() {
       <div className="mx-auto max-w-3xl px-6 lg:px-10">
         <div className="text-center mb-10 lg:mb-14">
           <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-5">
-            Buyer Intake
+            {isPropertyAware ? "Property-aware follow up" : "Buyer Intake"}
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-[1.1]">
-            Tell me what you're looking for
+            {isPropertyAware ? "A few quick questions about this home" : "Tell me what you're looking for"}
           </h2>
-          <p className="mt-5 text-stone-500 text-sm font-light">Takes about 2 minutes.</p>
+          <p className="mt-5 text-stone-500 text-sm font-light">
+            {isPropertyAware
+              ? `${REALTOR_FIRST_NAME} already knows the home you asked about. Answer a few quick questions so she can confirm availability, schedule the right next step, or send similar homes if this one is not the right fit.`
+              : "Takes about 2 minutes."}
+          </p>
           <p className="mt-3 text-stone-400 text-xs font-light italic max-w-md mx-auto">
-            Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more relevant
-            homes.
+            Your answers are only used to help {REALTOR_FIRST_NAME} follow up with more
+            relevant homes.
           </p>
         </div>
 
         {/* Fixed-min-height shell keeps page from jumping on submit */}
         <div ref={wizardRef} className="min-h-[760px]">
           {submitted ? (
-            <div className="space-y-8">
-              <BuyerMatchResult match={match} />
-              <BuyerAgentPreview state={state} match={match} />
-            </div>
+            isPropertyAware && property ? (
+              <PropertyInquiryResult property={property} state={state} />
+            ) : (
+              <BuyerMatchResult match={match} state={state} />
+            )
           ) : (
             <div className="bg-white border border-stone-200 shadow-sm">
               {/* Progress */}
               <div className="px-6 sm:px-10 pt-8">
                 <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500">
-                  <span>
-                    Step {step} of {TOTAL_STEPS}
-                  </span>
-                  <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
+                  <span>Step {step} of {totalSteps}</span>
+                  <span>{Math.round((step / totalSteps) * 100)}%</span>
                 </div>
                 <div className="mt-3 h-px bg-stone-200 relative overflow-hidden">
                   <div
                     className="absolute inset-y-0 left-0 bg-stone-900 transition-all duration-500"
-                    style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
+                    style={{ width: `${(step / totalSteps) * 100}%` }}
                   />
                 </div>
               </div>
 
               <div className="px-6 sm:px-10 py-10 sm:py-12">
-                {step === 1 && <Step1 state={state} update={update} />}
-                {step === 2 && <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />}
-                {step === 3 && <Step3 state={state} update={update} />}
-                {step === 4 && <Step4 state={state} update={update} toggle={toggleArr} />}
-                {step === 5 && <Step5 state={state} update={update} />}
+                {isPropertyAware && property ? (
+                  <>
+                    {step === 1 && <PropertyStep1 state={state} update={update} />}
+                    {step === 2 && <PropertyStep2 state={state} update={update} />}
+                    {step === 3 && <PropertyStep3 state={state} update={update} />}
+                    {step === 4 && <PropertyStep4 state={state} update={update} property={property} />}
+                    {step === 5 && <PropertyStep5 state={state} update={update} property={property} />}
+                  </>
+                ) : (
+                  <>
+                    {step === 1 && <Step1 state={state} update={update} />}
+                    {step === 2 && (
+                      <Step2 state={state} toggle={(v) => toggleArr("areas", v)} />
+                    )}
+                    {step === 3 && <Step3 state={state} update={update} />}
+                    {step === 4 && (
+                      <Step4 state={state} update={update} toggle={toggleArr} />
+                    )}
+                    {step === 5 && <Step5 state={state} update={update} />}
+                  </>
+                )}
               </div>
 
               {/* Calm inline notice */}
@@ -455,7 +593,7 @@ function BuyerWizard() {
                   <span />
                 )}
 
-                {step < TOTAL_STEPS ? (
+                {step < totalSteps ? (
                   <button
                     type="button"
                     onClick={handleContinue}
@@ -477,6 +615,7 @@ function BuyerWizard() {
           )}
         </div>
 
+
         {/* Secondary phone option */}
         <p className="mt-10 text-center text-sm text-stone-500 font-light leading-relaxed max-w-lg mx-auto">
           Prefer to talk it through? You can{" "}
@@ -496,13 +635,19 @@ function BuyerWizard() {
 /* ---------- Step components ---------- */
 
 function FieldLabel({ children }: { children: ReactNode }) {
-  return <p className="text-[11px] tracking-[0.3em] uppercase text-stone-500 mb-4">{children}</p>;
+  return (
+    <p className="text-[11px] tracking-[0.3em] uppercase text-stone-500 mb-4">
+      {children}
+    </p>
+  );
 }
 
 function StepHeading({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-8">
-      <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 leading-[1.15]">{title}</h3>
+      <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 leading-[1.15]">
+        {title}
+      </h3>
       {sub && <p className="mt-3 text-stone-500 text-sm font-light">{sub}</p>}
     </div>
   );
@@ -522,14 +667,260 @@ function Chip({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center justify-center px-4 py-2.5 text-sm font-light border transition-all min-h-11
-        ${
-          active
-            ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
-            : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
+        ${active
+          ? "border-stone-900 bg-stone-900 text-[#faf7f2]"
+          : "border-stone-300 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900"
         }`}
     >
       {children}
     </button>
+  );
+}
+
+function PropertyStep1({
+  state,
+  update,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+}) {
+  return (
+    <div>
+      <StepHeading
+        title="What would you like to do with this home?"
+        sub="The listing details are already attached, so this is just about the next step."
+      />
+      <div className="flex flex-wrap gap-3">
+        {PROPERTY_ACTION_OPTIONS.map((opt) => (
+          <Chip
+            key={opt}
+            active={state.propertyAction === opt}
+            onClick={() => update("propertyAction", opt)}
+          >
+            {opt}
+          </Chip>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PropertyStep2({
+  state,
+  update,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+}) {
+  return (
+    <div>
+      <StepHeading title="When are you hoping to move?" />
+      <div className="flex flex-wrap gap-3">
+        {TIMELINE_OPTIONS.map((opt) => (
+          <Chip
+            key={opt}
+            active={state.timeline === opt}
+            onClick={() => update("timeline", opt)}
+          >
+            {opt}
+          </Chip>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PropertyStep3({
+  state,
+  update,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+}) {
+  return (
+    <div>
+      <StepHeading
+        title="Where are you with financing?"
+        sub="This helps decide whether the next step is a showing, a lender intro, or a softer follow-up."
+      />
+      <div className="flex flex-wrap gap-3">
+        {FINANCING_OPTIONS.map((opt) => (
+          <Chip
+            key={opt}
+            active={state.financing === opt}
+            onClick={() => update("financing", opt)}
+          >
+            {opt}
+          </Chip>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PropertyStep4({
+  state,
+  update,
+  property,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+  property: KnownProperty;
+}) {
+  const inputCls =
+    "w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors";
+
+  return (
+    <div className="space-y-8">
+      <StepHeading title="A few helpful details" />
+      <div>
+        <FieldLabel>Are you currently working with another real estate agent?</FieldLabel>
+        <div className="flex flex-wrap gap-2.5">
+          {AGENT_OPTIONS.map((opt) => (
+            <Chip
+              key={opt}
+              active={state.workingWithAgent === opt}
+              onClick={() => update("workingWithAgent", opt)}
+            >
+              {opt}
+            </Chip>
+          ))}
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Do you need to sell a home before buying?</FieldLabel>
+        <div className="flex flex-wrap gap-2.5">
+          {SELL_OPTIONS.map((opt) => (
+            <Chip
+              key={opt}
+              active={state.needsToSell === opt}
+              onClick={() => update("needsToSell", opt)}
+            >
+              {opt}
+            </Chip>
+          ))}
+        </div>
+      </div>
+      <div>
+        <FieldLabel>If {property.address} is not available, should I send similar homes?</FieldLabel>
+        <div className="flex flex-wrap gap-2.5">
+          {SIMILAR_HOME_OPTIONS.map((opt) => (
+            <Chip
+              key={opt}
+              active={state.similarHomes === opt}
+              onClick={() => update("similarHomes", opt)}
+            >
+              {opt}
+            </Chip>
+          ))}
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Anything specific about this home? <span className="text-stone-400 normal-case tracking-normal italic">- optional</span></FieldLabel>
+        <input
+          type="text"
+          value={state.otherMatters}
+          onChange={(e) => update("otherMatters", e.target.value)}
+          maxLength={200}
+          placeholder="Showing time, availability question, similar homes, or anything else..."
+          className={inputCls}
+        />
+      </div>
+    </div>
+  );
+}
+
+function PropertyStep5({
+  state,
+  update,
+  property,
+}: {
+  state: BuyerState;
+  update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
+  property: KnownProperty;
+}) {
+  const inputCls =
+    "w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors";
+
+  return (
+    <div className="space-y-10">
+      <div>
+        <p className="font-serif text-xl text-stone-900 mb-6">How should {REALTOR_FIRST_NAME} follow up?</p>
+        <div className="grid sm:grid-cols-2 gap-x-8 gap-y-5">
+          <div>
+            <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
+              Name <span className="text-stone-900">*</span>
+            </label>
+            <input
+              type="text"
+              value={state.name}
+              onChange={(e) => update("name", e.target.value)}
+              maxLength={100}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
+              Phone <span className="text-stone-900">*</span>
+            </label>
+            <input
+              type="tel"
+              value={state.phone}
+              onChange={(e) => update("phone", e.target.value)}
+              maxLength={30}
+              className={inputCls}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
+              Email <span className="normal-case tracking-normal italic text-stone-400">- optional</span>
+            </label>
+            <input
+              type="email"
+              value={state.email}
+              onChange={(e) => update("email", e.target.value)}
+              maxLength={255}
+              className={inputCls}
+            />
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <FieldLabel>Preferred follow-up</FieldLabel>
+          <div className="flex flex-wrap gap-2.5">
+            {FOLLOWUP_OPTIONS.map((opt) => (
+              <Chip
+                key={opt}
+                active={state.followUp === opt}
+                onClick={() => update("followUp", opt)}
+              >
+                {opt}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-stone-50 border border-stone-200 p-6">
+        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500 mb-4">
+          Request summary
+        </p>
+        <dl className="grid sm:grid-cols-2 gap-x-8 gap-y-3 text-sm font-light text-stone-700">
+          <ReviewRow label="Property" value={property.address} full />
+          <ReviewRow label="Next step" value={state.propertyAction} />
+          <ReviewRow label="Timeline" value={state.timeline} />
+          <ReviewRow label="Financing" value={state.financing} />
+          <ReviewRow label="Similar homes" value={state.similarHomes} />
+          <ReviewRow
+            label="Agent status"
+            value={state.workingWithAgent || "Not answered"}
+          />
+          {state.otherMatters && (
+            <ReviewRow label="Note" value={state.otherMatters} full />
+          )}
+        </dl>
+      </div>
+    </div>
   );
 }
 
@@ -545,7 +936,11 @@ function Step1({
       <StepHeading title="When are you hoping to buy?" />
       <div className="flex flex-wrap gap-3">
         {TIMELINE_OPTIONS.map((opt) => (
-          <Chip key={opt} active={state.timeline === opt} onClick={() => update("timeline", opt)}>
+          <Chip
+            key={opt}
+            active={state.timeline === opt}
+            onClick={() => update("timeline", opt)}
+          >
             {opt}
           </Chip>
         ))}
@@ -554,17 +949,30 @@ function Step1({
   );
 }
 
-function Step2({ state, toggle }: { state: BuyerState; toggle: (v: string) => void }) {
+function Step2({
+  state,
+  toggle,
+}: {
+  state: BuyerState;
+  toggle: (v: string) => void;
+}) {
   return (
     <div>
-      <StepHeading title="Where are you open to looking?" sub="Select any that interest you." />
+      <StepHeading
+        title="Where are you open to looking?"
+        sub="Select any that interest you."
+      />
       <div className="space-y-7">
         {AREA_GROUPS.map((group) => (
           <div key={group.label}>
             <FieldLabel>{group.label}</FieldLabel>
             <div className="flex flex-wrap gap-2.5">
               {group.options.map((opt) => (
-                <Chip key={opt} active={state.areas.includes(opt)} onClick={() => toggle(opt)}>
+                <Chip
+                  key={opt}
+                  active={state.areas.includes(opt)}
+                  onClick={() => toggle(opt)}
+                >
                   {opt}
                 </Chip>
               ))}
@@ -597,7 +1005,11 @@ function Step3({
         <StepHeading title="What budget range feels right?" />
         <div className="flex flex-wrap gap-3">
           {BUDGET_OPTIONS.map((opt) => (
-            <Chip key={opt} active={state.budget === opt} onClick={() => update("budget", opt)}>
+            <Chip
+              key={opt}
+              active={state.budget === opt}
+              onClick={() => update("budget", opt)}
+            >
               {opt}
             </Chip>
           ))}
@@ -638,7 +1050,11 @@ function Step4({
           <FieldLabel>Bedrooms</FieldLabel>
           <div className="flex flex-wrap gap-2">
             {BED_OPTIONS.map((opt) => (
-              <Chip key={opt} active={state.beds === opt} onClick={() => update("beds", opt)}>
+              <Chip
+                key={opt}
+                active={state.beds === opt}
+                onClick={() => update("beds", opt)}
+              >
                 {opt}
               </Chip>
             ))}
@@ -648,7 +1064,11 @@ function Step4({
           <FieldLabel>Bathrooms</FieldLabel>
           <div className="flex flex-wrap gap-2">
             {BATH_OPTIONS.map((opt) => (
-              <Chip key={opt} active={state.baths === opt} onClick={() => update("baths", opt)}>
+              <Chip
+                key={opt}
+                active={state.baths === opt}
+                onClick={() => update("baths", opt)}
+              >
                 {opt}
               </Chip>
             ))}
@@ -685,10 +1105,7 @@ function Step4({
           ))}
         </div>
         <div className="mt-5">
-          <FieldLabel>
-            Anything else that matters?{" "}
-            <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
-          </FieldLabel>
+          <FieldLabel>Anything else that matters? <span className="text-stone-400 normal-case tracking-normal italic">— optional</span></FieldLabel>
           <input
             type="text"
             value={state.otherMatters}
@@ -701,10 +1118,7 @@ function Step4({
       </div>
 
       <div>
-        <FieldLabel>
-          Deal-breakers{" "}
-          <span className="text-stone-400 normal-case tracking-normal italic">— optional</span>
-        </FieldLabel>
+        <FieldLabel>Deal-breakers <span className="text-stone-400 normal-case tracking-normal italic">— optional</span></FieldLabel>
         <input
           type="text"
           value={state.dealBreakers}
@@ -714,6 +1128,7 @@ function Step4({
           className="w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors"
         />
       </div>
+
     </div>
   );
 }
@@ -725,6 +1140,7 @@ function Step5({
   state: BuyerState;
   update: <K extends keyof BuyerState>(k: K, v: BuyerState[K]) => void;
 }) {
+
   const inputCls =
     "w-full bg-transparent border-b border-stone-300 focus:border-stone-900 outline-none py-2.5 text-sm font-light text-stone-900 placeholder:text-stone-400 transition-colors";
 
@@ -760,8 +1176,7 @@ function Step5({
           </div>
           <div className="sm:col-span-2">
             <label className="text-[10px] tracking-[0.3em] uppercase text-stone-500">
-              Email{" "}
-              <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
+              Email <span className="normal-case tracking-normal italic text-stone-400">— optional</span>
             </label>
             <input
               type="email"
@@ -853,21 +1268,36 @@ function Step5({
           <ReviewRow
             label="Beds / Baths"
             value={
-              state.beds || state.baths ? `${state.beds || "—"} bd · ${state.baths || "—"} ba` : ""
+              state.beds || state.baths
+                ? `${state.beds || "—"} bd · ${state.baths || "—"} ba`
+                : ""
             }
           />
           <ReviewRow label="Areas" value={state.areas.join(", ")} full />
           <ReviewRow label="Home types" value={state.homeTypes.join(", ")} full />
           <ReviewRow label="Must-haves" value={state.mustHaves.join(", ")} full />
-          {state.otherMatters && <ReviewRow label="Also matters" value={state.otherMatters} full />}
-          {state.dealBreakers && <ReviewRow label="Avoid" value={state.dealBreakers} full />}
+          {state.otherMatters && (
+            <ReviewRow label="Also matters" value={state.otherMatters} full />
+          )}
+          {state.dealBreakers && (
+            <ReviewRow label="Avoid" value={state.dealBreakers} full />
+          )}
         </dl>
       </div>
+
     </div>
   );
 }
 
-function ReviewRow({ label, value, full }: { label: string; value: string; full?: boolean }) {
+function ReviewRow({
+  label,
+  value,
+  full,
+}: {
+  label: string;
+  value: string;
+  full?: boolean;
+}) {
   return (
     <div className={full ? "sm:col-span-2" : ""}>
       <dt className="text-[10px] tracking-[0.28em] uppercase text-stone-400">{label}</dt>
@@ -878,164 +1308,51 @@ function ReviewRow({ label, value, full }: { label: string; value: string; full?
 
 /* ---------- Match result ---------- */
 
-const EMPTY_PREVIEW_VALUE = "Not provided yet";
-
-function previewValue(value: string): string {
-  return value.trim() || EMPTY_PREVIEW_VALUE;
-}
-
-function previewList(values: string[]): string {
-  return values.length > 0 ? values.join(", ") : EMPTY_PREVIEW_VALUE;
-}
-
-function isSoonBuyerTimeline(timeline: string): boolean {
-  const normalized = timeline.toLowerCase();
-  return normalized.includes("asap") || (normalized.includes("1") && normalized.includes("3"));
-}
-
-function buyerAgentStatusLabel(status: string): string {
-  if (status === "Yes") return "Currently represented";
-  if (status === "No") return "Not currently represented";
-  if (status === "Not sure") return "Not sure yet";
-  return EMPTY_PREVIEW_VALUE;
-}
-
-function BuyerAgentPreview({ state, match }: { state: BuyerState; match: MatchResult | null }) {
-  const isRepresented = state.workingWithAgent === "Yes";
-  const isSoon = isSoonBuyerTimeline(state.timeline);
-  const leadStatus = isRepresented ? "Ethics pause" : isSoon ? "Hot buyer" : "Nurture buyer";
-  const suggestedAction = isRepresented
-    ? "Do not solicit. Buyer says they are already working with another agent. Offer general information only."
-    : isSoon
-      ? "Text within 5 minutes. This is an active buyer lead."
-      : "Start nurture follow-up. Buyer is interested but not urgent.";
-  const followUpItems = isRepresented
-    ? [
-        "Automation paused",
-        "Do not send property recommendations",
-        "Keep interaction respectful and informational only",
-      ]
-    : [
-        "Today: Send intro text",
-        "Tomorrow: Check in if no response",
-        "Day 3: Send helpful listing follow-up",
-        "Stop if they reply",
-      ];
-  const buyerName = state.name.trim() || "New buyer";
-  const preferredArea = previewList(state.areas);
-  const homeNeeds =
-    [
-      state.beds ? `${state.beds} beds` : "",
-      state.baths ? `${state.baths} baths` : "",
-      previewList(state.homeTypes) !== EMPTY_PREVIEW_VALUE ? previewList(state.homeTypes) : "",
-      previewList(state.mustHaves) !== EMPTY_PREVIEW_VALUE ? previewList(state.mustHaves) : "",
-      state.otherMatters.trim(),
-    ]
-      .filter(Boolean)
-      .join("; ") || EMPTY_PREVIEW_VALUE;
-  const textAlert = isRepresented
-    ? `New buyer inquiry from ${buyerName}: buyer says they are already working with another agent. Suggested next step: do not solicit; offer general information only.`
-    : `New buyer lead from your website: ${buyerName} is looking in ${preferredArea}, budget ${previewValue(
-        state.budget,
-      )}, timeline ${previewValue(state.timeline)}. Suggested next step: ${
-        isSoon ? "text within 5 minutes" : "start nurture follow-up"
-      }.${match ? ` Closest match: ${match.listing.address}, ${match.listing.neighborhood}.` : ""}`;
+function PropertyInquiryResult({ property, state }: { property: KnownProperty; state: BuyerState }) {
+  const agentPreview = buildPropertyAgentPreview(state, property);
 
   return (
-    <aside className="border border-dashed border-stone-300 bg-white px-5 py-7 sm:p-8 shadow-sm">
-      <div className="inline-flex border border-stone-200 bg-stone-50 px-3 py-1.5 text-[10px] tracking-[0.28em] uppercase text-stone-500">
-        Demo Agent View
-      </div>
-
-      <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h3 className="font-serif text-2xl text-stone-900">Agent Preview</h3>
-          <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-stone-500">
-            Hidden from visitors in the live version. Shown here so the agent can see what they
-            would receive.
-          </p>
-        </div>
-        <div className="w-fit border border-stone-300 px-3 py-2 text-[10px] tracking-[0.24em] uppercase text-stone-700">
-          {leadStatus}
-        </div>
-      </div>
-
-      <div className="mt-8 border-t border-stone-100 pt-7">
-        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">Lead Summary</p>
-        <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
-          <AgentPreviewField label="Lead source" value="Website buyer form" />
-          <AgentPreviewField label="Lead status" value={leadStatus} />
-          <AgentPreviewField label="Name" value={previewValue(state.name)} />
-          <AgentPreviewField label="Timeline" value={previewValue(state.timeline)} />
-          <AgentPreviewField label="Budget" value={previewValue(state.budget)} />
-          <AgentPreviewField label="Preferred area" value={preferredArea} />
-          <AgentPreviewField
-            label="Agent status"
-            value={buyerAgentStatusLabel(state.workingWithAgent)}
-          />
-          <AgentPreviewField label="Home needs" value={homeNeeds} />
-        </dl>
-      </div>
-
-      <div className="mt-8 border border-stone-300 bg-stone-50 p-5">
-        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">
-          Suggested Next Action
-        </p>
-        <p className="mt-4 border-l-2 border-stone-900 pl-4 text-sm font-light leading-relaxed text-stone-800">
-          {suggestedAction}
-        </p>
-      </div>
-
-      <div className="mt-8">
-        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">Follow-Up Preview</p>
-        <ul className="mt-4 space-y-2 text-sm font-light text-stone-700">
-          {followUpItems.map((item) => (
-            <li key={item} className="flex gap-3">
-              <span className="mt-2 h-px w-5 shrink-0 bg-stone-300" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="mt-8">
-        <p className="text-[10px] tracking-[0.35em] uppercase text-stone-500">Text Alert Preview</p>
-        <div className="mt-4 max-w-xl rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm font-light leading-relaxed text-stone-700 shadow-sm">
-          <p className="mb-2 text-[10px] tracking-[0.25em] uppercase text-stone-400">
-            Text - just now
-          </p>
-          {textAlert}
-        </div>
-      </div>
-
-      <p className="mt-8 border-t border-stone-100 pt-4 text-xs font-light italic text-stone-400">
-        Demo preview only. In the live version, this would be sent privately to the agent.
-      </p>
-    </aside>
-  );
-}
-
-function AgentPreviewField({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-[10px] tracking-[0.28em] uppercase text-stone-400">{label}</dt>
-      <dd className="mt-1 text-sm font-light leading-relaxed text-stone-800">{value}</dd>
-    </div>
-  );
-}
-
-function BuyerMatchResult({ match }: { match: MatchResult | null }) {
-  if (!match) {
-    return (
+    <>
       <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
         <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
           <Check className="h-4 w-4" strokeWidth={2} />
         </div>
-        <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">Thank you</h3>
-        <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
-          I'll review what you shared and follow up with homes or next steps that fit your search.
+        <p className="mt-6 text-[10px] uppercase tracking-[0.35em] text-stone-500">
+          Request received
+        </p>
+        <h3 className="mt-4 font-serif text-2xl text-stone-900 sm:text-3xl">
+          Thank you
+        </h3>
+        <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-lg mx-auto">
+          {REALTOR_FIRST_NAME} will review your request for {property.address} and follow up with
+          availability, showing options, or similar homes that fit what you shared.
+        </p>
+        <p className="mt-4 text-sm text-stone-500 font-light italic leading-relaxed max-w-md mx-auto">
+          If this home is no longer available, she will use your answers to send close alternatives.
         </p>
       </div>
+      <AgentPreview {...agentPreview} />
+    </>
+  );
+}
+
+function BuyerMatchResult({ match, state }: { match: MatchResult | null; state: BuyerState }) {
+  const agentPreview = buildBuyerAgentPreview(state, match);
+
+  if (!match) {
+    return (
+      <>
+        <div className="bg-white border border-stone-200 p-10 sm:p-14 text-center shadow-sm">
+          <div className="mx-auto h-10 w-10 rounded-full bg-stone-900 text-white grid place-items-center">
+            <Check className="h-4 w-4" strokeWidth={2} />
+          </div>
+          <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 mt-6">Thank you</h3>
+          <p className="mt-4 text-stone-600 font-light leading-relaxed max-w-md mx-auto">
+            I'll review what you shared and follow up with homes or next steps that fit your search.
+          </p>
+        </div>
+        <AgentPreview {...agentPreview} />
+      </>
     );
   }
 
@@ -1045,6 +1362,7 @@ function BuyerMatchResult({ match }: { match: MatchResult | null }) {
     : "A close starting point based on what you shared";
 
   return (
+    <>
     <div className="bg-white border border-stone-200 shadow-sm">
       {/* Confirmation header */}
       <div className="px-6 sm:px-10 pt-10 pb-6 text-center border-b border-stone-100">
@@ -1085,11 +1403,12 @@ function BuyerMatchResult({ match }: { match: MatchResult | null }) {
                 <Bath className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.baths} ba
               </span>
               <span className="flex items-center gap-1.5">
-                <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} />{" "}
-                {listing.sqft.toLocaleString()} sqft
+                <Maximize className="h-3.5 w-3.5" strokeWidth={1.5} /> {listing.sqft.toLocaleString()} sqft
               </span>
             </div>
-            <p className="mt-5 text-sm text-stone-700 font-light leading-relaxed">{reason}</p>
+            <p className="mt-5 text-sm text-stone-700 font-light leading-relaxed">
+              {reason}
+            </p>
 
             {!strong && (
               <p className="mt-3 text-sm text-stone-500 font-light italic leading-relaxed">
@@ -1115,7 +1434,164 @@ function BuyerMatchResult({ match }: { match: MatchResult | null }) {
         </article>
       </div>
     </div>
+    <AgentPreview {...agentPreview} />
+    </>
   );
+}
+
+/* ---------- Buyer agent-preview builder ---------- */
+
+function buildPropertyAgentPreview(state: BuyerState, property: KnownProperty) {
+  const represented = state.workingWithAgent === "Yes";
+  const urgentTimelines = new Set(["ASAP", "1-3 months", "1â€“3 months"]);
+  const nameDisplay = state.name.trim() || "Buyer";
+  const firstName = nameDisplay.split(" ")[0];
+
+  const summary: AgentPreviewItem[] = [
+    { label: "Name", value: nameDisplay },
+    { label: "Source", value: property.source },
+    { label: "Property", value: property.address },
+    { label: "Interested in", value: state.propertyAction },
+    { label: "Timeline", value: state.timeline },
+    { label: "Financing", value: state.financing },
+    { label: "Similar homes", value: state.similarHomes },
+    {
+      label: "Agent status",
+      value: represented
+        ? "Already working with another agent"
+        : state.workingWithAgent === "Not sure"
+          ? "Not sure"
+          : "Not currently represented",
+    },
+  ];
+
+  let nextAction: string;
+  if (represented) {
+    nextAction =
+      "Do not solicit. Buyer says they are already working with another agent. Offer general information only.";
+  } else if (urgentTimelines.has(state.timeline)) {
+    nextAction = `Text within 5 minutes about ${property.address}. This is an active Zillow inquiry.`;
+  } else {
+    nextAction = `Follow up with availability or similar homes for ${property.address}.`;
+  }
+
+  const followUp = represented
+    ? [
+        "Automation paused.",
+        "Do not send property recommendations.",
+        "Keep interaction respectful and informational only.",
+      ]
+    : [
+        "Now: Confirm availability or showing path.",
+        "If unavailable: send similar homes based on the buyer's answer.",
+        "Tomorrow: Check in if no response.",
+        "Stop if they reply.",
+      ];
+
+  const suggested = represented
+    ? "do not solicit - buyer is represented"
+    : urgentTimelines.has(state.timeline)
+      ? "text within 5 minutes"
+      : "send availability or similar homes";
+
+  const textAlert = `New Zillow inquiry: ${firstName} asked about ${property.address} in ${property.neighborhood}. They want to ${state.propertyAction || "follow up"}; timeline ${state.timeline || "not provided"}. Suggested next step: ${suggested}.`;
+
+  return {
+    subtitle: `What ${REALTOR_FIRST_NAME} would receive from this Zillow property inquiry`,
+    summaryTitle: "Property Inquiry Summary",
+    summary,
+    nextAction,
+    followUp,
+    textAlert,
+  };
+}
+
+function buildBuyerAgentPreview(
+  state: BuyerState,
+  match: MatchResult | null,
+) {
+  const represented = state.workingWithAgent === "Yes";
+  const urgentTimelines = new Set(["ASAP", "1–3 months"]);
+  const laterTimelines = new Set(["3–6 months", "6+ months", "Just browsing"]);
+
+  const nameDisplay = state.name.trim() || "Buyer";
+  const firstName = nameDisplay.split(" ")[0];
+
+  const areasText = state.areas.length ? state.areas.join(", ") : "";
+  const homeTypesText = state.homeTypes.join(", ");
+  const mustHavesText = state.mustHaves.join(", ");
+  const needs = [
+    state.beds && `${state.beds} beds`,
+    state.baths && `${state.baths} baths`,
+    homeTypesText,
+    mustHavesText && `must-haves: ${mustHavesText}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  const summary: AgentPreviewItem[] = [
+    { label: "Name", value: nameDisplay },
+    { label: "Timeline", value: state.timeline },
+    { label: "Budget", value: state.budget },
+    { label: "Preferred area", value: areasText },
+    { label: "Home needs", value: needs },
+    {
+      label: "Agent status",
+      value: represented
+        ? "Already working with another agent"
+        : state.workingWithAgent === "Not sure"
+          ? "Not sure"
+          : "Not currently represented",
+    },
+  ];
+
+  let nextAction: string;
+  if (represented) {
+    nextAction =
+      "Do not solicit. Buyer says they are already working with another agent. Offer general information only.";
+  } else if (urgentTimelines.has(state.timeline)) {
+    nextAction = "Text within 5 minutes. This is an active buyer lead.";
+  } else if (laterTimelines.has(state.timeline)) {
+    nextAction = "Start nurture follow-up. Buyer is interested but not urgent.";
+  } else {
+    nextAction = "Reach out today to learn more about their timeline and goals.";
+  }
+
+  const followUp = represented
+    ? [
+        "Automation paused.",
+        "Do not send property recommendations.",
+        "Keep interaction respectful and informational only.",
+      ]
+    : [
+        "Today: Send intro text.",
+        "Tomorrow: Check in if no response.",
+        "Day 3: Send helpful listing follow-up.",
+        "Stop if they reply.",
+      ];
+
+  // Text alert
+  const areaForText = state.areas[0] || "the Atlanta area";
+  const budgetForText = state.budget || "an unspecified budget";
+  const timelineForText = state.timeline ? `timeline ${state.timeline.toLowerCase()}` : "timeline not provided";
+  const suggested = represented
+    ? "do not solicit — buyer is represented"
+    : urgentTimelines.has(state.timeline)
+      ? "text within 5 minutes"
+      : "start nurture follow-up";
+
+  const matchHint = match && !represented ? ` Closest match: ${match.listing.address}, ${match.listing.neighborhood}.` : "";
+
+  const textAlert = `New buyer lead from your website: ${firstName} is looking in ${areaForText}, budget ${budgetForText}, ${timelineForText}. Suggested next step: ${suggested}.${matchHint}`;
+
+  return {
+    subtitle: `What ${REALTOR_FIRST_NAME} would receive from this buyer inquiry`,
+    summaryTitle: "Lead Summary",
+    summary,
+    nextAction,
+    followUp,
+    textAlert,
+  };
 }
 
 /* ---------- Reassurance ---------- */
@@ -1124,7 +1600,9 @@ function BuyerReassurance() {
   return (
     <section className="bg-[#faf7f2] py-24 lg:py-32">
       <div className="mx-auto max-w-3xl px-6 lg:px-10 text-center">
-        <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-6">From buyers</p>
+        <p className="text-[11px] tracking-[0.35em] uppercase text-stone-500 mb-6">
+          From buyers
+        </p>
         <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 leading-[1.15] max-w-2xl mx-auto">
           {REALTOR_FIRST_NAME} has helped buyers like you move from unsure to clear.
         </h2>
@@ -1140,6 +1618,7 @@ function BuyerReassurance() {
             <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} />
           </Link>
         </div>
+
       </div>
     </section>
   );
@@ -1158,18 +1637,10 @@ function Footer() {
               {REALTOR_PROFILE.title} in {REALTOR_PROFILE.location}
             </p>
             <div className="mt-6 flex items-center gap-4">
-              <a
-                href={REALTOR_PROFILE.socialLinks.linkedin}
-                aria-label="LinkedIn"
-                className="text-stone-400 hover:text-white transition-colors"
-              >
+              <a href={REALTOR_PROFILE.socialLinks.linkedin} aria-label="LinkedIn" className="text-stone-400 hover:text-white transition-colors">
                 <Linkedin className="h-4 w-4" strokeWidth={1.5} />
               </a>
-              <a
-                href={REALTOR_PROFILE.socialLinks.instagram}
-                aria-label="Instagram"
-                className="text-stone-400 hover:text-white transition-colors"
-              >
+              <a href={REALTOR_PROFILE.socialLinks.instagram} aria-label="Instagram" className="text-stone-400 hover:text-white transition-colors">
                 <Instagram className="h-4 w-4" strokeWidth={1.5} />
               </a>
             </div>
@@ -1177,52 +1648,27 @@ function Footer() {
 
           <div className="text-sm font-light space-y-2">
             <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">Contact</p>
-            <a
-              href={`tel:${REALTOR_PROFILE.phone.replace(/[^+\d]/g, "")}`}
-              className="flex items-center gap-2 hover:text-white transition-colors"
-            >
+            <a href={`tel:${REALTOR_PROFILE.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 hover:text-white transition-colors">
               <Phone className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.phone}
             </a>
-            <a
-              href={`mailto:${REALTOR_PROFILE.email}`}
-              className="flex items-center gap-2 hover:text-white transition-colors"
-            >
+            <a href={`mailto:${REALTOR_PROFILE.email}`} className="flex items-center gap-2 hover:text-white transition-colors">
               <Mail className="h-3.5 w-3.5" strokeWidth={1.5} /> {REALTOR_PROFILE.email}
             </a>
           </div>
 
           <div>
-            <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">
-              Quick Links
-            </p>
+            <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-3">Quick Links</p>
             <ul className="space-y-2 text-sm font-light">
-              <li>
-                <Link to="/" className="hover:text-white transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/start-here" className="hover:text-white transition-colors">
-                  Start Here
-                </Link>
-              </li>
-              <li>
-                <Link to="/testimonials" className="hover:text-white transition-colors">
-                  Testimonials
-                </Link>
-              </li>
+              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
+              <li><Link to="/start-here" className="hover:text-white transition-colors">Start Here</Link></li>
+              <li><Link to="/testimonials" className="hover:text-white transition-colors">Testimonials</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-[11px] text-stone-500 font-light">
-          <p>
-            Brokerage: {REALTOR_PROFILE.company} · GA License {REALTOR_PROFILE.licenseNumber}· Equal
-            Housing Opportunity
-          </p>
-          <p>
-            © {new Date().getFullYear()} {REALTOR_PROFILE.name}. All rights reserved.
-          </p>
+          <p>Brokerage: {REALTOR_PROFILE.company} · GA License {REALTOR_PROFILE.licenseNumber}· Equal Housing Opportunity</p>
+          <p>© {new Date().getFullYear()} {REALTOR_PROFILE.name}. All rights reserved.</p>
         </div>
       </div>
     </footer>
