@@ -35,7 +35,7 @@ export type Testimonial = {
 export const HOMEPAGE_TESTIMONIALS: Testimonial[] = [
     {
         quote:
-            "Daryl was very respectful of our needs and paid close attention to the location and price point that mattered to us. He was always prompt, patient, polite, and honest when answering our questions. We highly recommend him.",
+            "Daryl was respectful, prompt, and patient. He paid close attention to our location and price needs, answered our questions honestly, and made the process feel easy.",
         name: "Calie M.",
     },
     {
