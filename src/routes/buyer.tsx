@@ -1150,6 +1150,7 @@ function PropertyAwareConfirmation({ state }: { state: BuyerState }) {
 function buildBuyerAgentPreview(
   state: BuyerState,
   match: MatchResult | null,
+  propertyAware = false,
 ) {
   const represented = state.workingWithAgent === "Yes";
   const urgentTimelines = new Set(["ASAP", "1–3 months"]);
