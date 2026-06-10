@@ -11,6 +11,9 @@ import {
 
 import appCss from "../styles.css?url";
 
+const SOCIAL_PREVIEW_IMAGE =
+  "https://raw.githubusercontent.com/tobikads/real-estate-website-template/demo/savannah-lavender/src/assets/Alexandra/alexandra-portrait.jpg";
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -86,11 +89,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Personal, calm, premium real estate guidance in Atlanta, Georgia.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: SOCIAL_PREVIEW_IMAGE },
+      { property: "og:image:secure_url", content: SOCIAL_PREVIEW_IMAGE },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:width", content: "1024" },
+      { property: "og:image:height", content: "1024" },
+      {
+        property: "og:image:alt",
+        content: "Professional real estate agent portrait",
+      },
       { name: "twitter:title", content: `${REALTOR_PROFILE.name} | Real Estate Agent in ${REALTOR_PROFILE.location}` },
       { name: "description", content: `${REALTOR_PROFILE.name}: ${REALTOR_PROFILE.location} is a premium realtor website showcasing ${REALTOR_PROFILE.location} properties and services.` },
       { property: "og:description", content: `${REALTOR_PROFILE.name}: ${REALTOR_PROFILE.location} is a premium realtor website showcasing ${REALTOR_PROFILE.location} properties and services.` },
       { name: "twitter:description", content: `${REALTOR_PROFILE.name}: ${REALTOR_PROFILE.location} is a premium realtor website showcasing ${REALTOR_PROFILE.location} properties and services.` },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: SOCIAL_PREVIEW_IMAGE },
+      {
+        name: "twitter:image:alt",
+        content: "Professional real estate agent portrait",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
